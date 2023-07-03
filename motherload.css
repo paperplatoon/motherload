@@ -1,0 +1,28 @@
+.map-div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-top: 6vh;
+    padding-left: 1vw;
+    height: 82vh;
+    background-color: brown;
+  }
+
+  .map-square {
+    width: 10vw;
+    height: 10vh;
+    margin: 1vw;
+    background-color: rgb(203, 203, 203);
+  }
+
+  .bronze {
+    background-color: rgb(166, 91, 0);
+  }
+
+  .silver {
+    background-color: rgb(131, 131, 131);
+  }
+
+  .gold {background-color: gold;}
+
+  .platinum { background-color: magenta;}
