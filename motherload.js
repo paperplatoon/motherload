@@ -26,9 +26,14 @@ async function fillMapWithArray(stateObj) {
         //first 12 * 36 squares
         let iterations = (8*7)
         for (let i=0; i < iterations; i++) {
-            const randomNumber = Math.random()
+            let randomNumber = Math.random()
             console.log(randomNumber)
             
+            const isEnemy = Math.random()
+            if (isEnemy > 0.98) {
+                randomNumber = 0.221
+            }
+
 
             if (randomNumber > 0.995) {
                 tempArray.push("4")
@@ -36,20 +41,22 @@ async function fillMapWithArray(stateObj) {
                 tempArray.push("3")
             } else if (randomNumber > 0.93) {
                 tempArray.push("2")
-            } else if (randomNumber > 0.80) {
+            } else if (randomNumber > 0.75) {
                 tempArray.push("1")
+            } else if (randomNumber == 0.221) {
+                tempArray.push("enemy")
             } else {
                 tempArray.push("0")
             }
         }
-        console.log(tempArray)
         stateObj.gameMap = tempArray;
 
         if (stateObj.currentPosition === false) {
-            stateObj.currentPosition = Math.random() * 10
+            stateObj.currentPosition = Math.floor(Math.random() * 8)
         }
     }
     console.log(stateObj.gameMap)
+    console.log(stateObj.currentPosition)
     return stateObj
 }
 
@@ -72,11 +79,17 @@ async function renderScreen(stateObj) {
     stateObj.gameMap.forEach(function (mapSquare, squareIndex) {
         let mapSquareDiv = document.createElement("Div");
         mapSquareDiv.classList.add("map-square");
+
+        if (stateObj.currentPosition === squareIndex) {
+            mapSquareDiv.classList.add("player-here")
+        }
         
         if (mapSquare === "0") {
             mapSquareDiv.classList.add("dirt")
         } else if (mapSquare === "air") {
             mapSquareDiv.classList.add("air")
+        } else if (mapSquare === "enemy") {
+            mapSquareDiv.classList.add("enemy")
         } else if (mapSquare === "1") {
             mapSquareDiv.classList.add("bronze")
         } else if (mapSquare === "2") {

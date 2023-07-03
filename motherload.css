@@ -26,3 +26,11 @@
   .gold {background-color: gold;}
 
   .platinum { background-color: magenta;}
+
+  .player-here {
+    background-color: aquamarine;
+  }
+
+  .enemy {
+    background-color: red;
+  }
