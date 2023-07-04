@@ -1,7 +1,7 @@
 let gameStartState = {
     gameMap: [],
-    fuelCapacity: 20,
-    currentFuel: 20,
+    fuelCapacity: 80,
+    currentFuel: 80,
     aboveGround: true,
     bankedCash: 50,
     inventoryCash: 0, 
@@ -20,11 +20,15 @@ let totalSquareNumber = (8*20)
 
 //takes a state object, changes the "state" to be that, and renders the screen
 async function changeState(newStateObj) {
-    state = {...newStateObj}
+    state = {...newStateObj};
     await renderScreen(state);
+
+    if (state.currentFuel < 0) {
+        await loseTheGame();
+    }
 }
 
-function renderTopBarStats(stateObj) {
+async function renderTopBarStats(stateObj) {
     let topBarDiv = document.createElement("Div")
     topBarDiv.classList.add("top-stats-bar")
 
@@ -94,13 +98,13 @@ async function renderScreen(stateObj) {
 
     document.getElementById("app").innerHTML = ""
     //create a mapDiv to append all your new squares to
-    topBar = renderTopBarStats(stateObj);
+    topBar = await renderTopBarStats(stateObj);
     document.getElementById("app").append(topBar)
 
     let mapDiv = document.createElement("Div");
     mapDiv.classList.add("map-div");
 
-    stateObj.gameMap.forEach(function (mapSquare, squareIndex) {
+    stateObj.gameMap.forEach(async function (mapSquare, squareIndex) {
         let mapSquareDiv = document.createElement("Div");
         mapSquareDiv.classList.add("map-square");
 
@@ -213,7 +217,15 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         console.log("target square was not 0")
     }
     
+    
 
     return stateObj
+}
 
+async function loseTheGame() {
+    var confirmation = confirm("You've run out of fuel! Click OK to try again");
+
+  if (confirmation) {
+    location.reload();
+  }
 }
