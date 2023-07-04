@@ -141,9 +141,9 @@ async function LeftArrow(stateObj) {
     return stateObj
 }
 
-
+//7, 15, 23
 async function RightArrow(stateObj) {
-    if (stateObj.currentPosition % 7 === 0 && stateObj.currentPosition !== 0 ) {
+    if ((stateObj.currentPosition+1) % 8 === 0 ) {
         return stateObj
     } else {
         stateObj.currentPosition += 1;
