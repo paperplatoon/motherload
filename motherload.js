@@ -46,8 +46,8 @@ function renderTopBarStats(stateObj) {
 async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
     if (stateObj.gameMap.length === 0) {
-        tempArray = ["air", "air", "air", "air",
-                    "air", "air", "air", "air"];
+        tempArray = ["0", "0", "0", "0",
+                    "0", "0", "0", "0"];
         //first 12 * 36 squares
         for (let i=0; i < totalSquareNumber; i++) {
             let randomNumber = Math.random()
@@ -89,7 +89,7 @@ async function renderScreen(stateObj) {
     console.log("rendering Screen")
     if (stateObj.gameMap.length === 0) {
         console.log("calling fillMap function")
-       stateObj = await fillMapWithArray(stateObj)
+        stateObj = await fillMapWithArray(stateObj)
     }
 
     document.getElementById("app").innerHTML = ""
@@ -140,19 +140,19 @@ document.addEventListener('keydown', async function(event) {
     if (event.key === 'ArrowUp') {
       // Execute your function for the up arrow key
       stateObj = await UpArrow(stateObj);
-      changeState(stateObj)
+      await changeState(stateObj)
     } else if (event.key === 'ArrowDown') {
       // Execute your function for the down arrow key
       stateObj = await DownArrow(stateObj);
-      changeState(stateObj)
+      await changeState(stateObj)
     } else if (event.key === 'ArrowLeft') {
       // Execute your function for the left arrow key
       stateObj = await LeftArrow(stateObj);
-      changeState(stateObj)
+      await changeState(stateObj)
     } else if (event.key === 'ArrowRight') {
       // Execute your function for the right arrow key
       stateObj = await RightArrow(stateObj);
-      changeState(stateObj)
+      await changeState(stateObj)
     }
   });
 
@@ -160,7 +160,8 @@ async function LeftArrow(stateObj) {
     if (stateObj.currentPosition == 0 || stateObj.currentPosition % 8 === 0 ) {
         return stateObj
     } else {
-        stateObj.currentPosition -= 1;
+        await calculateMoveChange(stateObj, -1)
+        //stateObj.currentPosition -= 1;
     }
     return stateObj
 }
@@ -170,7 +171,8 @@ async function RightArrow(stateObj) {
     if ((stateObj.currentPosition+1) % 8 === 0 ) {
         return stateObj
     } else {
-        stateObj.currentPosition += 1;
+        await calculateMoveChange(stateObj, 1)
+        //stateObj.currentPosition += 1;
     }
     return stateObj
 }
@@ -178,11 +180,9 @@ async function RightArrow(stateObj) {
 async function UpArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     const scrollAmount = Math.floor(viewportHeight * 0.06);
-    if (stateObj.currentPosition < 8 ) {
-        return stateObj
-    } else {
+    if (stateObj.currentPosition > 7 ) {
         window.scrollTo(0, window.pageYOffset - scrollAmount)
-        stateObj.currentPosition -= 8;
+        stateObj = await calculateMoveChange(stateObj, -8)
     }
     return stateObj
 }
@@ -190,11 +190,30 @@ async function UpArrow(stateObj) {
 async function DownArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     const scrollAmount = Math.floor(viewportHeight * 0.06);
-    if (stateObj.currentPosition > (totalSquareNumber)) {
-        return stateObj
-    } else {
+    if (stateObj.currentPosition < (totalSquareNumber)) {
         window.scrollTo(0, window.pageYOffset + scrollAmount)
-        stateObj.currentPosition += 8;
+        stateObj = await calculateMoveChange(stateObj, 8)
     }
     return stateObj
+}
+
+async function calculateMoveChange(stateObj, squaresToMove) {
+    targetSquareNum = stateObj.currentPosition + squaresToMove
+    targetSquare = stateObj.gameMap[targetSquareNum];
+    console.log("target square is " + targetSquare)
+    
+
+    
+    if (targetSquare === "0") {
+            console.log("target square was dirt")
+            stateObj.currentFuel -= 2;
+            stateObj.currentPosition = targetSquareNum
+            
+    } else {
+        console.log("target square was not 0")
+    }
+    
+
+    return stateObj
+
 }
