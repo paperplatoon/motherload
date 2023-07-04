@@ -12,10 +12,11 @@ let state = {...gameStartState}
 let totalSquareNumber = (8*20)
 
 //TO-DO
-//render current state (fuel capacity, cash, etc) at top of page
 //change the state when the player "clears" a square; decrease  the fuel
 //check so the player can't move if out of fuel
 //if the player moves into a gem, change inventory AND clear the square
+//edit scroll logic so it only triggers once player is at LEAST three squares up or down
+
 
 //takes a state object, changes the "state" to be that, and renders the screen
 async function changeState(newStateObj) {
@@ -175,18 +176,24 @@ async function RightArrow(stateObj) {
 }
 
 async function UpArrow(stateObj) {
+    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const scrollAmount = Math.floor(viewportHeight * 0.06);
     if (stateObj.currentPosition < 8 ) {
         return stateObj
     } else {
+        window.scrollTo(0, window.pageYOffset - scrollAmount)
         stateObj.currentPosition -= 8;
     }
     return stateObj
 }
 
 async function DownArrow(stateObj) {
+    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const scrollAmount = Math.floor(viewportHeight * 0.06);
     if (stateObj.currentPosition > (totalSquareNumber)) {
         return stateObj
     } else {
+        window.scrollTo(0, window.pageYOffset + scrollAmount)
         stateObj.currentPosition += 8;
     }
     return stateObj
