@@ -3,17 +3,19 @@
     flex-direction: row;
     flex-wrap: wrap;
     padding-top: 6vh;
-    padding-left: 1vw;
-    height: 82vh;
+    padding: 2vh 0.5vw;
+    height: 100%;
+    margin-top: 20vh;
     background-color: brown;
   }
 
   .top-stats-bar {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
     height: 5vh;
     position: fixed;
+    padding: 1vh 0;
     top: 0;
     left: 0;
     width: 100%;
@@ -44,7 +46,7 @@
   }
 
   .player-here {
-    background-color: aquamarine;
+    background-color: rgb(22, 64, 200);
   }
 
  
