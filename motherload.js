@@ -10,10 +10,15 @@ let gameStartState = {
 
 let state = {...gameStartState}
 
+//TO-DO
+//render current state (fuel capacity, cash, etc) at top of page
+//change the state when the player "clears" a square; decrease  the fuel
+//check so the player can't move if out of fuel
+//if the player moves into a gem, change inventory AND clear the square
+
 //takes a state object, changes the "state" to be that, and renders the screen
 async function changeState(newStateObj) {
     state = {...newStateObj}
-    console.log("changeState gameMap: " + state.gameMap)
     await renderScreen(state);
   }
 
@@ -27,7 +32,6 @@ async function fillMapWithArray(stateObj) {
         let iterations = (8*7)
         for (let i=0; i < iterations; i++) {
             let randomNumber = Math.random()
-            console.log(randomNumber)
             
             const isEnemy = Math.random()
             if (isEnemy > 0.98) {
@@ -55,8 +59,8 @@ async function fillMapWithArray(stateObj) {
             stateObj.currentPosition = Math.floor(Math.random() * 8)
         }
     }
-    console.log(stateObj.gameMap)
-    console.log(stateObj.currentPosition)
+    // console.log(stateObj.gameMap)
+    // console.log(stateObj.currentPosition)
     return stateObj
 }
 
@@ -68,9 +72,7 @@ async function renderScreen(stateObj) {
         console.log("calling fillMap function")
        stateObj = await fillMapWithArray(stateObj)
     }
-
-    console.log(stateObj.gameMap)
-
+    
     document.getElementById("app").innerHTML = ""
     //create a mapDiv to append all your new squares to
     let mapDiv = document.createElement("Div");
