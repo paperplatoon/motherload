@@ -115,26 +115,56 @@ document.addEventListener('keydown', async function(event) {
     let stateObj = {...state};
     if (event.key === 'ArrowUp') {
       // Execute your function for the up arrow key
-      yourFunctionForUpArrow();
+      stateObj = await UpArrow(stateObj);
+      changeState(stateObj)
     } else if (event.key === 'ArrowDown') {
       // Execute your function for the down arrow key
-      yourFunctionForDownArrow();
+      stateObj = await DownArrow(stateObj);
+      changeState(stateObj)
     } else if (event.key === 'ArrowLeft') {
       // Execute your function for the left arrow key
-
-      stateObj = await yourFunctionForLeftArrow(stateObj);
+      stateObj = await LeftArrow(stateObj);
       changeState(stateObj)
     } else if (event.key === 'ArrowRight') {
       // Execute your function for the right arrow key
-      yourFunctionForRightArrow();
+      stateObj = await RightArrow(stateObj);
+      changeState(stateObj)
     }
   });
 
-  async function yourFunctionForLeftArrow(stateObj) {
+async function LeftArrow(stateObj) {
     if (stateObj.currentPosition == 0 || stateObj.currentPosition % 8 === 0 ) {
         return stateObj
     } else {
         stateObj.currentPosition -= 1;
+    }
+    return stateObj
+}
+
+
+async function RightArrow(stateObj) {
+    if (stateObj.currentPosition % 7 === 0 && stateObj.currentPosition !== 0 ) {
+        return stateObj
+    } else {
+        stateObj.currentPosition += 1;
+    }
+    return stateObj
+}
+
+async function UpArrow(stateObj) {
+    if (stateObj.currentPosition < 8 ) {
+        return stateObj
+    } else {
+        stateObj.currentPosition -= 8;
+    }
+    return stateObj
+}
+
+async function DownArrow(stateObj) {
+    if (stateObj.currentPosition > 55) {
+        return stateObj
+    } else {
+        stateObj.currentPosition += 8;
     }
     return stateObj
 }
