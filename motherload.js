@@ -8,13 +8,13 @@ let gameStartState = {
     currentPosition: false,
 }
 
+let state = {...gameStartState}
+
 //takes a state object, changes the "state" to be that, and renders the screen
 async function changeState(newStateObj) {
-    let stateObj = {...newStateObj}
-  
-    state = {...stateObj}
-    renderScreen(stateObj);
-    return stateObj
+    state = {...newStateObj}
+    console.log("changeState gameMap: " + state.gameMap)
+    await renderScreen(state);
   }
 
 //takes a stateObj, and if the gameMap is not created, creates it
@@ -106,5 +106,35 @@ async function renderScreen(stateObj) {
 }
 
 
-let state = {...gameStartState}
 renderScreen(state)
+
+
+
+//listen for key presses
+document.addEventListener('keydown', async function(event) {
+    let stateObj = {...state};
+    if (event.key === 'ArrowUp') {
+      // Execute your function for the up arrow key
+      yourFunctionForUpArrow();
+    } else if (event.key === 'ArrowDown') {
+      // Execute your function for the down arrow key
+      yourFunctionForDownArrow();
+    } else if (event.key === 'ArrowLeft') {
+      // Execute your function for the left arrow key
+
+      stateObj = await yourFunctionForLeftArrow(stateObj);
+      changeState(stateObj)
+    } else if (event.key === 'ArrowRight') {
+      // Execute your function for the right arrow key
+      yourFunctionForRightArrow();
+    }
+  });
+
+  async function yourFunctionForLeftArrow(stateObj) {
+    if (stateObj.currentPosition == 0 || stateObj.currentPosition % 8 === 0 ) {
+        return stateObj
+    } else {
+        stateObj.currentPosition -= 1;
+    }
+    return stateObj
+}
