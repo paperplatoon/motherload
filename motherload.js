@@ -9,6 +9,7 @@ let gameStartState = {
 }
 
 let state = {...gameStartState}
+let totalSquareNumber = (8*20)
 
 //TO-DO
 //render current state (fuel capacity, cash, etc) at top of page
@@ -20,7 +21,25 @@ let state = {...gameStartState}
 async function changeState(newStateObj) {
     state = {...newStateObj}
     await renderScreen(state);
-  }
+}
+
+function renderTopBarStats(stateObj) {
+    let topBarDiv = document.createElement("Div")
+    topBarDiv.classList.add("top-stats-bar")
+
+    let fuelDiv = document.createElement("Div")
+    fuelDiv.textContent = "Fuel: " + stateObj.currentFuel + "/" + stateObj.fuelCapacity
+
+    let cashDiv = document.createElement("Div")
+    cashDiv.textContent = "Total Funds: " + stateObj.bankedCash
+    
+    let inventoryDiv = document.createElement("Div")
+    inventoryDiv.textContent = "Current Inventory Value: " + stateObj.inventoryCash
+
+    topBarDiv.append(fuelDiv, cashDiv, inventoryDiv)
+
+    return topBarDiv
+}
 
 //takes a stateObj, and if the gameMap is not created, creates it
 async function fillMapWithArray(stateObj) {
@@ -29,8 +48,7 @@ async function fillMapWithArray(stateObj) {
         tempArray = ["air", "air", "air", "air",
                     "air", "air", "air", "air"];
         //first 12 * 36 squares
-        let iterations = (8*7)
-        for (let i=0; i < iterations; i++) {
+        for (let i=0; i < totalSquareNumber; i++) {
             let randomNumber = Math.random()
             
             const isEnemy = Math.random()
@@ -72,9 +90,12 @@ async function renderScreen(stateObj) {
         console.log("calling fillMap function")
        stateObj = await fillMapWithArray(stateObj)
     }
-    
+
     document.getElementById("app").innerHTML = ""
     //create a mapDiv to append all your new squares to
+    topBar = renderTopBarStats(stateObj);
+    document.getElementById("app").append(topBar)
+
     let mapDiv = document.createElement("Div");
     mapDiv.classList.add("map-div");
 
@@ -163,7 +184,7 @@ async function UpArrow(stateObj) {
 }
 
 async function DownArrow(stateObj) {
-    if (stateObj.currentPosition > 55) {
+    if (stateObj.currentPosition > (totalSquareNumber)) {
         return stateObj
     } else {
         stateObj.currentPosition += 8;
