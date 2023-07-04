@@ -114,8 +114,8 @@ async function renderScreen(stateObj) {
         
         if (mapSquare === "0") {
             mapSquareDiv.classList.add("dirt")
-        } else if (mapSquare === "air") {
-            mapSquareDiv.classList.add("air")
+        } else if (mapSquare === "empty") {
+            mapSquareDiv.classList.add("empty")
         } else if (mapSquare === "enemy") {
             mapSquareDiv.classList.add("enemy")
         } else if (mapSquare === "1") {
@@ -141,14 +141,18 @@ renderScreen(state)
 //listen for key presses
 document.addEventListener('keydown', async function(event) {
     let stateObj = {...state};
+    console.log("outside loop " + stateObj.currentPosition)
     if (event.key === 'ArrowUp') {
       // Execute your function for the up arrow key
       stateObj = await UpArrow(stateObj);
       await changeState(stateObj)
     } else if (event.key === 'ArrowDown') {
+        console.log("inside loop 1 " + stateObj.currentPosition)
       // Execute your function for the down arrow key
       stateObj = await DownArrow(stateObj);
+      console.log("inside loop 2 " + stateObj.currentPosition)
       await changeState(stateObj)
+      console.log("inside loop 3 " + stateObj.currentPosition)
     } else if (event.key === 'ArrowLeft') {
       // Execute your function for the left arrow key
       stateObj = await LeftArrow(stateObj);
@@ -161,10 +165,8 @@ document.addEventListener('keydown', async function(event) {
   });
 
 async function LeftArrow(stateObj) {
-    if (stateObj.currentPosition == 0 || stateObj.currentPosition % 8 === 0 ) {
-        return stateObj
-    } else {
-        await calculateMoveChange(stateObj, -1)
+    if (stateObj.currentPosition !== 0 && stateObj.currentPosition % 8 !== 0 ) {
+        stateObj = await calculateMoveChange(stateObj, -1)
         //stateObj.currentPosition -= 1;
     }
     return stateObj
@@ -172,10 +174,8 @@ async function LeftArrow(stateObj) {
 
 //7, 15, 23
 async function RightArrow(stateObj) {
-    if ((stateObj.currentPosition+1) % 8 === 0 ) {
-        return stateObj
-    } else {
-        await calculateMoveChange(stateObj, 1)
+    if ((stateObj.currentPosition+1) % 8 !== 0 ) {
+        stateObj = await calculateMoveChange(stateObj, 1)
         //stateObj.currentPosition += 1;
     }
     return stateObj
@@ -209,15 +209,35 @@ async function calculateMoveChange(stateObj, squaresToMove) {
 
     
     if (targetSquare === "0") {
-            console.log("target square was dirt")
-            stateObj.currentFuel -= 2;
-            stateObj.currentPosition = targetSquareNum
+        console.log("target square was dirt")
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 1)
             
+    } else if (targetSquare === "1") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 5)
+    } else if (targetSquare === "2") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 10)
+    } else if (targetSquare === "3") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 20)
+    } else if (targetSquare === "4") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 50)
+    } else if (targetSquare === "empty") {
+        console.log("target square was empty")
+        stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else {
-        console.log("target square was not 0")
+        console.log("target square hasn't been handled yet")
     }
-    
-    
+
+    if (targetSquare !== "empty") {
+        stateObj.gameMap[targetSquareNum] = "empty"
+    }
+
+    return stateObj
+}
+
+async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGain) {
+    stateObj.currentFuel -= fuelToLose;
+    stateObj.currentPosition = squareIndexToMoveTo;
+    stateObj.inventoryCash += goldToGain
 
     return stateObj
 }
