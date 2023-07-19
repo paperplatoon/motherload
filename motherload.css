@@ -23,9 +23,8 @@
   }
 
   .map-square {
-    width: 10vw;
+    width: 12vw;
     height: 10vh;
-    margin: 1vw;
     background-color: rgb(203, 203, 203);
   }
 
@@ -47,6 +46,10 @@
 
   .empty {
     background-color: black;
+  }
+
+  .store {
+    background-color: rgb(3, 184, 190);
   }
 
   .player-here {
