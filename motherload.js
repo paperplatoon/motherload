@@ -88,6 +88,8 @@ async function fillMapWithArray(stateObj) {
                 tempArray.push("1")
             } else if (randomNumber == 0.221) {
                 tempArray.push("enemy")
+            } else if (randomNumber > 0.5 && randomNumber < 0.58) {
+                tempArray.push("empty")
             } else {
                 tempArray.push("0")
             }
@@ -193,8 +195,14 @@ async function checkForDeath(stateObj) {
         await loseTheGame("You've run out of fuel!");
     }
 
-    if (stateObj.gameMap[targetSquareNum-1] === "enemy" || stateObj.gameMap[targetSquareNum+1] === "enemy") {
-        await loseTheGame("You got too close to an enemy!");
+    if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % screenwidthBlocks !== 0) {
+        await loseTheGame("You got too close to an enemy on your left!");
+    } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition-1) % screenwidthBlocks !== 0) {
+        await loseTheGame("You got too close to an enemy on your right!");
+    } else if (stateObj.gameMap[stateObj.currentPosition+screenwidthBlocks] === "enemy") {
+        await loseTheGame("You got too close to an enemy below you!");
+    } else if (stateObj.gameMap[stateObj.currentPosition-screenwidthBlocks] === "enemy") {
+        await loseTheGame("You got too close to an enemy above you!");
     }
 }
 
