@@ -44,6 +44,21 @@
     background-color: red;
   }
 
+  .empty-fuel-bar {
+    width: 10vw;
+    height: 2vh;
+    background-color: grey;
+    position: relative;
+  }
+  
+  .current-fuel-bar {
+    background-color: blue;
+    position: absolute;
+    top:-1px;
+    left: -1px;
+    height: 2.2vh;
+  }
+
   .empty {
     background-color: black;
   }

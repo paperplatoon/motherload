@@ -1,7 +1,7 @@
 let gameStartState = {
     gameMap: [],
-    fuelCapacity: 80,
-    currentFuel: 80,
+    fuelCapacity: 150,
+    currentFuel: 130,
     aboveGround: true,
     bankedCash: 50,
     inventoryCash: 0, 
@@ -9,7 +9,9 @@ let gameStartState = {
 }
 
 let state = {...gameStartState}
-let totalSquareNumber = (8*20)
+
+let screenwidthBlocks = 8; 
+let totalSquareNumber = (16*20)
 
 //TO-DO
 //change the state when the player "clears" a square; decrease  the fuel
@@ -33,7 +35,23 @@ async function renderTopBarStats(stateObj) {
     topBarDiv.classList.add("top-stats-bar")
 
     let fuelDiv = document.createElement("Div")
-    fuelDiv.textContent = "Fuel: " + stateObj.currentFuel + "/" + stateObj.fuelCapacity
+    fuelDiv.textContent = "Fuel "
+
+    let emptyFuelBarDiv = document.createElement("Div");
+    emptyFuelBarDiv.classList.add("empty-fuel-bar");
+    let currentFuelBarDiv = document.createElement("Div");
+    currentFuelBarDiv.classList.add("current-fuel-bar");
+    
+    
+    let barLength = 10*(stateObj.currentFuel/stateObj.fuelCapacity)
+    let barText = "width:" + barLength + "vw"
+
+    currentFuelBarDiv.setAttribute("style", barText);
+    emptyFuelBarDiv.append(currentFuelBarDiv);
+    fuelDiv.appendChild(emptyFuelBarDiv)
+    topBarDiv.appendChild(fuelDiv)
+
+    
 
     let cashDiv = document.createElement("Div")
     cashDiv.textContent = "Total Funds: " + stateObj.bankedCash
@@ -50,8 +68,10 @@ async function renderTopBarStats(stateObj) {
 async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
     if (stateObj.gameMap.length === 0) {
-        tempArray = ["STORE", "0", "0", "0",
-                    "0", "0", "0", "0"];
+        tempArray = ["STORE"];
+        for (let i=0; i<screenwidthBlocks-1; i++ ) {
+            tempArray.push("empty")
+        };
         //first 12 * 36 squares
         for (let i=0; i < totalSquareNumber; i++) {
             let randomNumber = Math.random()
@@ -203,9 +223,13 @@ async function RightArrow(stateObj) {
     return stateObj
 }
 
+//calculate move change takes stateObj & direction
+//checkIfCanMove does all the calculations to see if you CAN move there
+//check target square figures out 
+
 async function UpArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.08);
+    const scrollAmount = Math.floor(viewportHeight * 0.04);
     if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - 8]=== "empty") {
         window.scrollTo(0, window.pageYOffset - scrollAmount)
         stateObj = await calculateMoveChange(stateObj, -8)
@@ -216,7 +240,7 @@ async function UpArrow(stateObj) {
 
 async function DownArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.06);
+    const scrollAmount = Math.floor(viewportHeight * 0.04);
     if (stateObj.currentPosition < (totalSquareNumber)) {
         window.scrollTo(0, window.pageYOffset + scrollAmount)
         stateObj = await calculateMoveChange(stateObj, 8)
