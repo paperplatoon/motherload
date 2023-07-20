@@ -10,7 +10,7 @@ let gameStartState = {
 
 let state = {...gameStartState}
 
-let screenwidthBlocks = 8; 
+let screenwidthBlocks = 16; 
 let totalSquareNumber = (16*20)
 
 //TO-DO
@@ -25,9 +25,7 @@ async function changeState(newStateObj) {
     state = {...newStateObj};
     await renderScreen(state);
 
-    if (state.currentFuel < 0) {
-        await loseTheGame();
-    }
+
 }
 
 async function renderTopBarStats(stateObj) {
@@ -77,11 +75,9 @@ async function fillMapWithArray(stateObj) {
             let randomNumber = Math.random()
             
             const isEnemy = Math.random()
-            if (isEnemy > 0.98) {
+            if (isEnemy > 0.97) {
                 randomNumber = 0.221
             }
-
-
             if (randomNumber > 0.995) {
                 tempArray.push("4")
             } else if (randomNumber > 0.98) {
@@ -149,6 +145,7 @@ async function renderScreen(stateObj) {
             mapSquareDiv.classList.add("platinum")
         } else if (mapSquare === "STORE") {
             mapSquareDiv.classList.add("store")
+            mapSquareDiv.textContent = "Store"
         }
 
         mapDiv.append(mapSquareDiv)
@@ -169,35 +166,49 @@ document.addEventListener('keydown', async function(event) {
       // Execute your function for the up arrow key
       stateObj = await UpArrow(stateObj);
       await changeState(stateObj)
+      await checkForDeath(stateObj)
     } else if (event.key === 'ArrowDown') {
         console.log("inside loop 1 " + stateObj.currentPosition)
       // Execute your function for the down arrow key
       stateObj = await DownArrow(stateObj);
       console.log("inside loop 2 " + stateObj.currentPosition)
       await changeState(stateObj)
+      await checkForDeath(stateObj)
       console.log("inside loop 3 " + stateObj.currentPosition)
     } else if (event.key === 'ArrowLeft') {
       // Execute your function for the left arrow key
       stateObj = await LeftArrow(stateObj);
       await changeState(stateObj)
+      await checkForDeath(stateObj)
     } else if (event.key === 'ArrowRight') {
       // Execute your function for the right arrow key
       stateObj = await RightArrow(stateObj);
       await changeState(stateObj)
+      await checkForDeath(stateObj)
     }
   });
+
+async function checkForDeath(stateObj) {
+    if (stateObj.currentFuel < 0) {
+        await loseTheGame("You've run out of fuel!");
+    }
+
+    if (stateObj.gameMap[targetSquareNum-1] === "enemy" || stateObj.gameMap[targetSquareNum+1] === "enemy") {
+        await loseTheGame("You got too close to an enemy!");
+    }
+}
 
 async function LeftArrow(stateObj) {   
     //make sure not drilling while in midair
     if (stateObj.gameMap[stateObj.currentPosition - 1] === "STORE") {
         stateObj = await calculateMoveChange(stateObj, -1)
     }
-    if (stateObj.gameMap[stateObj.currentPosition + 8] === "empty" && stateObj.gameMap[stateObj.currentPosition - 1] !== "empty") {
+    if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty" && stateObj.gameMap[stateObj.currentPosition - 1] !== "empty") {
         return stateObj
     } 
 
     //make sure not on left side 
-    if (stateObj.currentPosition % 8 === 0 ) {
+    if (stateObj.currentPosition % screenwidthBlocks === 0 ) {
         return stateObj
     } else {
         stateObj = await calculateMoveChange(stateObj, -1)
@@ -209,11 +220,11 @@ async function LeftArrow(stateObj) {
 //7, 15, 23
 async function RightArrow(stateObj) {
     //do nothing if you're in the air and space to your left isn't air
-    if (stateObj.gameMap[stateObj.currentPosition + 8] === "empty" && stateObj.gameMap[stateObj.currentPosition + 1] !== "empty") {
+    if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty" && stateObj.gameMap[stateObj.currentPosition + 1] !== "empty") {
         return stateObj
     } else {
         //only execute if not already on right side
-        if ((stateObj.currentPosition+1) % 8 !== 0) {
+        if ((stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
             stateObj = await calculateMoveChange(stateObj, 1)
             //stateObj.currentPosition += 1;
         }
@@ -229,10 +240,10 @@ async function RightArrow(stateObj) {
 
 async function UpArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.04);
-    if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - 8]=== "empty") {
+    const scrollAmount = Math.floor(viewportHeight * 0.02);
+    if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - screenwidthBlocks]=== "empty") {
         window.scrollTo(0, window.pageYOffset - scrollAmount)
-        stateObj = await calculateMoveChange(stateObj, -8)
+        stateObj = await calculateMoveChange(stateObj, -screenwidthBlocks)
         stateObj.currentFuel -= 3;
     }
     return stateObj
@@ -240,10 +251,10 @@ async function UpArrow(stateObj) {
 
 async function DownArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.04);
+    const scrollAmount = Math.floor(viewportHeight * 0.02);
     if (stateObj.currentPosition < (totalSquareNumber)) {
         window.scrollTo(0, window.pageYOffset + scrollAmount)
-        stateObj = await calculateMoveChange(stateObj, 8)
+        stateObj = await calculateMoveChange(stateObj, screenwidthBlocks)
     }
     return stateObj
 }
@@ -251,7 +262,9 @@ async function DownArrow(stateObj) {
 async function calculateMoveChange(stateObj, squaresToMove) {
     targetSquareNum = stateObj.currentPosition + squaresToMove
     targetSquare = stateObj.gameMap[targetSquareNum];
-    console.log("target square is " + targetSquare)
+    console.log("target square is " + targetSquareNum)
+
+    //check if target square has an enemy nearby
     
 
     
@@ -289,8 +302,13 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         console.log(stateObj.gameMap[targetSquareNum])
     }
 
+
     return stateObj
 }
+
+function pause(timeValue) {
+    return new Promise(res => setTimeout(res, timeValue))
+  }
 
 async function seeStore(stateObj) {
     let missingFuel = stateObj.fuelCapacity - stateObj.currentFuel 
@@ -320,8 +338,9 @@ async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGai
     return stateObj
 }
 
-async function loseTheGame() {
-    var confirmation = confirm("You've run out of fuel! Click OK to try again");
+async function loseTheGame(textString) {
+    let confirmText = textString + ` Click OK to try again`
+    var confirmation = confirm(confirmText);
 
   if (confirmation) {
     location.reload();
