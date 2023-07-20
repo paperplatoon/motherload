@@ -11,7 +11,10 @@ let gameStartState = {
 let state = {...gameStartState}
 
 let screenwidthBlocks = 16; 
-let totalSquareNumber = (16*20)
+
+let introBlockSquare = 8
+let middleBlockSquare = 20
+let totalSquareNumber = introBlockSquare + middleBlockSquare
 
 //TO-DO
 //change the state when the player "clears" a square; decrease  the fuel
@@ -71,18 +74,38 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         //first 12 * 36 squares
-        for (let i=0; i < totalSquareNumber; i++) {
+        for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
+            let randomNumber = Math.random()
+        
+            if (randomNumber > 0.995) {
+                tempArray.push("4")
+            } else if (randomNumber > 0.98) {
+                tempArray.push("3")
+            } else if (randomNumber > 0.93) {
+                tempArray.push("2")
+            } else if (randomNumber > 0.75) {
+                tempArray.push("1")
+            } else if (randomNumber == 0.221) {
+                tempArray.push("enemy")
+            } else if (randomNumber > 0.5 && randomNumber < 0.58) {
+                tempArray.push("empty")
+            } else {
+                tempArray.push("0")
+            }
+        }
+
+        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
             let randomNumber = Math.random()
             
             const isEnemy = Math.random()
             if (isEnemy > 0.97) {
                 randomNumber = 0.221
             }
-            if (randomNumber > 0.995) {
+            if (randomNumber > 0.985) {
                 tempArray.push("4")
-            } else if (randomNumber > 0.98) {
+            } else if (randomNumber > 0.96) {
                 tempArray.push("3")
-            } else if (randomNumber > 0.93) {
+            } else if (randomNumber > 0.91) {
                 tempArray.push("2")
             } else if (randomNumber > 0.75) {
                 tempArray.push("1")
@@ -163,20 +186,16 @@ renderScreen(state)
 //listen for key presses
 document.addEventListener('keydown', async function(event) {
     let stateObj = {...state};
-    console.log("outside loop " + stateObj.currentPosition)
     if (event.key === 'ArrowUp') {
       // Execute your function for the up arrow key
       stateObj = await UpArrow(stateObj);
       await changeState(stateObj)
       await checkForDeath(stateObj)
     } else if (event.key === 'ArrowDown') {
-        console.log("inside loop 1 " + stateObj.currentPosition)
       // Execute your function for the down arrow key
       stateObj = await DownArrow(stateObj);
-      console.log("inside loop 2 " + stateObj.currentPosition)
       await changeState(stateObj)
       await checkForDeath(stateObj)
-      console.log("inside loop 3 " + stateObj.currentPosition)
     } else if (event.key === 'ArrowLeft') {
       // Execute your function for the left arrow key
       stateObj = await LeftArrow(stateObj);
@@ -252,7 +271,7 @@ async function RightArrow(stateObj) {
 
 async function UpArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.02);
+    const scrollAmount = Math.floor(viewportHeight * 0.012);
     if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - screenwidthBlocks]=== "empty") {
         window.scrollTo(0, window.pageYOffset - scrollAmount)
         stateObj = await calculateMoveChange(stateObj, -screenwidthBlocks)
@@ -263,8 +282,8 @@ async function UpArrow(stateObj) {
 
 async function DownArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.02);
-    if (stateObj.currentPosition < (totalSquareNumber)) {
+    const scrollAmount = Math.floor(viewportHeight * 0.005);
+    if (stateObj.currentPosition < (screenwidthBlocks * totalSquareNumber)) {
         window.scrollTo(0, window.pageYOffset + scrollAmount)
         stateObj = await calculateMoveChange(stateObj, screenwidthBlocks)
     }
