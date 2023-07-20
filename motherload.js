@@ -195,9 +195,13 @@ async function checkForDeath(stateObj) {
         await loseTheGame("You've run out of fuel!");
     }
 
+    console.log("current position " + stateObj.currentPosition)
+    console.log("screenwidth blocks-1 " + (screenwidthBlocks-1))
+    console.log("remainder current position % blocks-1 " + (stateObj.currentPosition % (screenwidthBlocks-1)))
+
     if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % screenwidthBlocks !== 0) {
         await loseTheGame("You got too close to an enemy on your left!");
-    } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition-1) % screenwidthBlocks !== 0) {
+    } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition-15) % screenwidthBlocks !== 0) {
         await loseTheGame("You got too close to an enemy on your right!");
     } else if (stateObj.gameMap[stateObj.currentPosition+screenwidthBlocks] === "enemy") {
         await loseTheGame("You got too close to an enemy below you!");
