@@ -99,15 +99,35 @@
   }
 
   .store-option {
-    color: black;
+    color: rgb(0, 105, 105);
     width: 80vw;
     height: 12vh;
-    background-color: aqua;
+    background-color: rgb(122, 253, 253);
     margin: auto;
     margin-top: 3vh;
     padding-top: 5vh;
     justify-content: center;
     display: flex;
+    transition: 0.2s all;
+  }
+
+  .store-clickable:hover {
+    background-color: rgb(78, 238, 238);
+    border: 1px dashed rgb(0, 147, 147);
+    
+    cursor: pointer;
+    font-size: 140%;
+  }
+
+  .return-to-map {
+    background-color: rgb(211, 121, 121);
+  }
+
+  .return-to-map:hover {
+    background-color: rgb(210, 81, 81);
+    border: 1px dashed rgb(0, 59, 59);
+    cursor: pointer;
+    font-size: 140%;
   }
 
  

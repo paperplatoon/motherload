@@ -4,21 +4,29 @@ let gameStartState = {
     currentFuel: 100,
     fuelCapacity: 120,
     fuelUpgrades: 0,
-    fuelUpgradeCost: 100,
+    fuelUpgradeCost: 1000,
+    
 
     currentInventory: 0,
     inventoryMax: 12,
     inventoryUpgrades: 0,
-    inventoryUpgradeCost: 100,
+    inventoryUpgradeCost: 1000,
+    
 
-    bankedCash: 50,
+    bankedCash: 100,
     inventoryCash: 0, 
     
     numberLasers: 0,
-    drillTime: 800,
+    laserCapacity: 1,
+    laserCost: 500,
+
+    drillTime: 450,
+
+    //states
     currentPosition: false,
     inStore: false,
-    inTransition: false
+    inTransition: false,    
+
 
 }
 
@@ -54,7 +62,7 @@ async function renderTopBarStats(stateObj) {
     topBarDiv.classList.add("top-stats-bar")
 
     let fuelDiv = document.createElement("Div")
-    fuelDiv.textContent = "Fuel "
+    fuelDiv.textContent = "Max Fuel: " + stateObj.fuelCapacity;
 
     let emptyFuelBarDiv = document.createElement("Div");
     emptyFuelBarDiv.classList.add("empty-fuel-bar");
@@ -81,11 +89,11 @@ async function renderTopBarStats(stateObj) {
         inventoryDiv.textContent = "Inventory Full"
         inventoryDiv.classList.add("inventory-full")
     } else {
-        inventoryDiv.textContent = "Inventory: " + Math.round((stateObj.currentInventory / stateObj.inventoryMax)*100) + "% full"
+        inventoryDiv.textContent = "Inventory: " + Math.round((stateObj.currentInventory / stateObj.inventoryMax)*100) + "% full    (Max: " + stateObj.inventoryMax + ")"
     }
 
     let lasersDiv = document.createElement("Div")
-    lasersDiv.textContent = "Lasers: " + stateObj.numberLasers
+    lasersDiv.textContent = "Lasers: " + stateObj.numberLasers + "/" + stateObj.laserCapacity
 
     topBarDiv.append(fuelDiv, cashDiv, lasersDiv, inventoryDiv)
 
@@ -237,11 +245,26 @@ async function renderScreen(stateObj) {
 
         let fuelUpgradeDiv = document.createElement("Div")
         fuelUpgradeDiv.classList.add("store-option")
+        fuelUpgradeDiv.classList.add("fuel-store")
         fuelUpgradeDiv.textContent = "Fuel Capacity Upgrade: " + stateObj.fuelUpgradeCost + " gold"
-        fuelUpgradeDiv.onclick = function () {
-            console.log("clicked fuel upgrade")
-            if (stateObj.bankedCash >= stateObj.fuelUpgradeCost) {
+
+        if (stateObj.bankedCash >= stateObj.fuelUpgradeCost) {
+            fuelUpgradeDiv.classList.add("store-clickable")
+            fuelUpgradeDiv.onclick = function () {
+                console.log("clicked fuel upgrade")
                 upgradeFuel(stateObj)
+            }
+          }
+
+        let fillFuelDiv = document.createElement("Div")
+        fillFuelDiv.classList.add("store-option")
+        fillFuelDiv.classList.add("fill-fuel")
+        fillFuelDiv.textContent = "Fill Fuel: " + (stateObj.fuelCapacity-stateObj.currentFuel) + " gold"
+        if (stateObj.bankedCash >= stateObj.fuelCapacity-stateObj.currentFuel) {
+            fillFuelDiv.classList.add("store-clickable")
+            fillFuelDiv.onclick = function () {
+                console.log("clicked fill fuel")
+                fillFuel(stateObj)
             }
           }
 
@@ -251,16 +274,24 @@ async function renderScreen(stateObj) {
         inventoryUpgradeDiv.onclick = function () {
             console.log("clicked inv upgrade")
           }
+        if (stateObj.bankedCash >= stateObj.inventoryUpgradeCost) {
+            inventoryUpgradeDiv.classList.add("store-clickable")
+            inventoryUpgradeDiv.onclick = function () {
+                console.log("clicked fuel upgrade")
+                upgradeInventory(stateObj)
+        }
+        }
     
         let buyNothingDiv = document.createElement("Div")
         buyNothingDiv.classList.add("store-option")
+        buyNothingDiv.classList.add("return-to-map")
         buyNothingDiv.textContent = "Return to Map"
         buyNothingDiv.onclick = function () {
             console.log("clicked buy nothing")
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fuelUpgradeDiv, fillFuelDiv, inventoryUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -268,19 +299,48 @@ async function renderScreen(stateObj) {
     }
 }
 
-function leaveStore(stateObj) {
+async function leaveStore(stateObj) {
     stateObj.inStore = false;
-    changeState(stateObj);
+    await changeState(stateObj);
 }
 
-function upgradeFuel(stateObj) {
-    stateObj.inStore = false;
-    stateObj.fuelCapacity += 50;
-    stateObj.currentFuel += 50;
-    stateObj.fuelUpgrades +=1;
-    stateObj.bankedCash -= stateObj.fuelUpgradeCost
-    stateObj.fuelUpgradeCost += 100;
-    changeState(stateObj);
+async function fillFuel(stateObj) {
+    let missingFuel = stateObj.fuelCapacity - stateObj.currentFuel
+    stateObj = immer.produce(stateObj, (newState) => {
+        if (missingFuel > 0) {
+            if (newState.bankedCash > missingFuel) {
+                newState.currentFuel += missingFuel;
+                newState.bankedCash -= missingFuel
+            } else {
+                newState.currentFuel += newState.bankedCash;
+                newState.bankedCash = 0;    
+            }
+        }
+    })
+    await changeState(stateObj);
+}
+
+async function upgradeFuel(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.fuelCapacity += 50;
+        newState.currentFuel += 50;
+        newState.fuelUpgrades +=1;
+        newState.bankedCash -= stateObj.fuelUpgradeCost
+        newState.fuelUpgradeCost += 1000;
+
+    })
+    await changeState(stateObj);
+}
+
+async function upgradeInventory(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.inventoryMax += 6;
+        newState.inventoryUpgrades +=1;
+        newState.bankedCash -= stateObj.inventoryUpgradeCost
+        newState.inventoryUpgradeCost += 1000;
+
+    })
+    await changeState(stateObj);
 }
 
 
@@ -411,13 +471,13 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime/2)
             
     } else if (targetSquare === "1") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 10, stateObj.drillTime)
-    } else if (targetSquare === "2") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 20, stateObj.drillTime)
-    } else if (targetSquare === "3") {
+    } else if (targetSquare === "2") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 50, stateObj.drillTime)
-    } else if (targetSquare === "4") {
+    } else if (targetSquare === "3") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 100, stateObj.drillTime)
+    } else if (targetSquare === "4") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 250, stateObj.drillTime)
     } else if (targetSquare === "empty") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "enemy") {
@@ -450,15 +510,7 @@ async function seeStore(stateObj) {
         newState.bankedCash += newState.inventoryCash;
         newState.inventoryCash = 0;
         newState.currentInventory = 0;
-        if (missingFuel > 0) {
-            if (newState.bankedCash > missingFuel) {
-                newState.currentFuel += missingFuel;
-                newState.bankedCash -= missingFuel
-            } else {
-                newState.currentFuel += newState.bankedCash;
-                newState.bankedCash = 0;    
-            }
-        }
+        
 
         if (newState.numberLasers === 0 && newState.bankedCash > 50) {
             console.log("buying laser")
