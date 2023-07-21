@@ -79,4 +79,30 @@
     color: red;
   }
 
+  .store-div {
+    margin: auto;
+    margin-top: 20vh;
+    height: 60vh;
+    width: 80vw;
+  }
+
+  .test {
+    height: 60vh;
+    width: 60vw;
+    margin: auto;
+    background-color: red;
+  }
+
+  .store-option {
+    color: black;
+    width: 80vw;
+    height: 12vh;
+    background-color: aqua;
+    margin: auto;
+    margin-top: 3vh;
+    padding-top: 5vh;
+    justify-content: center;
+    display: flex;
+  }
+
  

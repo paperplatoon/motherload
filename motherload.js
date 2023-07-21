@@ -1,14 +1,22 @@
 let gameStartState = {
     gameMap: [],
-    fuelCapacity: 120,
+
     currentFuel: 100,
-    aboveGround: true,
+    fuelCapacity: 120,
+    fuelUpgrades: 0,
+    fuelUpgradeCost: 100,
+
+    currentInventory: 0,
+    inventoryMax: 12,
+    inventoryUpgrades: 0,
+    inventoryUpgradeCost: 100,
+
     bankedCash: 50,
     inventoryCash: 0, 
-    inventoryMax: 12,
-    currentInventory: 0,
+    
+    numberLasers: 0,
     currentPosition: false,
-    numberLasers: 1
+    inStore: false
 
 }
 
@@ -185,40 +193,76 @@ async function renderScreen(stateObj) {
     topBar = await renderTopBarStats(stateObj);
     document.getElementById("app").append(topBar)
 
-    let mapDiv = document.createElement("Div");
-    mapDiv.classList.add("map-div");
+    if (stateObj.inStore === false) {
+        let mapDiv = document.createElement("Div");
+        mapDiv.classList.add("map-div");
 
-    stateObj.gameMap.forEach(async function (mapSquare, squareIndex) {
-        let mapSquareDiv = document.createElement("Div");
-        mapSquareDiv.classList.add("map-square");
+        stateObj.gameMap.forEach(async function (mapSquare, squareIndex) {
+            let mapSquareDiv = document.createElement("Div");
+            mapSquareDiv.classList.add("map-square");
 
-        if (stateObj.currentPosition === squareIndex) {
-            mapSquareDiv.classList.add("player-here")
-        }
-        
-        if (mapSquare === "0") {
-            mapSquareDiv.classList.add("dirt")
-        } else if (mapSquare === "empty") {
-            mapSquareDiv.classList.add("empty")
-        } else if (mapSquare === "enemy") {
-            mapSquareDiv.classList.add("enemy")
-        } else if (mapSquare === "1") {
-            mapSquareDiv.classList.add("bronze")
-        } else if (mapSquare === "2") {
-            mapSquareDiv.classList.add("silver")
-        } else if (mapSquare === "3") {
-            mapSquareDiv.classList.add("gold")
-        }  else if (mapSquare === "4") {
-            mapSquareDiv.classList.add("platinum")
-        } else if (mapSquare === "STORE") {
-            mapSquareDiv.classList.add("store")
-            mapSquareDiv.textContent = "Store"
-        }
+            if (stateObj.currentPosition === squareIndex) {
+                mapSquareDiv.classList.add("player-here")
+            }
+            
+            if (mapSquare === "0") {
+                mapSquareDiv.classList.add("dirt")
+            } else if (mapSquare === "empty") {
+                mapSquareDiv.classList.add("empty")
+            } else if (mapSquare === "enemy") {
+                mapSquareDiv.classList.add("enemy")
+            } else if (mapSquare === "1") {
+                mapSquareDiv.classList.add("bronze")
+            } else if (mapSquare === "2") {
+                mapSquareDiv.classList.add("silver")
+            } else if (mapSquare === "3") {
+                mapSquareDiv.classList.add("gold")
+            }  else if (mapSquare === "4") {
+                mapSquareDiv.classList.add("platinum")
+            } else if (mapSquare === "STORE") {
+                mapSquareDiv.classList.add("store")
+                mapSquareDiv.textContent = "Store"
+            }
 
-        mapDiv.append(mapSquareDiv)
-    })
-    document.getElementById("app").append(mapDiv)
+            mapDiv.append(mapSquareDiv)
+        })
+        document.getElementById("app").append(mapDiv)
+    } else {
+        console.log("in store")
+        console.log("fuel upgrade " +stateObj.fuelUpgradeCost )
+        let storeDiv = document.createElement("Div")
+        storeDiv.classList.add("store-div")
+
+        let fuelUpgradeDiv = document.createElement("Div")
+        fuelUpgradeDiv.classList.add("store-option")
+        fuelUpgradeDiv.textContent = "Fuel Capacity Upgrade: " + stateObj.fuelUpgradeCost + " gold"
+
+        let inventoryUpgradeDiv = document.createElement("Div")
+        inventoryUpgradeDiv.classList.add("store-option")
+        inventoryUpgradeDiv.textContent = "Inventory Size Upgrade: " + stateObj.inventoryUpgradeCost + " gold"
+    
+        let buyNothingDiv = document.createElement("Div")
+        buyNothingDiv.classList.add("store-option")
+        buyNothingDiv.textContent = "Return to Map"
+
+        buyNothingDiv.onclick = function () {
+            console.log("clicked buy nothing")
+            leaveStore(stateObj)
+          }
+
+        storeDiv.append(fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
+
+
+        let testDiv = document.createElement("Div")
+        document.getElementById("app").append(storeDiv)
+    }
 }
+
+function leaveStore(stateObj) {
+    stateObj.inStore = false;
+    changeState(stateObj);
+}
+
 
 
 renderScreen(state)
@@ -399,6 +443,8 @@ async function seeStore(stateObj) {
             newState.numberLasers += 1;
             newState.bankedCash -= 50;
         }
+
+        newState.inStore = true;
     })
      
     return stateObj
