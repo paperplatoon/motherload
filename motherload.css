@@ -86,8 +86,8 @@
 
   .store-div {
     margin: auto;
-    margin-top: 20vh;
-    height: 60vh;
+    margin-top: 15vh;
+    height: 85vh;
     width: 80vw;
   }
 
@@ -100,12 +100,12 @@
 
   .store-option {
     color: rgb(0, 105, 105);
-    width: 80vw;
-    height: 12vh;
+    width: 65vw;
+    height: 7vh;
     background-color: rgb(122, 253, 253);
     margin: auto;
     margin-top: 3vh;
-    padding-top: 5vh;
+    padding-top: 2vh;
     justify-content: center;
     display: flex;
     transition: 0.2s all;

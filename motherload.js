@@ -4,13 +4,13 @@ let gameStartState = {
     currentFuel: 100,
     fuelCapacity: 120,
     fuelUpgrades: 0,
-    fuelUpgradeCost: 1000,
+    fuelUpgradeCost: 500,
     
 
     currentInventory: 0,
     inventoryMax: 12,
     inventoryUpgrades: 0,
-    inventoryUpgradeCost: 1000,
+    inventoryUpgradeCost: 500,
     
 
     bankedCash: 100,
@@ -18,7 +18,7 @@ let gameStartState = {
     
     numberLasers: 0,
     laserCapacity: 1,
-    laserCost: 500,
+    laserCost: 200,
 
     drillTime: 450,
 
@@ -247,11 +247,9 @@ async function renderScreen(stateObj) {
         fuelUpgradeDiv.classList.add("store-option")
         fuelUpgradeDiv.classList.add("fuel-store")
         fuelUpgradeDiv.textContent = "Fuel Capacity Upgrade: " + stateObj.fuelUpgradeCost + " gold"
-
         if (stateObj.bankedCash >= stateObj.fuelUpgradeCost) {
             fuelUpgradeDiv.classList.add("store-clickable")
             fuelUpgradeDiv.onclick = function () {
-                console.log("clicked fuel upgrade")
                 upgradeFuel(stateObj)
             }
           }
@@ -263,7 +261,6 @@ async function renderScreen(stateObj) {
         if (stateObj.bankedCash >= stateObj.fuelCapacity-stateObj.currentFuel) {
             fillFuelDiv.classList.add("store-clickable")
             fillFuelDiv.onclick = function () {
-                console.log("clicked fill fuel")
                 fillFuel(stateObj)
             }
           }
@@ -271,15 +268,23 @@ async function renderScreen(stateObj) {
         let inventoryUpgradeDiv = document.createElement("Div")
         inventoryUpgradeDiv.classList.add("store-option")
         inventoryUpgradeDiv.textContent = "Inventory Size Upgrade: " + stateObj.inventoryUpgradeCost + " gold"
-        inventoryUpgradeDiv.onclick = function () {
-            console.log("clicked inv upgrade")
-          }
         if (stateObj.bankedCash >= stateObj.inventoryUpgradeCost) {
             inventoryUpgradeDiv.classList.add("store-clickable")
             inventoryUpgradeDiv.onclick = function () {
-                console.log("clicked fuel upgrade")
                 upgradeInventory(stateObj)
+            }
         }
+
+        let buyLaserDiv = document.createElement("Div")
+        buyLaserDiv.classList.add("store-option")
+        buyLaserDiv.textContent = "Buy 1 laser: " + stateObj.laserCost + " gold"
+        buyLaserDiv.onclick = function () {
+          }
+        if (stateObj.bankedCash >= stateObj.laserCost && stateObj.numberLasers < stateObj.laserCapacity) {
+            buyLaserDiv.classList.add("store-clickable")
+            buyLaserDiv.onclick = function () {
+                buyLaser(stateObj)
+            }
         }
     
         let buyNothingDiv = document.createElement("Div")
@@ -291,7 +296,7 @@ async function renderScreen(stateObj) {
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fuelUpgradeDiv, fillFuelDiv, inventoryUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fillFuelDiv, buyLaserDiv, fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -326,7 +331,7 @@ async function upgradeFuel(stateObj) {
         newState.currentFuel += 50;
         newState.fuelUpgrades +=1;
         newState.bankedCash -= stateObj.fuelUpgradeCost
-        newState.fuelUpgradeCost += 1000;
+        newState.fuelUpgradeCost += 500;
 
     })
     await changeState(stateObj);
@@ -337,8 +342,16 @@ async function upgradeInventory(stateObj) {
         newState.inventoryMax += 6;
         newState.inventoryUpgrades +=1;
         newState.bankedCash -= stateObj.inventoryUpgradeCost
-        newState.inventoryUpgradeCost += 1000;
+        newState.inventoryUpgradeCost += 500;
 
+    })
+    await changeState(stateObj);
+}
+
+async function buyLaser(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.numberLasers += 1;
+        newState.bankedCash -= stateObj.laserCost
     })
     await changeState(stateObj);
 }
@@ -505,18 +518,10 @@ function pause(timeValue) {
   }
 
 async function seeStore(stateObj) {
-    let missingFuel = stateObj.fuelCapacity - stateObj.currentFuel 
     stateObj = await immer.produce(stateObj, async (newState) => {
         newState.bankedCash += newState.inventoryCash;
         newState.inventoryCash = 0;
         newState.currentInventory = 0;
-        
-
-        if (newState.numberLasers === 0 && newState.bankedCash > 50) {
-            console.log("buying laser")
-            newState.numberLasers += 1;
-            newState.bankedCash -= 50;
-        }
 
         newState.inStore = true;
     })
