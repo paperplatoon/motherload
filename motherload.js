@@ -15,8 +15,10 @@ let gameStartState = {
     inventoryCash: 0, 
     
     numberLasers: 0,
+    drillTime: 800,
     currentPosition: false,
-    inStore: false
+    inStore: false,
+    inTransition: false
 
 }
 
@@ -290,31 +292,33 @@ renderScreen(state)
 //listen for key presses
 document.addEventListener('keydown', async function(event) {
     let stateObj = {...state};
-    if (event.key === 'ArrowUp') {
-      // Execute your function for the up arrow key
-      stateObj = await UpArrow(stateObj);
-      await changeState(stateObj)
-      await checkForDeath(stateObj)
-    } else if (event.key === 'ArrowDown') {
-      // Execute your function for the down arrow key
-      stateObj = await DownArrow(stateObj);
-      await changeState(stateObj)
-      await checkForDeath(stateObj)
-    } else if (event.key === 'ArrowLeft') {
-      // Execute your function for the left arrow key
-      stateObj = await LeftArrow(stateObj);
-      await changeState(stateObj)
-      await checkForDeath(stateObj)
-    } else if (event.key === 'ArrowRight') {
-      // Execute your function for the right arrow key
-      stateObj = await RightArrow(stateObj);
-      await changeState(stateObj)
-      await checkForDeath(stateObj)
-    } else if (event.key === "l") {
-        if (stateObj.numberLasers > 0) {
-            stateObj = await fireLaser(stateObj)
+    if (stateObj.inTransition === false) {
+        if (event.key === 'ArrowUp') {
+            // Execute your function for the up arrow key
+            stateObj = await UpArrow(stateObj);
             await changeState(stateObj)
-        }
+            await checkForDeath(stateObj)
+          } else if (event.key === 'ArrowDown') {
+            // Execute your function for the down arrow key
+            stateObj = await DownArrow(stateObj);
+            await changeState(stateObj)
+            await checkForDeath(stateObj)
+          } else if (event.key === 'ArrowLeft') {
+            // Execute your function for the left arrow key
+            stateObj = await LeftArrow(stateObj);
+            await changeState(stateObj)
+            await checkForDeath(stateObj)
+          } else if (event.key === 'ArrowRight') {
+            // Execute your function for the right arrow key
+            stateObj = await RightArrow(stateObj);
+            await changeState(stateObj)
+            await checkForDeath(stateObj)
+          } else if (event.key === "l") {
+              if (stateObj.numberLasers > 0) {
+                  stateObj = await fireLaser(stateObj)
+                  await changeState(stateObj)
+              }
+          }
     }
   });
 
@@ -404,16 +408,16 @@ async function calculateMoveChange(stateObj, squaresToMove) {
 
     
     if (targetSquare === "0") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime/2)
             
     } else if (targetSquare === "1") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 10)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 10, stateObj.drillTime)
     } else if (targetSquare === "2") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 20)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 20, stateObj.drillTime)
     } else if (targetSquare === "3") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 50)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 50, stateObj.drillTime)
     } else if (targetSquare === "4") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 100)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 100, stateObj.drillTime)
     } else if (targetSquare === "empty") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "enemy") {
@@ -468,9 +472,10 @@ async function seeStore(stateObj) {
     return stateObj
 }
 
-async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGain) {
+async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGain, pauseDuration=0) {
+    let oldPosition = stateObj.currentPosition
     stateObj = immer.produce(stateObj, (newState) => {
-        stateObj.currentFuel -= fuelToLose;
+        newState.currentFuel -= fuelToLose;
         newState.currentPosition = squareIndexToMoveTo;
 
         if (goldToGain > 0) {
@@ -480,11 +485,17 @@ async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGai
             } else {
                 console.log("inventory is full")
             }
-        }
-
-        
-        
+        }    
     }) 
+    if (pauseDuration > 0) {
+        state.inTransition = true;
+        document.querySelectorAll(".map-square")[stateObj.currentPosition].classList.add("change-empty")
+        await pause(pauseDuration)   
+        document.querySelectorAll(".map-square")[stateObj.currentPosition].classList.remove("change-empty")
+        stateObj = immer.produce(stateObj, (newState) => {
+            newState.inTransition = false;
+        })    
+    }
     return stateObj
 }
 
