@@ -236,15 +236,23 @@ async function renderScreen(stateObj) {
         let fuelUpgradeDiv = document.createElement("Div")
         fuelUpgradeDiv.classList.add("store-option")
         fuelUpgradeDiv.textContent = "Fuel Capacity Upgrade: " + stateObj.fuelUpgradeCost + " gold"
+        fuelUpgradeDiv.onclick = function () {
+            console.log("clicked fuel upgrade")
+            if (stateObj.bankedCash > stateObj.fuelUpgradeCost) {
+                upgradeFuel(stateObj)
+            }
+          }
 
         let inventoryUpgradeDiv = document.createElement("Div")
         inventoryUpgradeDiv.classList.add("store-option")
         inventoryUpgradeDiv.textContent = "Inventory Size Upgrade: " + stateObj.inventoryUpgradeCost + " gold"
+        inventoryUpgradeDiv.onclick = function () {
+            console.log("clicked inv upgrade")
+          }
     
         let buyNothingDiv = document.createElement("Div")
         buyNothingDiv.classList.add("store-option")
         buyNothingDiv.textContent = "Return to Map"
-
         buyNothingDiv.onclick = function () {
             console.log("clicked buy nothing")
             leaveStore(stateObj)
@@ -260,6 +268,14 @@ async function renderScreen(stateObj) {
 
 function leaveStore(stateObj) {
     stateObj.inStore = false;
+    changeState(stateObj);
+}
+
+function upgradeFuel(stateObj) {
+    stateObj.inStore = false;
+    stateObj.fuelCapacity += 50;
+    stateObj.fuelUpgrades +=1;
+    stateObj.fuelUpgradeCost += 100;
     changeState(stateObj);
 }
 
