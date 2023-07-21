@@ -30,7 +30,7 @@ let screenwidthBlocks = 16;
 
 let introBlockSquare = 8
 let middleBlockSquare = 20
-let totalSquareNumber = introBlockSquare + middleBlockSquare
+let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare
 
 //TO-DO
 //change the state when the player "clears" a square; decrease  the fuel
@@ -238,7 +238,7 @@ async function renderScreen(stateObj) {
         fuelUpgradeDiv.textContent = "Fuel Capacity Upgrade: " + stateObj.fuelUpgradeCost + " gold"
         fuelUpgradeDiv.onclick = function () {
             console.log("clicked fuel upgrade")
-            if (stateObj.bankedCash > stateObj.fuelUpgradeCost) {
+            if (stateObj.bankedCash >= stateObj.fuelUpgradeCost) {
                 upgradeFuel(stateObj)
             }
           }
@@ -274,7 +274,9 @@ function leaveStore(stateObj) {
 function upgradeFuel(stateObj) {
     stateObj.inStore = false;
     stateObj.fuelCapacity += 50;
+    stateObj.currentFuel += 50;
     stateObj.fuelUpgrades +=1;
+    stateObj.bankedCash -= stateObj.fuelUpgradeCost
     stateObj.fuelUpgradeCost += 100;
     changeState(stateObj);
 }
