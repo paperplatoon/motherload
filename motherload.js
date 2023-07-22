@@ -26,7 +26,11 @@ let gameStartState = {
     //states
     currentPosition: false,
     inStore: false,
-    inTransition: false,    
+    inTransition: false,  
+    
+    currentHullIntegrity: 100,
+    maxHullIntegrity: 100,
+    hullUpgradeCost: 1000,
 
 
 }
@@ -79,6 +83,8 @@ async function renderTopBarStats(stateObj) {
     fuelDiv.appendChild(emptyFuelBarDiv)
     topBarDiv.appendChild(fuelDiv)
 
+    let hullDiv = document.createElement("Div")
+    hullDiv.textContent = "Hull Integrity: " + stateObj.currentHullIntegrity + "/" + stateObj.maxHullIntegrity
     
 
     let cashDiv = document.createElement("Div")
@@ -96,7 +102,7 @@ async function renderTopBarStats(stateObj) {
     let lasersDiv = document.createElement("Div")
     lasersDiv.textContent = "Lasers: " + stateObj.numberLasers + "/" + stateObj.laserCapacity
 
-    topBarDiv.append(fuelDiv, cashDiv, lasersDiv, inventoryDiv)
+    topBarDiv.append(fuelDiv, cashDiv, hullDiv, lasersDiv, inventoryDiv)
 
     return topBarDiv
 }
@@ -311,6 +317,21 @@ async function renderScreen(stateObj) {
                 fillFuel(stateObj)
         }
 
+        let repairDiv = document.createElement("Div")
+        repairDiv.classList.add("store-option")
+        repairDiv.classList.add("repair-hull")
+        let missingHull = stateObj.maxHullIntegrity-stateObj.currentHullIntegrity
+        if ((missingHull*5) > stateObj.bankedCash) {
+            repairDiv.textContent = "Spend all gold on repair: " + Math.ceil(stateObj.bankedCash) + " gold"
+        } else {
+            repairDiv.textContent = "Repair hull fully: " + Math.ceil(missingHull*5) + " gold"
+        }
+        repairDiv.classList.add("store-clickable")
+        
+        repairDiv.onclick = function () {
+                repairHull(stateObj)
+        }
+
 
         let inventoryUpgradeDiv = document.createElement("Div")
         inventoryUpgradeDiv.classList.add("store-option")
@@ -343,7 +364,7 @@ async function renderScreen(stateObj) {
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fillFuelDiv, buyLaserDiv, laserUpgradeDiv, fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, laserUpgradeDiv, fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -365,6 +386,22 @@ async function fillFuel(stateObj) {
                 newState.bankedCash -= Math.ceil(missingFuel)
             } else {
                 newState.currentFuel += Math.ceil(newState.bankedCash);
+                newState.bankedCash = 0;    
+            }
+        }
+    })
+    await changeState(stateObj);
+}
+
+async function repairHull(stateObj) {
+    let missingHull = stateObj.maxHullIntegrity - stateObj.currentHullIntegrity
+    stateObj = immer.produce(stateObj, (newState) => {
+        if (missingHull > 0) {
+            if (newState.bankedCash > (missingHull*5)) {
+                newState.currentHullIntegrity = newState.maxHullIntegrity ;
+                newState.bankedCash -= Math.ceil(missingHull*5)
+            } else {
+                newState.currentHull += Math.ceil(newState.bankedCash/5);
                 newState.bankedCash = 0;    
             }
         }
@@ -466,14 +503,27 @@ async function checkForDeath(stateObj) {
     console.log("current position " + stateObj.currentPosition)
 
     if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % screenwidthBlocks !== 0) {
-        await loseTheGame("You got too close to an enemy on your left!");
+        stateObj = await doDamage(stateObj, 50)
     } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition-15) % screenwidthBlocks !== 0) {
-        await loseTheGame("You got too close to an enemy on your right!");
+        stateObj = await doDamage(stateObj, 50)
     } else if (stateObj.gameMap[stateObj.currentPosition+screenwidthBlocks] === "enemy") {
-        await loseTheGame("You got too close to an enemy below you!");
+        stateObj = await doDamage(stateObj, 50)
     } else if (stateObj.gameMap[stateObj.currentPosition-screenwidthBlocks] === "enemy") {
-        await loseTheGame("You got too close to an enemy above you!");
+        stateObj = await doDamage(stateObj, 50)
     }
+
+    changeState(stateObj)
+
+    if (stateObj.currentHullIntegrity <= 0) {
+        await loseTheGame("Your miner took too much damage and exploded!");
+    }
+}
+
+async function doDamage(stateObj, damageAmount) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.currentHullIntegrity -= damageAmount;
+    })
+    return stateObj
 }
 
 async function LeftArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {   
@@ -564,7 +614,7 @@ async function calculateMoveChange(stateObj, squaresToMove) {
     } else if (targetSquare === "empty") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "enemy") {
-        await loseTheGame()
+        await loseTheGame("You crashed into an enemy and both of you exploded! ")
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "STORE") {
         stateObj = await seeStore(stateObj)
