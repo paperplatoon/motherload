@@ -480,10 +480,14 @@ async function LeftArrow(stateObj) {
     } 
 
     //make sure not on left side 
-    const viewportHeight = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.05);
+    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const currentHeight = Math.floor(stateObj.currentPosition/screenwidthBlocks)
+    const currentWidth = Math.floor(stateObj.currentPosition % screenwidthBlocks)
+    const scrollHeight = Math.floor(viewportHeight * 0.1);
+    const scrollWidth = Math.floor(viewportWidth * 0.1);
     if (stateObj.currentPosition % screenwidthBlocks !== 0 ) {
-        window.scrollTo(window.pageXOffset - scrollAmount, window.pageYOffset)
+        window.scrollTo(currentWidth*scrollWidth- (scrollWidth*4), currentHeight*scrollHeight)
         stateObj = await calculateMoveChange(stateObj, -1)
     }
 
