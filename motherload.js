@@ -422,25 +422,31 @@ renderScreen(state)
 //listen for key presses
 document.addEventListener('keydown', async function(event) {
     let stateObj = {...state};
+    let viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    let viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    let currentHeight = Math.floor(stateObj.currentPosition/screenwidthBlocks)
+    let currentWidth = Math.floor(stateObj.currentPosition % screenwidthBlocks)
+    let scrollHeight = Math.floor(viewportHeight * 0.1);
+    let scrollWidth = Math.floor(viewportWidth * 0.1);
     if (stateObj.inTransition === false) {
         if (event.key === 'ArrowUp') {
             // Execute your function for the up arrow key
-            stateObj = await UpArrow(stateObj);
+            stateObj = await UpArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
           } else if (event.key === 'ArrowDown') {
             // Execute your function for the down arrow key
-            stateObj = await DownArrow(stateObj);
+            stateObj = await DownArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
           } else if (event.key === 'ArrowLeft') {
             // Execute your function for the left arrow key
-            stateObj = await LeftArrow(stateObj);
+            stateObj = await LeftArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
           } else if (event.key === 'ArrowRight') {
             // Execute your function for the right arrow key
-            stateObj = await RightArrow(stateObj);
+            stateObj = await RightArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
           } else if (event.key === "l") {
@@ -470,7 +476,7 @@ async function checkForDeath(stateObj) {
     }
 }
 
-async function LeftArrow(stateObj) {   
+async function LeftArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {   
     //make sure not drilling while in midair
     if (stateObj.gameMap[stateObj.currentPosition - 1] === "STORE") {
         stateObj = await calculateMoveChange(stateObj, -1)
@@ -480,12 +486,7 @@ async function LeftArrow(stateObj) {
     } 
 
     //make sure not on left side 
-    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const currentHeight = Math.floor(stateObj.currentPosition/screenwidthBlocks)
-    const currentWidth = Math.floor(stateObj.currentPosition % screenwidthBlocks)
-    const scrollHeight = Math.floor(viewportHeight * 0.1);
-    const scrollWidth = Math.floor(viewportWidth * 0.1);
+    
     if (stateObj.currentPosition % screenwidthBlocks !== 0 ) {
         window.scrollTo(currentWidth*scrollWidth- (scrollWidth*4), currentHeight*scrollHeight)
         stateObj = await calculateMoveChange(stateObj, -1)
@@ -495,17 +496,15 @@ async function LeftArrow(stateObj) {
 }
 
 //7, 15, 23
-async function RightArrow(stateObj) {
+async function RightArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {
     //do nothing if you're in the air and space to your left isn't air
     if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty" && stateObj.gameMap[stateObj.currentPosition + 1] !== "empty") {
         return stateObj
     } else {
-        const viewportHeight = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-        const scrollAmount = Math.floor(viewportHeight * 0.05);
         //only execute if not already on right side
         if ((stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
             stateObj = await calculateMoveChange(stateObj, 1)
-            window.scrollTo(window.pageXOffset + scrollAmount, window.pageYOffset)
+            window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight)
             //stateObj.currentPosition += 1;
         }
     }
