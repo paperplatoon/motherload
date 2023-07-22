@@ -37,7 +37,7 @@ inventoryMaxUpgrades = [5, 8, 12, 17, 23, 30, 38, 47, 57]
 
 let state = {...gameStartState}
 
-let screenwidthBlocks = 16; 
+let screenwidthBlocks = 24; 
 
 let introBlockSquare = 8
 let middleBlockSquare = 30
@@ -119,11 +119,11 @@ async function fillMapWithArray(stateObj) {
         
             if (randomNumber > 0.98) {
                 tempArray.push("3")
-            } else if (randomNumber > 0.95) {
+            } else if (randomNumber > 0.93) {
                 tempArray.push("2")
-            } else if (randomNumber > 0.82) {
+            } else if (randomNumber > 0.75) {
                 tempArray.push("1")
-            } else if (randomNumber > 0.65) {
+            } else if (randomNumber > 0.60) {
                 tempArray.push("empty")
             } else {
                 tempArray.push("0")
@@ -143,9 +143,9 @@ async function fillMapWithArray(stateObj) {
                 tempArray.push("3")
             } else if (randomNumber > 0.88) {
                 tempArray.push("2")
-            } else if (randomNumber > 0.80) {
+            } else if (randomNumber > 0.75) {
                 tempArray.push("1")
-            } else if (randomNumber > 0.7) {
+            } else if (randomNumber > 0.65) {
                 tempArray.push("empty")
             } else if (randomNumber == 0.221) {
                 tempArray.push("enemy")
@@ -167,13 +167,13 @@ async function fillMapWithArray(stateObj) {
                 tempArray.push("4")
             } else if (randomNumber > 0.915) {
                 tempArray.push("3")
-            } else if (randomNumber > 0.8) {
-                tempArray.push("2")
             } else if (randomNumber > 0.75) {
+                tempArray.push("2")
+            } else if (randomNumber > 0.70) {
                 tempArray.push("1")
             } else if (randomNumber == 0.221) {
                 tempArray.push("enemy")
-            } else if (randomNumber > 0.65) {
+            } else if (randomNumber > 0.60) {
                 tempArray.push("empty")
             } else {
                 tempArray.push("0")
@@ -187,17 +187,19 @@ async function fillMapWithArray(stateObj) {
             if (isEnemy > 0.96) {
                 randomNumber = 0.221
             }
-            if (randomNumber > 0.97) {
+            if (randomNumber > 0.98) {
+                tempArray.push("5")
+            } else if (randomNumber > 0.955) {
                 tempArray.push("4")
-            } else if (randomNumber > 0.915) {
+            } else if (randomNumber > 0.87) {
                 tempArray.push("3")
-            } else if (randomNumber > 0.8) {
+            } else if (randomNumber > 0.77) {
                 tempArray.push("2")
-            } else if (randomNumber > 0.75) {
+            } else if (randomNumber > 0.72) {
                 tempArray.push("1")
             } else if (randomNumber == 0.221) {
                 tempArray.push("enemy")
-            } else if (randomNumber > 0.65) {
+            } else if (randomNumber > 0.64) {
                 tempArray.push("empty")
             } else {
                 tempArray.push("0")
@@ -212,7 +214,7 @@ async function fillMapWithArray(stateObj) {
         }
     }
     // console.log(stateObj.gameMap)
-    // console.log(stateObj.currentPosition)
+    console.log(stateObj.currentPosition)
     return stateObj
 }
 
@@ -299,9 +301,9 @@ async function renderScreen(stateObj) {
         fillFuelDiv.classList.add("fill-fuel")
         let missingFuel = stateObj.fuelCapacity-stateObj.currentFuel
         if (missingFuel > stateObj.bankedCash) {
-            fillFuelDiv.textContent = "Spend all gold on fuel: " + stateObj.bankedCash + " gold"
+            fillFuelDiv.textContent = "Spend all gold on fuel: " + Math.ceil(stateObj.bankedCash) + " gold"
         } else {
-            fillFuelDiv.textContent = "Refill fuel: " + missingFuel + " gold"
+            fillFuelDiv.textContent = "Refill fuel: " + Math.ceil(missingFuel) + " gold"
         }
         fillFuelDiv.classList.add("store-clickable")
         
@@ -360,9 +362,9 @@ async function fillFuel(stateObj) {
         if (missingFuel > 0) {
             if (newState.bankedCash > missingFuel) {
                 newState.currentFuel += missingFuel;
-                newState.bankedCash -= missingFuel
+                newState.bankedCash -= Math.ceil(missingFuel)
             } else {
-                newState.currentFuel += newState.bankedCash;
+                newState.currentFuel += Math.ceil(newState.bankedCash);
                 newState.bankedCash = 0;    
             }
         }
@@ -478,9 +480,10 @@ async function LeftArrow(stateObj) {
     } 
 
     //make sure not on left side 
-    if (stateObj.currentPosition % screenwidthBlocks === 0 ) {
-        return stateObj
-    } else {
+    const viewportHeight = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const scrollAmount = Math.floor(viewportHeight * 0.05);
+    if (stateObj.currentPosition % screenwidthBlocks !== 0 ) {
+        window.scrollTo(window.pageXOffset - scrollAmount, window.pageYOffset)
         stateObj = await calculateMoveChange(stateObj, -1)
     }
 
@@ -493,9 +496,12 @@ async function RightArrow(stateObj) {
     if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty" && stateObj.gameMap[stateObj.currentPosition + 1] !== "empty") {
         return stateObj
     } else {
+        const viewportHeight = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const scrollAmount = Math.floor(viewportHeight * 0.05);
         //only execute if not already on right side
         if ((stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
             stateObj = await calculateMoveChange(stateObj, 1)
+            window.scrollTo(window.pageXOffset + scrollAmount, window.pageYOffset)
             //stateObj.currentPosition += 1;
         }
     }
@@ -508,20 +514,23 @@ async function RightArrow(stateObj) {
 
 async function UpArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.012);
+    const scrollAmount = Math.floor(viewportHeight * 0.04);
     if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - screenwidthBlocks]=== "empty") {
-        window.scrollTo(0, window.pageYOffset - scrollAmount)
+        window.scrollTo(window.pageXOffset, window.pageYOffset - scrollAmount)
         stateObj = await calculateMoveChange(stateObj, -screenwidthBlocks)
-        stateObj.currentFuel -= 3;
+        stateObj = immer.produce(stateObj, (newState) => {
+            newState.currentFuel -= 0.25;
+        })
+        
     }
     return stateObj
 }
 
 async function DownArrow(stateObj) {
     const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.005);
+    const scrollAmount = Math.floor(viewportHeight * 0.04);
     if (stateObj.currentPosition < (screenwidthBlocks * totalSquareNumber)) {
-        window.scrollTo(0, window.pageYOffset + scrollAmount)
+        window.scrollTo(window.pageXOffset, window.pageYOffset + scrollAmount)
         stateObj = await calculateMoveChange(stateObj, screenwidthBlocks)
     }
     return stateObj
@@ -529,6 +538,7 @@ async function DownArrow(stateObj) {
 
 async function calculateMoveChange(stateObj, squaresToMove) {
     targetSquareNum = stateObj.currentPosition + squaresToMove
+
     targetSquare = stateObj.gameMap[targetSquareNum];
 
     //check if target square has an enemy nearby
