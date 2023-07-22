@@ -40,8 +40,8 @@ let state = {...gameStartState}
 let screenwidthBlocks = 16; 
 
 let introBlockSquare = 8
-let middleBlockSquare = 20
-let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare
+let middleBlockSquare = 30
+let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
 
 //TO-DO
 //change the state when the player "clears" a square; decrease  the fuel
@@ -101,6 +101,10 @@ async function renderTopBarStats(stateObj) {
     return topBarDiv
 }
 
+function createArrayBlocks(numberRows, hasEnemies=true, discount=0) {
+            
+}
+
 //takes a stateObj, and if the gameMap is not created, creates it
 async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
@@ -113,17 +117,13 @@ async function fillMapWithArray(stateObj) {
         for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
             let randomNumber = Math.random()
         
-            if (randomNumber > 0.995) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.98) {
+            if (randomNumber > 0.98) {
                 tempArray.push("3")
-            } else if (randomNumber > 0.93) {
+            } else if (randomNumber > 0.95) {
                 tempArray.push("2")
-            } else if (randomNumber > 0.75) {
+            } else if (randomNumber > 0.82) {
                 tempArray.push("1")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            } else if (randomNumber > 0.5 && randomNumber < 0.58) {
+            } else if (randomNumber > 0.65) {
                 tempArray.push("empty")
             } else {
                 tempArray.push("0")
@@ -134,44 +134,70 @@ async function fillMapWithArray(stateObj) {
             let randomNumber = Math.random()
             
             const isEnemy = Math.random()
-            if (isEnemy > 0.97) {
+            if (isEnemy > 0.99) {
                 randomNumber = 0.221
             }
-            if (randomNumber > 0.985) {
+            if (randomNumber > 0.99) {
                 tempArray.push("4")
-            } else if (randomNumber > 0.96) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.91) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.75) {
-                tempArray.push("1")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            } else if (randomNumber > 0.5 && randomNumber < 0.58) {
-                tempArray.push("empty")
-            } else {
-                tempArray.push("0")
-            }
-        }
-
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            let randomNumber = Math.random()
-            
-            const isEnemy = Math.random()
-            if (isEnemy > 0.95) {
-                randomNumber = 0.221
-            }
-            if (randomNumber > 0.96) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.93) {
+            } else if (randomNumber > 0.95) {
                 tempArray.push("3")
             } else if (randomNumber > 0.88) {
                 tempArray.push("2")
+            } else if (randomNumber > 0.80) {
+                tempArray.push("1")
+            } else if (randomNumber > 0.7) {
+                tempArray.push("empty")
+            } else if (randomNumber == 0.221) {
+                tempArray.push("enemy")
+            }  else {
+                tempArray.push("0")
+            }
+        }
+
+        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+            let randomNumber = Math.random()
+            
+            const isEnemy = Math.random()
+            if (isEnemy > 0.96) {
+                randomNumber = 0.221
+            }
+            if (randomNumber > 0.995) {
+                tempArray.push("5")
+            } else if (randomNumber > 0.97) {
+                tempArray.push("4")
+            } else if (randomNumber > 0.915) {
+                tempArray.push("3")
+            } else if (randomNumber > 0.8) {
+                tempArray.push("2")
             } else if (randomNumber > 0.75) {
                 tempArray.push("1")
             } else if (randomNumber == 0.221) {
                 tempArray.push("enemy")
-            } else if (randomNumber > 0.5 && randomNumber < 0.58) {
+            } else if (randomNumber > 0.65) {
+                tempArray.push("empty")
+            } else {
+                tempArray.push("0")
+            }
+        }
+
+        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+            let randomNumber = Math.random()
+            
+            const isEnemy = Math.random()
+            if (isEnemy > 0.96) {
+                randomNumber = 0.221
+            }
+            if (randomNumber > 0.97) {
+                tempArray.push("4")
+            } else if (randomNumber > 0.915) {
+                tempArray.push("3")
+            } else if (randomNumber > 0.8) {
+                tempArray.push("2")
+            } else if (randomNumber > 0.75) {
+                tempArray.push("1")
+            } else if (randomNumber == 0.221) {
+                tempArray.push("enemy")
+            } else if (randomNumber > 0.65) {
                 tempArray.push("empty")
             } else {
                 tempArray.push("0")
@@ -230,6 +256,8 @@ async function renderScreen(stateObj) {
                 mapSquareDiv.classList.add("gold")
             }  else if (mapSquare === "4") {
                 mapSquareDiv.classList.add("platinum")
+            } else if (mapSquare === "5") {
+                mapSquareDiv.classList.add("amethyst")
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
                 mapSquareDiv.textContent = "Store"
@@ -511,13 +539,15 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime/2)
             
     } else if (targetSquare === "1") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 20, stateObj.drillTime)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 25, stateObj.drillTime)
     } else if (targetSquare === "2") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 50, stateObj.drillTime)
     } else if (targetSquare === "3") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 100, stateObj.drillTime)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 125, stateObj.drillTime)
     } else if (targetSquare === "4") {
-        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 250, stateObj.drillTime)
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 300, stateObj.drillTime)
+    } else if (targetSquare === "5") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 750, stateObj.drillTime)
     } else if (targetSquare === "empty") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "enemy") {
