@@ -19,6 +19,7 @@ let gameStartState = {
     numberLasers: 0,
     laserCapacity: 1,
     laserCost: 200,
+    laserUpgradeCost: 1000,
 
     drillTime: 450,
 
@@ -254,16 +255,32 @@ async function renderScreen(stateObj) {
             }
           }
 
+        let laserUpgradeDiv = document.createElement("Div")
+        laserUpgradeDiv.classList.add("store-option")
+        laserUpgradeDiv.classList.add("laser-upgrade-store")
+        laserUpgradeDiv.textContent = "Laser Capacity Upgrade: " + stateObj.laserUpgradeCost + " gold"
+        if (stateObj.bankedCash >= stateObj.laserUpgradeCost) {
+            laserUpgradeDiv.classList.add("store-clickable")
+            laserUpgradeDiv.onclick = function () {
+                laserUpgrade(stateObj)
+            }
+          }
+
         let fillFuelDiv = document.createElement("Div")
         fillFuelDiv.classList.add("store-option")
         fillFuelDiv.classList.add("fill-fuel")
-        fillFuelDiv.textContent = "Fill Fuel: " + (stateObj.fuelCapacity-stateObj.currentFuel) + " gold"
-        if (stateObj.bankedCash >= stateObj.fuelCapacity-stateObj.currentFuel) {
-            fillFuelDiv.classList.add("store-clickable")
-            fillFuelDiv.onclick = function () {
+        let missingFuel = stateObj.fuelCapacity-stateObj.currentFuel
+        if (missingFuel > stateObj.bankedCash) {
+            fillFuelDiv.textContent = "Spend all gold on fuel: " + stateObj.bankedCash + " gold"
+        } else {
+            fillFuelDiv.textContent = "Refill fuel: " + missingFuel + " gold"
+        }
+        fillFuelDiv.classList.add("store-clickable")
+        
+        fillFuelDiv.onclick = function () {
                 fillFuel(stateObj)
-            }
-          }
+        }
+
 
         let inventoryUpgradeDiv = document.createElement("Div")
         inventoryUpgradeDiv.classList.add("store-option")
@@ -280,7 +297,7 @@ async function renderScreen(stateObj) {
         buyLaserDiv.textContent = "Buy 1 laser: " + stateObj.laserCost + " gold"
         buyLaserDiv.onclick = function () {
           }
-        if (stateObj.bankedCash >= stateObj.laserCost && stateObj.numberLasers < stateObj.laserCapacity) {
+        if (stateObj.bankedCash >= stateObj.laserCost) {
             buyLaserDiv.classList.add("store-clickable")
             buyLaserDiv.onclick = function () {
                 buyLaser(stateObj)
@@ -296,7 +313,7 @@ async function renderScreen(stateObj) {
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fillFuelDiv, buyLaserDiv, fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fillFuelDiv, buyLaserDiv, laserUpgradeDiv, fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -321,6 +338,16 @@ async function fillFuel(stateObj) {
                 newState.bankedCash = 0;    
             }
         }
+    })
+    await changeState(stateObj);
+}
+
+async function laserUpgrade(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.laserCapacity += 1;
+        newState.numberLasers += 1;
+        newState.bankedCash -= stateObj.laserUpgradeCost
+        newState.laserUpgradeCost += 1000;
     })
     await changeState(stateObj);
 }
