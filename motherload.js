@@ -314,12 +314,12 @@ async function renderScreen(stateObj) {
           }
 
         let fillFuelDiv = document.createElement("Div")
-        let missingFuel = stateObj.fuelCapacity-stateObj.currentFuel
+        let missingFuel = Math.floor((stateObj.fuelCapacity-stateObj.currentFuel)/2)
         if (missingFuel > 0) {
             fillFuelDiv.classList.add("store-option")
             fillFuelDiv.classList.add("fill-fuel")
             
-            if (missingFuel > stateObj.bankedCash) {
+            if (Math.floor(missingFuel/2) > stateObj.bankedCash) {
                 fillFuelDiv.textContent = "Spend all gold on fuel: " + Math.ceil(stateObj.bankedCash) + " gold"
             } else {
                 fillFuelDiv.textContent = "Refill fuel: " + Math.ceil(missingFuel) + " gold"
@@ -410,13 +410,14 @@ async function leaveStore(stateObj) {
 
 async function fillFuel(stateObj) {
     let missingFuel = stateObj.fuelCapacity - stateObj.currentFuel
+    let missingFuelValue = Math.floor((stateObj.fuelCapacity - stateObj.currentFuel)/2)
     stateObj = immer.produce(stateObj, (newState) => {
         if (missingFuel > 0) {
-            if (newState.bankedCash > missingFuel) {
+            if (newState.bankedCash > missingFuelValue) {
                 newState.currentFuel += missingFuel;
-                newState.bankedCash -= Math.ceil(missingFuel)
+                newState.bankedCash -= missingFuelValue
             } else {
-                newState.currentFuel += Math.ceil(newState.bankedCash);
+                newState.currentFuel += Math.ceil(newState.bankedCash*2);
                 newState.bankedCash = 0;    
             }
         }
