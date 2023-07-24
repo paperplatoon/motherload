@@ -303,34 +303,41 @@ async function renderScreen(stateObj) {
           }
 
         let fillFuelDiv = document.createElement("Div")
-        fillFuelDiv.classList.add("store-option")
-        fillFuelDiv.classList.add("fill-fuel")
         let missingFuel = stateObj.fuelCapacity-stateObj.currentFuel
-        if (missingFuel > stateObj.bankedCash) {
-            fillFuelDiv.textContent = "Spend all gold on fuel: " + Math.ceil(stateObj.bankedCash) + " gold"
-        } else {
-            fillFuelDiv.textContent = "Refill fuel: " + Math.ceil(missingFuel) + " gold"
+        if (missingFuel > 0) {
+            fillFuelDiv.classList.add("store-option")
+            fillFuelDiv.classList.add("fill-fuel")
+            
+            if (missingFuel > stateObj.bankedCash) {
+                fillFuelDiv.textContent = "Spend all gold on fuel: " + Math.ceil(stateObj.bankedCash) + " gold"
+            } else {
+                fillFuelDiv.textContent = "Refill fuel: " + Math.ceil(missingFuel) + " gold"
+            }
+            fillFuelDiv.classList.add("store-clickable")
+            
+            fillFuelDiv.onclick = function () {
+                    fillFuel(stateObj)
+            }
         }
-        fillFuelDiv.classList.add("store-clickable")
         
-        fillFuelDiv.onclick = function () {
-                fillFuel(stateObj)
-        }
 
         let repairDiv = document.createElement("Div")
-        repairDiv.classList.add("store-option")
-        repairDiv.classList.add("repair-hull")
         let missingHull = stateObj.maxHullIntegrity-stateObj.currentHullIntegrity
-        if ((missingHull*5) > stateObj.bankedCash) {
-            repairDiv.textContent = "Spend all gold on repair: " + Math.ceil(stateObj.bankedCash) + " gold"
-        } else {
-            repairDiv.textContent = "Repair hull fully: " + Math.ceil(missingHull*5) + " gold"
+        if (missingHull > 0) {
+            repairDiv.classList.add("store-option")
+            repairDiv.classList.add("repair-hull")
+            if ((missingHull*5) > stateObj.bankedCash) {
+                repairDiv.textContent = "Spend all gold on repair: " + Math.ceil(stateObj.bankedCash) + " gold"
+            } else {
+                repairDiv.textContent = "Repair hull fully: " + Math.ceil(missingHull*5) + " gold"
+            }
+            repairDiv.classList.add("store-clickable")
+            
+            repairDiv.onclick = function () {
+                    repairHull(stateObj)
         }
-        repairDiv.classList.add("store-clickable")
+        }
         
-        repairDiv.onclick = function () {
-                repairHull(stateObj)
-        }
 
 
         let inventoryUpgradeDiv = document.createElement("Div")
@@ -343,17 +350,30 @@ async function renderScreen(stateObj) {
             }
         }
 
-        let buyLaserDiv = document.createElement("Div")
-        buyLaserDiv.classList.add("store-option")
-        buyLaserDiv.textContent = "Buy 1 laser: " + stateObj.laserCost + " gold"
-        buyLaserDiv.onclick = function () {
-          }
-        if (stateObj.bankedCash >= stateObj.laserCost) {
-            buyLaserDiv.classList.add("store-clickable")
-            buyLaserDiv.onclick = function () {
-                buyLaser(stateObj)
+        let hullUpgradeDiv = document.createElement("Div")
+        hullUpgradeDiv.classList.add("store-option")
+        hullUpgradeDiv.textContent = "Upgrade Hull Integrity: " + stateObj.hullUpgradeCost + " gold"
+        if (stateObj.bankedCash >= stateObj.hullUpgradeCost) {
+            inventoryUpgradeDiv.classList.add("store-clickable")
+            inventoryUpgradeDiv.onclick = function () {
+                upgradeHull(stateObj)
             }
         }
+
+        let buyLaserDiv = document.createElement("Div")
+        if (stateObj.numberLasers < stateObj.laserCapacity) {
+            buyLaserDiv.classList.add("store-option")
+            buyLaserDiv.textContent = "Buy 1 laser: " + stateObj.laserCost + " gold"
+            buyLaserDiv.onclick = function () {
+            }
+            if (stateObj.bankedCash >= stateObj.laserCost) {
+                buyLaserDiv.classList.add("store-clickable")
+                buyLaserDiv.onclick = function () {
+                    buyLaser(stateObj)
+                }
+            }
+        }
+        
     
         let buyNothingDiv = document.createElement("Div")
         buyNothingDiv.classList.add("store-option")
@@ -364,7 +384,7 @@ async function renderScreen(stateObj) {
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, laserUpgradeDiv, fuelUpgradeDiv, inventoryUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, fuelUpgradeDiv, inventoryUpgradeDiv, hullUpgradeDiv, laserUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -437,6 +457,17 @@ async function upgradeInventory(stateObj) {
         newState.inventoryUpgrades +=1;
         newState.bankedCash -= stateObj.inventoryUpgradeCost
         newState.inventoryUpgradeCost += 500;
+
+    })
+    await changeState(stateObj);
+}
+
+async function upgradeHull(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.maxHullIntegrity += 50;
+        newState.currentHullIntegrity +=50;
+        newState.bankedCash -= stateObj.hullUpgradeCost
+        newState.hullUpgradeCost += 1000;
 
     })
     await changeState(stateObj);
