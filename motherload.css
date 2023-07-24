@@ -135,6 +135,10 @@
     color: red;
   }
 
+  .fuel-relic {
+    background-color: pink;
+  }
+
   .store-div {
     margin: auto;
     margin-top: 15vh;

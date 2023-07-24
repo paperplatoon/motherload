@@ -120,97 +120,105 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         //first 12 * 36 squares
-        for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
-            let randomNumber = Math.random()
+        // for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
+        //     let randomNumber = Math.random()
         
-            if (randomNumber > 0.98) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.93) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.75) {
-                tempArray.push("1")
-            } else if (randomNumber > 0.60) {
-                tempArray.push("empty")
+        //     if (randomNumber > 0.98) {
+        //         tempArray.push("3")
+        //     } else if (randomNumber > 0.93) {
+        //         tempArray.push("2")
+        //     } else if (randomNumber > 0.75) {
+        //         tempArray.push("1")
+        //     } else if (randomNumber > 0.60) {
+        //         tempArray.push("empty")
+        //     } else {
+        //         tempArray.push("0")
+        //     }
+        // }
+
+        let assignedObject = false;
+        let chosenSquare = Math.floor(Math.random() * screenwidthBlocks*middleBlockSquare);
+        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+            if (j === chosenSquare) {
+                tempArray.push("fuelRelic")
             } else {
-                tempArray.push("0")
+                let randomNumber = Math.random() 
+                const isEnemy = Math.random()
+                if (isEnemy > 0.99) {
+                    tempArray.push("enemy")
+                } else {
+                    if (randomNumber > 0.99) {
+                        tempArray.push("4")
+                    } else if (randomNumber > 0.95) {
+                        tempArray.push("3")
+                    } else if (randomNumber > 0.88) {
+                        tempArray.push("2")
+                    } else if (randomNumber > 0.75) {
+                        tempArray.push("1")
+                    } else if (randomNumber > 0.65) {
+                        tempArray.push("empty")
+                    } else {
+                        tempArray.push("0")
+                    }
+                }
+                
+
             }
+
+            
         }
 
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            let randomNumber = Math.random()
+        // for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+        //     let randomNumber = Math.random()
             
-            const isEnemy = Math.random()
-            if (isEnemy > 0.99) {
-                randomNumber = 0.221
-            }
-            if (randomNumber > 0.99) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.95) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.88) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.75) {
-                tempArray.push("1")
-            } else if (randomNumber > 0.65) {
-                tempArray.push("empty")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            }  else {
-                tempArray.push("0")
-            }
-        }
+        //     const isEnemy = Math.random()
+        //     if (isEnemy > 0.96) {
+        //         randomNumber = 0.221
+        //     }
+        //     if (randomNumber > 0.995) {
+        //         tempArray.push("5")
+        //     } else if (randomNumber > 0.97) {
+        //         tempArray.push("4")
+        //     } else if (randomNumber > 0.915) {
+        //         tempArray.push("3")
+        //     } else if (randomNumber > 0.75) {
+        //         tempArray.push("2")
+        //     } else if (randomNumber > 0.70) {
+        //         tempArray.push("1")
+        //     } else if (randomNumber == 0.221) {
+        //         tempArray.push("enemy")
+        //     } else if (randomNumber > 0.60) {
+        //         tempArray.push("empty")
+        //     } else {
+        //         tempArray.push("0")
+        //     }
+        // }
 
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            let randomNumber = Math.random()
+        // for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+        //     let randomNumber = Math.random()
             
-            const isEnemy = Math.random()
-            if (isEnemy > 0.96) {
-                randomNumber = 0.221
-            }
-            if (randomNumber > 0.995) {
-                tempArray.push("5")
-            } else if (randomNumber > 0.97) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.915) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.75) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.70) {
-                tempArray.push("1")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            } else if (randomNumber > 0.60) {
-                tempArray.push("empty")
-            } else {
-                tempArray.push("0")
-            }
-        }
-
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            let randomNumber = Math.random()
-            
-            const isEnemy = Math.random()
-            if (isEnemy > 0.96) {
-                randomNumber = 0.221
-            }
-            if (randomNumber > 0.98) {
-                tempArray.push("5")
-            } else if (randomNumber > 0.955) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.87) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.77) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.72) {
-                tempArray.push("1")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            } else if (randomNumber > 0.64) {
-                tempArray.push("empty")
-            } else {
-                tempArray.push("0")
-            }
-        }
+        //     const isEnemy = Math.random()
+        //     if (isEnemy > 0.96) {
+        //         randomNumber = 0.221
+        //     }
+        //     if (randomNumber > 0.98) {
+        //         tempArray.push("5")
+        //     } else if (randomNumber > 0.955) {
+        //         tempArray.push("4")
+        //     } else if (randomNumber > 0.87) {
+        //         tempArray.push("3")
+        //     } else if (randomNumber > 0.77) {
+        //         tempArray.push("2")
+        //     } else if (randomNumber > 0.72) {
+        //         tempArray.push("1")
+        //     } else if (randomNumber == 0.221) {
+        //         tempArray.push("enemy")
+        //     } else if (randomNumber > 0.64) {
+        //         tempArray.push("empty")
+        //     } else {
+        //         tempArray.push("0")
+        //     }
+        // }
 
         stateObj.gameMap = tempArray;
 
@@ -269,6 +277,9 @@ async function renderScreen(stateObj) {
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
                 mapSquareDiv.textContent = "Store"
+            } else if (mapSquare === "fuelRelic") {
+                mapSquareDiv.classList.add("fuel-relic")
+                mapSquareDiv.textContent = "Fuel ++"
             }
 
             mapDiv.append(mapSquareDiv)
@@ -451,6 +462,17 @@ async function upgradeFuel(stateObj) {
     await changeState(stateObj);
 }
 
+async function upgradeFuelRelic(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.fuelCapacity += 80;
+        newState.currentFuel += 80;
+        newState.fuelUpgrades +=1;
+
+    })
+    await changeState(stateObj);
+    return stateObj
+}
+
 async function upgradeInventory(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.inventoryMax += 6;
@@ -623,8 +645,6 @@ async function calculateMoveChange(stateObj, squaresToMove) {
 
     //check if target square has an enemy nearby
     
-
-    
     if (targetSquare === "0") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime/2)
             
@@ -645,6 +665,10 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "STORE") {
         stateObj = await seeStore(stateObj)
+    } else if (targetSquare === "fuelRelic") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime)
+        stateObj = await upgradeFuelRelic(stateObj)
+        
     } else {
         console.log("target square hasn't been handled yet")
     }
