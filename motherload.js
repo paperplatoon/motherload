@@ -354,8 +354,8 @@ async function renderScreen(stateObj) {
         hullUpgradeDiv.classList.add("store-option")
         hullUpgradeDiv.textContent = "Upgrade Hull Integrity: " + stateObj.hullUpgradeCost + " gold"
         if (stateObj.bankedCash >= stateObj.hullUpgradeCost) {
-            inventoryUpgradeDiv.classList.add("store-clickable")
-            inventoryUpgradeDiv.onclick = function () {
+            hullUpgradeDiv.classList.add("store-clickable")
+            hullUpgradeDiv.onclick = function () {
                 upgradeHull(stateObj)
             }
         }
@@ -497,22 +497,22 @@ document.addEventListener('keydown', async function(event) {
     let scrollHeight = Math.floor(viewportHeight * 0.1);
     let scrollWidth = Math.floor(viewportWidth * 0.1);
     if (stateObj.inTransition === false) {
-        if (event.key === 'ArrowUp') {
+        if (event.key === 'ArrowUp' || event.key ==="w") {
             // Execute your function for the up arrow key
             stateObj = await UpArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
-          } else if (event.key === 'ArrowDown') {
+          } else if (event.key === 'ArrowDown' || event.key ==="s") {
             // Execute your function for the down arrow key
             stateObj = await DownArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
-          } else if (event.key === 'ArrowLeft') {
+          } else if (event.key === 'ArrowLeft' || event.key ==="a") {
             // Execute your function for the left arrow key
             stateObj = await LeftArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
             await checkForDeath(stateObj)
-          } else if (event.key === 'ArrowRight') {
+          } else if (event.key === 'ArrowRight' || event.key ==="d") {
             // Execute your function for the right arrow key
             stateObj = await RightArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth);
             await changeState(stateObj)
@@ -569,7 +569,7 @@ async function LeftArrow(stateObj, currentHeight, currentWidth, scrollHeight, sc
     //make sure not on left side 
     
     if (stateObj.currentPosition % screenwidthBlocks !== 0 ) {
-        window.scrollTo(currentWidth*scrollWidth- (scrollWidth*4), currentHeight*scrollHeight)
+        window.scrollTo(currentWidth*scrollWidth- (scrollWidth*4), currentHeight*scrollHeight - (scrollHeight*2))
         stateObj = await calculateMoveChange(stateObj, -1)
     }
 
@@ -585,7 +585,7 @@ async function RightArrow(stateObj, currentHeight, currentWidth, scrollHeight, s
         //only execute if not already on right side
         if ((stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
             stateObj = await calculateMoveChange(stateObj, 1)
-            window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight)
+            window.scrollTo(currentWidth*scrollWidth- (scrollWidth*2), currentHeight*scrollHeight - (scrollHeight*2))
             //stateObj.currentPosition += 1;
         }
     }
@@ -596,11 +596,9 @@ async function RightArrow(stateObj, currentHeight, currentWidth, scrollHeight, s
 //checkIfCanMove does all the calculations to see if you CAN move there
 //check target square figures out 
 
-async function UpArrow(stateObj) {
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.04);
+async function UpArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {
     if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - screenwidthBlocks]=== "empty") {
-        window.scrollTo(window.pageXOffset, window.pageYOffset - scrollAmount)
+        window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight - (scrollHeight*2))
         stateObj = await calculateMoveChange(stateObj, -screenwidthBlocks)
         stateObj = immer.produce(stateObj, (newState) => {
             newState.currentFuel -= 0.25;
@@ -610,11 +608,9 @@ async function UpArrow(stateObj) {
     return stateObj
 }
 
-async function DownArrow(stateObj) {
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const scrollAmount = Math.floor(viewportHeight * 0.04);
+async function DownArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {
     if (stateObj.currentPosition < (screenwidthBlocks * totalSquareNumber)) {
-        window.scrollTo(window.pageXOffset, window.pageYOffset + scrollAmount)
+        window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight - (scrollHeight))
         stateObj = await calculateMoveChange(stateObj, screenwidthBlocks)
     }
     return stateObj
