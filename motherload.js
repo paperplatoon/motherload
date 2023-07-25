@@ -119,22 +119,22 @@ async function fillMapWithArray(stateObj) {
         for (let i=0; i<screenwidthBlocks-1; i++ ) {
             tempArray.push("empty")
         };
-        //first 12 * 36 squares
-        // for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
-        //     let randomNumber = Math.random()
+        // first 12 * 36 squares
+        for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
+            let randomNumber = Math.random()
         
-        //     if (randomNumber > 0.98) {
-        //         tempArray.push("3")
-        //     } else if (randomNumber > 0.93) {
-        //         tempArray.push("2")
-        //     } else if (randomNumber > 0.75) {
-        //         tempArray.push("1")
-        //     } else if (randomNumber > 0.60) {
-        //         tempArray.push("empty")
-        //     } else {
-        //         tempArray.push("0")
-        //     }
-        // }
+            if (randomNumber > 0.98) {
+                tempArray.push("3")
+            } else if (randomNumber > 0.93) {
+                tempArray.push("2")
+            } else if (randomNumber > 0.75) {
+                tempArray.push("1")
+            } else if (randomNumber > 0.60) {
+                tempArray.push("empty")
+            } else {
+                tempArray.push("0")
+            }
+        }
 
         let assignedObject = false;
         let chosenSquare = Math.floor(Math.random() * screenwidthBlocks*middleBlockSquare);
@@ -168,57 +168,57 @@ async function fillMapWithArray(stateObj) {
             
         }
 
-        // for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-        //     let randomNumber = Math.random()
+        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+            let randomNumber = Math.random()
             
-        //     const isEnemy = Math.random()
-        //     if (isEnemy > 0.96) {
-        //         randomNumber = 0.221
-        //     }
-        //     if (randomNumber > 0.995) {
-        //         tempArray.push("5")
-        //     } else if (randomNumber > 0.97) {
-        //         tempArray.push("4")
-        //     } else if (randomNumber > 0.915) {
-        //         tempArray.push("3")
-        //     } else if (randomNumber > 0.75) {
-        //         tempArray.push("2")
-        //     } else if (randomNumber > 0.70) {
-        //         tempArray.push("1")
-        //     } else if (randomNumber == 0.221) {
-        //         tempArray.push("enemy")
-        //     } else if (randomNumber > 0.60) {
-        //         tempArray.push("empty")
-        //     } else {
-        //         tempArray.push("0")
-        //     }
-        // }
+            const isEnemy = Math.random()
+            if (isEnemy > 0.96) {
+                randomNumber = 0.221
+            }
+            if (randomNumber > 0.995) {
+                tempArray.push("5")
+            } else if (randomNumber > 0.97) {
+                tempArray.push("4")
+            } else if (randomNumber > 0.915) {
+                tempArray.push("3")
+            } else if (randomNumber > 0.75) {
+                tempArray.push("2")
+            } else if (randomNumber > 0.70) {
+                tempArray.push("1")
+            } else if (randomNumber == 0.221) {
+                tempArray.push("enemy")
+            } else if (randomNumber > 0.60) {
+                tempArray.push("empty")
+            } else {
+                tempArray.push("0")
+            }
+        }
 
-        // for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-        //     let randomNumber = Math.random()
+        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
+            let randomNumber = Math.random()
             
-        //     const isEnemy = Math.random()
-        //     if (isEnemy > 0.96) {
-        //         randomNumber = 0.221
-        //     }
-        //     if (randomNumber > 0.98) {
-        //         tempArray.push("5")
-        //     } else if (randomNumber > 0.955) {
-        //         tempArray.push("4")
-        //     } else if (randomNumber > 0.87) {
-        //         tempArray.push("3")
-        //     } else if (randomNumber > 0.77) {
-        //         tempArray.push("2")
-        //     } else if (randomNumber > 0.72) {
-        //         tempArray.push("1")
-        //     } else if (randomNumber == 0.221) {
-        //         tempArray.push("enemy")
-        //     } else if (randomNumber > 0.64) {
-        //         tempArray.push("empty")
-        //     } else {
-        //         tempArray.push("0")
-        //     }
-        // }
+            const isEnemy = Math.random()
+            if (isEnemy > 0.96) {
+                randomNumber = 0.221
+            }
+            if (randomNumber > 0.98) {
+                tempArray.push("5")
+            } else if (randomNumber > 0.955) {
+                tempArray.push("4")
+            } else if (randomNumber > 0.87) {
+                tempArray.push("3")
+            } else if (randomNumber > 0.77) {
+                tempArray.push("2")
+            } else if (randomNumber > 0.72) {
+                tempArray.push("1")
+            } else if (randomNumber == 0.221) {
+                tempArray.push("enemy")
+            } else if (randomNumber > 0.64) {
+                tempArray.push("empty")
+            } else {
+                tempArray.push("0")
+            }
+        }
 
         stateObj.gameMap = tempArray;
 
