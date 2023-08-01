@@ -158,6 +158,8 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
     return arrayObj
 }
 
+
+
 //takes a stateObj, and if the gameMap is not created, creates it
 async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
@@ -181,6 +183,15 @@ async function fillMapWithArray(stateObj) {
     // console.log(stateObj.gameMap)
     console.log(stateObj.currentPosition)
     return stateObj
+}
+
+function timeStuff() {
+    setInterval(moveEnemies, 800); // 500 milliseconds (half a second)
+}
+
+function moveEnemies() {
+    let stateObj = {...state}
+    
 }
 
 //renders all the map squares. 
