@@ -45,7 +45,8 @@ let screenwidthBlocks = 24;
 
 let introBlockSquare = 8
 let middleBlockSquare = 30
-let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
+let totalSquareNumber = (introBlockSquare + middleBlockSquare + middleBlockSquare)*screenwidthBlocks
+let mapSize = (introBlockSquare + middleBlockSquare + middleBlockSquare)*screenwidthBlocks
 
 //TO-DO
 //change the state when the player "clears" a square; decrease  the fuel
@@ -188,10 +189,42 @@ async function fillMapWithArray(stateObj) {
 function timeStuff() {
     setInterval(moveEnemies, 800); // 500 milliseconds (half a second)
 }
+timeStuff()
 
-function moveEnemies() {
+async function moveEnemies() {
+    console.log("triggering moveEnemies")
     let stateObj = {...state}
-    
+    let dontCheckNextSquare = false;
+    for (let i=0; i < totalSquareNumber; i++) {
+        if (dontCheckNextSquare === false) {
+            if (stateObj.gameMap[i]==="enemy") {
+                console.log("found an enemy")
+                let randomNumber = Math.random();
+                //going left
+                if (randomNumber > 0.5) {
+                    if (stateObj.gameMap[i-1]==="empty") {
+                        stateObj = immer.produce(stateObj, (newState) => {
+                            console.log("moving enemy")
+                            newState.gameMap[i-1]="enemy"
+                            newState.gameMap[i]="empty"
+                        })
+                    }
+                } else {
+                    if (stateObj.gameMap[i+1]==="empty") {
+                        stateObj = immer.produce(stateObj, (newState) => {
+                            newState.gameMap[i+1]="enemy"
+                            newState.gameMap[i]="empty"
+                        })
+                        dontCheckNextSquare = true
+                    }
+                }
+            }
+        } else {
+            dontCheckNextSquare = false
+        }
+        
+    }
+    await changeState(stateObj)
 }
 
 //renders all the map squares. 
@@ -594,7 +627,7 @@ async function UpArrow(stateObj, currentHeight, currentWidth, scrollHeight, scro
 }
 
 async function DownArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {
-    if (stateObj.currentPosition < (screenwidthBlocks * totalSquareNumber)) {
+    if (stateObj.currentPosition < (mapSize-screenwidthBlocks)) {
         window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight - (scrollHeight))
         stateObj = await calculateMoveChange(stateObj, screenwidthBlocks)
     }
