@@ -58,8 +58,6 @@ let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare
 async function changeState(newStateObj) {
     state = {...newStateObj};
     await renderScreen(state);
-
-
 }
 
 async function renderTopBarStats(stateObj) {
@@ -111,6 +109,55 @@ function createArrayBlocks(numberRows, hasEnemies=true, discount=0) {
             
 }
 
+function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false) {
+    let chosenSquare = 50000
+    if (isRelic === true) {
+        chosenSquare = Math.floor(Math.random() * screenwidthBlocks*numberRows);
+    }
+    
+    let nextSquareEmpty = false;
+    for (let j=0; j < screenwidthBlocks*numberRows; j++) {
+        if (j === chosenSquare) {
+            arrayObj.push("fuelRelic")
+        } else if (nextSquareEmpty === true){
+            arrayObj.push("empty")
+            nextSquareEmpty = false
+        } else {
+            let randomNumber = Math.random() 
+            const isEnemy = Math.random()
+            if (isEnemy > enemyBar && (j % screenwidthBlocks !== 0) && ((j+1) % screenwidthBlocks !== 0) && j-1 !== chosenSquare) {
+                arrayObj.pop()
+                arrayObj.push("empty")
+                arrayObj.push("enemy")
+                nextSquareEmpty = true;
+            } else {
+                if (randomNumber > bar7) {
+                    arrayObj.push("7")
+                } else if (randomNumber > bar6) {
+                    arrayObj.push("6")
+                } else if (randomNumber > bar5) {
+                    arrayObj.push("5")
+                } else if (randomNumber > bar4) {
+                    arrayObj.push("4")
+                } else if (randomNumber > bar3) {
+                    arrayObj.push("3")
+                } else if (randomNumber > bar2) {
+                    arrayObj.push("2")
+                } else if (randomNumber > bar1) {
+                    arrayObj.push("1")
+                } else if (randomNumber == 0.221) {
+                    arrayObj.push("enemy")
+                } else if (randomNumber > emptybar) {
+                    arrayObj.push("empty")
+                } else {
+                    arrayObj.push("0")
+                }
+            }
+        }  
+    }
+    return arrayObj
+}
+
 //takes a stateObj, and if the gameMap is not created, creates it
 async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
@@ -120,105 +167,9 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         // first 12 * 36 squares
-        for (let i=0; i < screenwidthBlocks*introBlockSquare; i++) {
-            let randomNumber = Math.random()
-        
-            if (randomNumber > 0.98) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.93) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.75) {
-                tempArray.push("1")
-            } else if (randomNumber > 0.60) {
-                tempArray.push("empty")
-            } else {
-                tempArray.push("0")
-            }
-        }
-
-        let assignedObject = false;
-        let chosenSquare = Math.floor(Math.random() * screenwidthBlocks*middleBlockSquare);
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            if (j === chosenSquare) {
-                tempArray.push("fuelRelic")
-            } else {
-                let randomNumber = Math.random() 
-                const isEnemy = Math.random()
-                if (isEnemy > 0.99) {
-                    tempArray.push("enemy")
-                } else {
-                    if (randomNumber > 0.99) {
-                        tempArray.push("4")
-                    } else if (randomNumber > 0.95) {
-                        tempArray.push("3")
-                    } else if (randomNumber > 0.88) {
-                        tempArray.push("2")
-                    } else if (randomNumber > 0.75) {
-                        tempArray.push("1")
-                    } else if (randomNumber > 0.65) {
-                        tempArray.push("empty")
-                    } else {
-                        tempArray.push("0")
-                    }
-                }
-                
-
-            }
-
-            
-        }
-
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            let randomNumber = Math.random()
-            
-            const isEnemy = Math.random()
-            if (isEnemy > 0.96) {
-                randomNumber = 0.221
-            }
-            if (randomNumber > 0.995) {
-                tempArray.push("5")
-            } else if (randomNumber > 0.97) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.915) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.75) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.70) {
-                tempArray.push("1")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            } else if (randomNumber > 0.60) {
-                tempArray.push("empty")
-            } else {
-                tempArray.push("0")
-            }
-        }
-
-        for (let j=0; j < screenwidthBlocks*middleBlockSquare; j++) {
-            let randomNumber = Math.random()
-            
-            const isEnemy = Math.random()
-            if (isEnemy > 0.96) {
-                randomNumber = 0.221
-            }
-            if (randomNumber > 0.98) {
-                tempArray.push("5")
-            } else if (randomNumber > 0.955) {
-                tempArray.push("4")
-            } else if (randomNumber > 0.87) {
-                tempArray.push("3")
-            } else if (randomNumber > 0.77) {
-                tempArray.push("2")
-            } else if (randomNumber > 0.72) {
-                tempArray.push("1")
-            } else if (randomNumber == 0.221) {
-                tempArray.push("enemy")
-            } else if (randomNumber > 0.64) {
-                tempArray.push("empty")
-            } else {
-                tempArray.push("0")
-            }
-        }
+        tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false)
+        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
+        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
 
         stateObj.gameMap = tempArray;
 
@@ -687,7 +638,7 @@ async function calculateMoveChange(stateObj, squaresToMove) {
 
 function pause(timeValue) {
     return new Promise(res => setTimeout(res, timeValue))
-  }
+}
 
 async function seeStore(stateObj) {
     stateObj = await immer.produce(stateObj, async (newState) => {
