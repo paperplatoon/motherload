@@ -16,9 +16,10 @@ let gameStartState = {
     bankedCash: 100,
     inventoryCash: 0, 
     
-    numberLasers: 0,
-    laserCapacity: 1,
+    numberLasers: 2,
+    laserCapacity: 2,
     laserCost: 200,
+    laserTiles: 2,
     laserUpgradeCost: 1000,
 
     drillTime: 450,
@@ -181,8 +182,6 @@ async function fillMapWithArray(stateObj) {
             stateObj.gameMap[stateObj.currentPosition] = "empty"
         }
     }
-    // console.log(stateObj.gameMap)
-    console.log(stateObj.currentPosition)
     return stateObj
 }
 
@@ -192,19 +191,16 @@ function timeStuff() {
 timeStuff()
 
 async function moveEnemies() {
-    console.log("triggering moveEnemies")
     let stateObj = {...state}
     let dontCheckNextSquare = false;
     for (let i=0; i < totalSquareNumber; i++) {
         if (dontCheckNextSquare === false) {
             if (stateObj.gameMap[i]==="enemy") {
-                console.log("found an enemy")
                 let randomNumber = Math.random();
                 //going left
                 if (randomNumber > 0.5) {
                     if (stateObj.gameMap[i-1]==="empty") {
                         stateObj = immer.produce(stateObj, (newState) => {
-                            console.log("moving enemy")
                             newState.gameMap[i-1]="enemy"
                             newState.gameMap[i]="empty"
                         })
@@ -733,43 +729,27 @@ async function loseTheGame(textString) {
 }
 
 async function fireLaser(stateObj) {
-    //
-    let leftBlocksToBlast = 0;
-    if ((stateObj.currentPosition-1) % screenwidthBlocks === 0 ) {
-        leftBlocksToBlast = 1;
-    } else if (stateObj.currentPosition % screenwidthBlocks !== 0 ) {
-        leftBlocksToBlast = 2;
+    //modify left 
+    let leftBlocksToBlast = stateObj.laserTiles;
+    let rightBlocksToBlast = stateObj.laserTiles;
+    for (let t=0; t < stateObj.laserTiles; t++) {
+        if ((stateObj.currentPosition-t) % screenwidthBlocks === 0 ) {
+            leftBlocksToBlast = t;
+        }
+        if ((stateObj.currentPosition+t+1) % screenwidthBlocks === 0 ) {
+            rightBlocksToBlast = t;
+        }
     }
 
-    let rightBlocksToBlast = 0;
-    if ((stateObj.currentPosition+2) % screenwidthBlocks === 0) {
-        rightBlocksToBlast = 1;
-    } else if ((stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
-        rightBlocksToBlast = 2;
-    }
     stateObj = immer.produce(stateObj, (newState) => {
-        if (leftBlocksToBlast > 0) {
-            newState.gameMap[newState.currentPosition - 1] = "empty"
+        for (let l = 0; l < leftBlocksToBlast; l++) {
+            newState.gameMap[newState.currentPosition - l-1] = "empty"
         }
-        if (leftBlocksToBlast >= 2) {
-            newState.gameMap[newState.currentPosition - 2] = "empty"
+        for (let r = 0; r < rightBlocksToBlast; r++) {
+            newState.gameMap[newState.currentPosition + r+1] = "empty"
         }
-
-        if (rightBlocksToBlast > 0) {
-            newState.gameMap[newState.currentPosition + 1] = "empty"
-        }
-        if (rightBlocksToBlast >= 2) {
-            newState.gameMap[newState.currentPosition + 2] = "empty"
-        }
-
         newState.numberLasers -= 1;
     })
 
-    
-
-    console.log("left blocks: " + leftBlocksToBlast)
-    console.log("right blocks: " + rightBlocksToBlast)
-
-    return stateObj
-  
+    return stateObj  
 }
