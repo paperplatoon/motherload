@@ -1,0 +1,187 @@
+.map-div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-top: 6vh;
+    padding: 2vh 0.5vw;
+    height: 100%;
+    width: 100%;
+    margin-top: 20vh;
+    background-color: brown;
+  }
+
+  .top-stats-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    height: 5vh;
+    position: fixed;
+    padding: 1vh 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 10;
+  }
+
+  .map-square {
+    width: 9.5vw;
+    height: 10vh;
+    background-color: rgb(200, 115, 70);
+    transition: background-color 1500ms ease-out;
+    border: 0.5px solid rgba(97, 48, 0, 0.756);
+  }
+
+  .bronze, .silver, .gold, .platinum, .amethyst {
+    position: relative;
+  }
+
+  .bronze:after, .silver:after, .gold:after, .platinum:after, .amethyst:after {
+    content: '';
+    width: 60%;
+    height: 30%;
+    border: solid 1px #fff;
+    position: absolute;
+    background-color: rgb(136, 78, 8);
+    left: 20%;
+    top: 35%;
+    z-index: 1;
+}
+
+.platinum:after, .amethyst:after {
+  width: 50%;
+  height: 50%;
+  left: 25%;
+  top: 25%;
+  border-radius: 100%;
+}
+
+.bronze:after {
+  background-color: rgb(136, 78, 8);
+}
+
+.silver:after {
+  background-color: rgb(227, 223, 223);
+}
+
+.gold:after {
+  background-color: rgb(255, 220, 24);
+}
+
+.platinum:after { 
+  background-image: radial-gradient(rgb(157, 255, 255) 0%, rgb(38, 255, 255) 20%, rgb(131, 206, 193) 40%);
+}
+
+.amethyst:after {
+  background-image: radial-gradient(rgb(209, 171, 252) 0%, rgb(197, 38, 255) 20%, rgb(132, 23, 194) 40%);
+}
+
+  .enemy {
+    background-color: rgb(203, 13, 13);
+    position: relative;
+    z-index: 2;
+  }
+
+  .enemy:after {
+    content: '';
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    background-color: rgba(230, 97, 97, 0.651);
+    border-radius: 100%;
+    left: -50%;
+    top: -50%;
+    z-index: 0;
+  }
+
+  .empty-fuel-bar {
+    width: 10vw;
+    height: 2vh;
+    background-color: grey;
+    position: relative;
+  }
+  
+  .current-fuel-bar {
+    background-color: blue;
+    position: absolute;
+    top:-1px;
+    left: -1px;
+    height: 2.2vh;
+  }
+
+  .empty {
+    background-color: black;
+    border: 0.5px solid rgba(0, 0, 0, 0);
+  }
+
+  .store {
+    background-color: rgb(3, 184, 190);
+    text-align: center;
+    color: rgb(64, 0, 0)
+  }
+
+  .player-here {
+    background-color: rgb(22, 64, 200);
+    color: black;
+
+  }
+
+  .change-empty {
+    background-color: black;
+  }
+
+  .inventory-full {
+    color: red;
+  }
+
+  .fuel-relic {
+    background-color: pink;
+  }
+
+  .store-div {
+    margin: auto;
+    margin-top: 15vh;
+    height: 85vh;
+    width: 80vw;
+  }
+
+  .test {
+    height: 60vh;
+    width: 60vw;
+    margin: auto;
+    background-color: red;
+  }
+
+  .store-option {
+    color: rgb(0, 105, 105);
+    width: 65vw;
+    height: 5vh;
+    background-color: rgb(122, 253, 253);
+    margin: auto;
+    margin-top: 3vh;
+    padding-top: 2vh;
+    justify-content: center;
+    display: flex;
+    transition: 0.2s all;
+  }
+
+  .store-clickable:hover {
+    background-color: rgb(78, 238, 238);
+    border: 1px dashed rgb(0, 147, 147);
+    
+    cursor: pointer;
+    font-size: 140%;
+  }
+
+  .return-to-map {
+    background-color: rgb(211, 121, 121);
+  }
+
+  .return-to-map:hover {
+    background-color: rgb(210, 81, 81);
+    border: 1px dashed rgb(0, 59, 59);
+    cursor: pointer;
+    font-size: 140%;
+  }
+
+ 
