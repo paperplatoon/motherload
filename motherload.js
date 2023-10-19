@@ -32,6 +32,9 @@ let gameStartState = {
     maxHullIntegrity: 100,
     hullUpgradeCost: 1000,
 
+    enemyArray: [],
+    enemyMovementArray:[]
+
 
 }
 
@@ -41,11 +44,12 @@ inventoryMaxUpgrades = [5, 8, 12, 17, 23, 30, 38, 47, 57]
 
 let state = {...gameStartState}
 
-let screenwidthBlocks = 24; 
+let screenwidthBlocks = 10; 
 
 let introBlockSquare = 8
-let middleBlockSquare = 30
-let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
+let middleBlockSquare = 20
+let totalSquareNumber = screenwidthBlocks * middleBlockSquare
+//let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
 
 //TO-DO
 //change the state when the player "clears" a square; decrease  the fuel
@@ -111,6 +115,7 @@ function createArrayBlocks(numberRows, hasEnemies=true, discount=0) {
 
 function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false) {
     let chosenSquare = 50000
+    let stateObj = {...state}
     if (isRelic === true) {
         chosenSquare = Math.floor(Math.random() * screenwidthBlocks*numberRows);
     }
@@ -129,6 +134,10 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
                 arrayObj.pop()
                 arrayObj.push("empty")
                 arrayObj.push("enemy")
+                const randOne = Math.random()
+                const direction = (randOne > 0.5) ? "left" : "right"; 
+                state.enemyArray.push(j)
+                state.enemyMovementArray.push(direction)
                 nextSquareEmpty = true;
             } else {
                 if (randomNumber > bar7) {
@@ -155,6 +164,7 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
             }
         }  
     }
+    console.log("produce squares array enemy length is " + state.enemyMovementArray.length)
     return arrayObj
 }
 
@@ -169,9 +179,10 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         // first 12 * 36 squares
-        tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false)
-        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
-        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
+        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=0.94, isRelic=false)
+        // tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false)
+        // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
+        // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
 
         stateObj.gameMap = tempArray;
 
@@ -185,13 +196,55 @@ async function fillMapWithArray(stateObj) {
     return stateObj
 }
 
-function timeStuff() {
-    setInterval(moveEnemies, 800); // 500 milliseconds (half a second)
+async function timeStuff() {
+    setInterval(moveEnemies, 2800); // 500 milliseconds (half a second)
 }
 
-function moveEnemies() {
+timeStuff();
+
+async function moveEnemies() {
     let stateObj = {...state}
-    
+    console.log("number of enemies is " + stateObj.enemyMovementArray.length)
+    let currentEnemyNumber = 0;
+    for (let i=0; i < totalSquareNumber; i++) {
+
+        if (stateObj.gameMap[i] === "enemy") {
+            if (stateObj.enemyMovementArray[currentEnemyNumber] === "left") {
+                console.log("left  enemy " + currentEnemyNumber + " is moving " + stateObj.enemyMovementArray[currentEnemyNumber])
+                if (i % screenwidthBlocks !== 0 && stateObj.gameMap[i-1] === "empty") {
+                    stateObj = immer.produce(stateObj, (newState) => {
+                        newState.gameMap[i-1] = "enemy";
+                        newState.gameMap[i] = "empty";
+                    })
+                } else {
+                    stateObj = immer.produce(stateObj, (newState) => {
+                        newState.enemyMovementArray[currentEnemyNumber] = "right";
+                    })
+                }
+            currentEnemyNumber += 1
+            } else {
+                console.log("right enemy " + currentEnemyNumber + " is moving " + stateObj.enemyMovementArray[currentEnemyNumber])
+                if ((i+1) % screenwidthBlocks !== 0 && stateObj.gameMap[i+1] === "empty") {
+                    stateObj = immer.produce(stateObj, (newState) => {
+                        newState.gameMap[i+1] = "enemy";
+                        newState.gameMap[i] = "empty";
+                    })
+                } else {
+                    stateObj = immer.produce(stateObj, (newState) => {
+                        newState.enemyMovementArray[currentEnemyNumber] = "left";
+                    })
+                }   
+            }
+            // if (randomNumber > 0.5) {
+            //     if (i % screenwidthBlocks !== 0 && (i+1) % screenwidthBlocks !== 0) {
+            //         stateObj = immer.produce(stateObj, (newState) => {
+            //             newState.gameMap[i]
+            //         })
+            //     }
+            // }
+        }
+    }
+    await changeState(stateObj)
 }
 
 //renders all the map squares. 
