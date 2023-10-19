@@ -197,7 +197,7 @@ async function fillMapWithArray(stateObj) {
 }
 
 async function timeStuff() {
-    setInterval(moveEnemies, 500); // 500 milliseconds (half a second)
+    setInterval(moveEnemies, 1500); // 500 milliseconds (half a second)
 }
 
 timeStuff();
@@ -216,6 +216,8 @@ async function moveEnemies() {
                         newState.gameMap[k] = "empty";
                         newState.enemyArray[i] -= 1
                     })
+
+                    
                 } else {
                     stateObj = await immer.produce(stateObj, (newState) => {
                         newState.enemyMovementArray[i] = "right";
@@ -245,7 +247,9 @@ async function moveEnemies() {
             //     }
             // }
         }
+    
     await changeState(stateObj)
+    await checkForDeath(stateObj)
 }
 
 //renders all the map squares. 
@@ -582,7 +586,7 @@ async function checkForDeath(stateObj) {
         stateObj = await doDamage(stateObj, 50)
     }
 
-    changeState(stateObj)
+    await changeState(stateObj)
 
     if (stateObj.currentHullIntegrity <= 0) {
         await loseTheGame("Your miner took too much damage and exploded!");
