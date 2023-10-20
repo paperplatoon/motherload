@@ -32,6 +32,8 @@ let gameStartState = {
     maxHullIntegrity: 100,
     hullUpgradeCost: 1000,
 
+    dirtReserves: 0,
+
     enemyArray: [],
     enemyMovementArray:[]
 
@@ -104,7 +106,10 @@ async function renderTopBarStats(stateObj) {
     let lasersDiv = document.createElement("Div")
     lasersDiv.textContent = "Lasers: " + stateObj.numberLasers + "/" + stateObj.laserCapacity
 
-    topBarDiv.append(fuelDiv, cashDiv, hullDiv, lasersDiv, inventoryDiv)
+    let dirtDiv = document.createElement("Div")
+    dirtDiv.textContent = "Dirt: " + Math.round((stateObj.dirtReserves/25)*100) + "%"
+
+    topBarDiv.append(fuelDiv, cashDiv, hullDiv, lasersDiv, dirtDiv, inventoryDiv)
 
     return topBarDiv
 }
@@ -204,13 +209,13 @@ timeStuff();
 
 async function moveEnemies() {
     let stateObj = {...state}
-    console.log("number of enemies is " + stateObj.enemyMovementArray.length)
-    console.log("enemy positions are " + stateObj.enemyArray)
+    // console.log("number of enemies is " + stateObj.enemyMovementArray.length)
+    // console.log("enemy positions are " + stateObj.enemyArray)
     for (let i=0; i < stateObj.enemyArray.length; i++) {
         let k = stateObj.enemyArray[i]
         if (stateObj.enemyMovementArray[i] === "left") {
                 if (k % screenwidthBlocks !== 0 && stateObj.gameMap[k-1] === "empty") {
-                    console.log("enemy  " + i + " moving left at position " + k + ", now " + k-1)
+                    //console.log("enemy  " + i + " moving left at position " + k + ", now " + k-1)
                     stateObj = await immer.produce(stateObj, (newState) => {
                         newState.gameMap[k-1] = "enemy";
                         newState.gameMap[k] = "empty";
@@ -222,11 +227,11 @@ async function moveEnemies() {
                     stateObj = await immer.produce(stateObj, (newState) => {
                         newState.enemyMovementArray[i] = "right";
                     })
-                    console.log("enemy  " + i + " switching to right at position " + k)
+                    //console.log("enemy  " + i + " switching to right at position " + k)
                 }
         } else {
                 if ((k+1) % screenwidthBlocks !== 0 && stateObj.gameMap[k+1] === "empty") {
-                    console.log("enemy  " + i + " moving right at position " + k + ", now " + k+1)
+                    //console.log("enemy  " + i + " moving right at position " + k + ", now " + k+1)
                     stateObj = await immer.produce(stateObj, (newState) => {
                         newState.gameMap[k+1] = "enemy";
                         newState.gameMap[k] = "empty";
@@ -236,7 +241,7 @@ async function moveEnemies() {
                     stateObj = await immer.produce(stateObj, (newState) => {
                         newState.enemyMovementArray[i] = "left";
                     })
-                    console.log("enemy  " + i + " switching to left at position " + k)
+                    //console.log("enemy  " + i + " switching to left at position " + k)
                 }   
             }
             // if (randomNumber > 0.5) {
@@ -565,7 +570,12 @@ document.addEventListener('keydown', async function(event) {
                   stateObj = await fireLaser(stateObj)
                   await changeState(stateObj)
               }
-          }
+          } else if (event.key === "p") {
+            //if (stateObj.numberLasers > 0) {
+                stateObj = await dropBlock(stateObj)
+                await changeState(stateObj)
+            //}
+        }
     }
   });
 
@@ -727,6 +737,11 @@ async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGai
         newState.currentFuel -= fuelToLose;
         newState.currentPosition = squareIndexToMoveTo;
 
+        if (newState.dirtReserves < 25 && newState.gameMap[squareIndexToMoveTo] !== "empty") {
+            console.log("giving dirt")
+            newState.dirtReserves += 1;
+        }
+
         if (goldToGain > 0) {
             if (newState.currentInventory < newState.inventoryMax) {
                 newState.inventoryCash += goldToGain;
@@ -790,11 +805,23 @@ async function fireLaser(stateObj) {
         newState.numberLasers -= 1;
     })
 
-    
-
     console.log("left blocks: " + leftBlocksToBlast)
     console.log("right blocks: " + rightBlocksToBlast)
 
     return stateObj
   
+}
+
+async function dropBlock(stateObj) {
+    console.log("dropping block")
+    if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty") {
+        console.log("below block is empty at position " + (stateObj.currentPosition + screenwidthBlocks))
+        stateObj = await immer.produce(stateObj, (newState) => {
+            if (newState.dirtReserves >= 25) {
+                newState.gameMap[stateObj.currentPosition+screenwidthBlocks] = "0";
+                newState.dirtReserves = 0;
+            }
+        })
+    }
+    return stateObj
 }
