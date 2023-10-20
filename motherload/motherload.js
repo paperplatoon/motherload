@@ -604,9 +604,11 @@ async function checkForDeath(stateObj) {
 }
 
 async function doDamage(stateObj, damageAmount) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.currentHullIntegrity -= damageAmount;
-    })
+    if (stateObj.inStore === false) {
+        stateObj = immer.produce(stateObj, (newState) => {
+            newState.currentHullIntegrity -= damageAmount;
+        })
+    }
     return stateObj
 }
 
@@ -650,14 +652,16 @@ async function RightArrow(stateObj, currentHeight, currentWidth, scrollHeight, s
 //check target square figures out 
 
 async function UpArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {
-    if (stateObj.currentPosition > 7 && stateObj.gameMap[stateObj.currentPosition - screenwidthBlocks]=== "empty") {
-        window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight - (scrollHeight*2))
-        stateObj = await calculateMoveChange(stateObj, -screenwidthBlocks)
-        stateObj = immer.produce(stateObj, (newState) => {
-            newState.currentFuel -= 0.25;
-        })
-        
-    }
+    let newSquare = stateObj.gameMap[stateObj.currentPosition - screenwidthBlocks]
+    if (stateObj.currentPosition > 7) {
+        if (newSquare=== "empty" || newSquare === "STORE") {
+            window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight - (scrollHeight*2))
+            stateObj = await calculateMoveChange(stateObj, -screenwidthBlocks)
+            stateObj = immer.produce(stateObj, (newState) => {
+                newState.currentFuel -= 0.25;
+            })
+        }
+    } 
     return stateObj
 }
 
