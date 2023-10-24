@@ -184,7 +184,7 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         // first 12 * 36 squares
-        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=0.94, isRelic=false)
+        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=0.985, isRelic=false)
         // tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false)
         // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
         // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
@@ -793,9 +793,19 @@ async function fireLaser(stateObj) {
     }
     stateObj = immer.produce(stateObj, (newState) => {
         if (leftBlocksToBlast > 0) {
+            if (newState.enemyArray.includes(newState.currentPosition - 1)) {
+                const enemyIndex = newState.enemyArray.indexOf(newState.currentPosition - 1)
+                newState.enemyArray.splice(enemyIndex, 1)
+                newState.enemyMovementArray.splice(enemyIndex, 1)
+            }
             newState.gameMap[newState.currentPosition - 1] = "empty"
         }
         if (leftBlocksToBlast >= 2) {
+            if (newState.enemyArray.includes(newState.currentPosition - 2)) {
+                const enemyIndex = newState.enemyArray.indexOf(newState.currentPosition - 2)
+                newState.enemyArray.splice(enemyIndex, 1)
+                newState.enemyMovementArray.splice(enemyIndex, 1)
+            }
             newState.gameMap[newState.currentPosition - 2] = "empty"
         }
 
