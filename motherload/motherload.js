@@ -35,13 +35,18 @@ let gameStartState = {
     dirtReserves: 0,
 
     enemyArray: [],
-    enemyMovementArray:[]
+    enemyMovementArray:[],
 
-
+    bombLocation: false,
+    bombTimer: false,
+    bombCapacity: 1,
+    bombCurrentTotal: 1,
 }
 
 fuelCapacityUpgrades = [50, 60, 70, 80, 90, 100, 110, 120, 150, 200]
 inventoryMaxUpgrades = [5, 8, 12, 17, 23, 30, 38, 47, 57]
+
+
 
 
 let state = {...gameStartState}
@@ -184,8 +189,8 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         // first 12 * 36 squares
-        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=0.985, isRelic=false)
-        // tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false)
+        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=0.998, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=false)
+        tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.65, 0.70, 0.90, 0.95, bar4=0.98, bar5=0.995, bar6=1, bar7=1, enemyBar=0.975, isRelic=false)
         // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
         // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
 
@@ -202,7 +207,7 @@ async function fillMapWithArray(stateObj) {
 }
 
 async function timeStuff() {
-    setInterval(moveEnemies, 1500); // 500 milliseconds (half a second)
+    setInterval(moveEnemies, 600); // 500 milliseconds (half a second)
 }
 
 timeStuff();
@@ -244,18 +249,30 @@ async function moveEnemies() {
                     //console.log("enemy  " + i + " switching to left at position " + k)
                 }   
             }
-            // if (randomNumber > 0.5) {
-            //     if (i % screenwidthBlocks !== 0 && (i+1) % screenwidthBlocks !== 0) {
-            //         stateObj = immer.produce(stateObj, (newState) => {
-            //             newState.gameMap[i]
-            //         })
-            //     }
-            // }
         }
-    
+
+
+        if (stateObj.bombLocation) {
+            if (stateObj.bombTimer > 0) {
+                console.log('counting down bomb timer from ' + stateObj.bombTimer)
+                stateObj = await immer.produce(stateObj, (newState) => {
+                    newState.bombTimer -= 1
+                })
+            } else {
+                stateObj = await fireLaser(stateObj, stateObj.bombLocation, isLaser=false)
+                stateObj = await immer.produce(stateObj, (newState) => {
+                    newState.gameMap[newState.bombLocation] = "empty"
+                    newState.bombTimer = false;
+                    newState.bombLocation = false;
+                    
+                })
+            }
+        }
+
     await changeState(stateObj)
     await checkForDeath(stateObj)
 }
+
 
 //renders all the map squares. 
 //To-DO: Need to set values for mapDiv and each map-square, including elements
@@ -302,6 +319,9 @@ async function renderScreen(stateObj) {
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
                 mapSquareDiv.textContent = "Store"
+            } else if (mapSquare === "BOMB") {
+                mapSquareDiv.classList.add("bomb")
+                mapSquareDiv.textContent = "Bomb"
             } else if (mapSquare === "fuelRelic") {
                 mapSquareDiv.classList.add("fuel-relic")
                 mapSquareDiv.textContent = "Fuel ++"
@@ -567,12 +587,17 @@ document.addEventListener('keydown', async function(event) {
             await checkForDeath(stateObj)
           } else if (event.key === "l") {
               if (stateObj.numberLasers > 0) {
-                  stateObj = await fireLaser(stateObj)
+                  stateObj = await fireLaser(stateObj, stateObj.currentPosition)
                   await changeState(stateObj)
               }
           } else if (event.key === "p") {
             //if (stateObj.numberLasers > 0) {
                 stateObj = await dropBlock(stateObj)
+                await changeState(stateObj)
+            //}
+        }else if (event.key === "b") {
+            //if (stateObj.numberLasers > 0) {
+                stateObj = await dropBomb(stateObj)
                 await changeState(stateObj)
             //}
         }
@@ -776,47 +801,58 @@ async function loseTheGame(textString) {
   }
 }
 
-async function fireLaser(stateObj) {
+async function fireLaser(stateObj, detonatePosition, isLaser=true) {
     //
     let leftBlocksToBlast = 0;
-    if ((stateObj.currentPosition-1) % screenwidthBlocks === 0 ) {
+    if ((detonatePosition-1) % screenwidthBlocks === 0 ) {
         leftBlocksToBlast = 1;
-    } else if (stateObj.currentPosition % screenwidthBlocks !== 0 ) {
+    } else if (detonatePosition % screenwidthBlocks !== 0 ) {
         leftBlocksToBlast = 2;
     }
 
     let rightBlocksToBlast = 0;
-    if ((stateObj.currentPosition+2) % screenwidthBlocks === 0) {
+    if ((detonatePosition+2) % screenwidthBlocks === 0) {
         rightBlocksToBlast = 1;
-    } else if ((stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
+    } else if ((detonatePosition+1) % screenwidthBlocks !== 0) {
         rightBlocksToBlast = 2;
     }
     stateObj = immer.produce(stateObj, (newState) => {
         if (leftBlocksToBlast > 0) {
-            if (newState.enemyArray.includes(newState.currentPosition - 1)) {
-                const enemyIndex = newState.enemyArray.indexOf(newState.currentPosition - 1)
+            if (newState.enemyArray.includes(detonatePosition - 1)) {
+                const enemyIndex = newState.enemyArray.indexOf(detonatePosition - 1)
                 newState.enemyArray.splice(enemyIndex, 1)
                 newState.enemyMovementArray.splice(enemyIndex, 1)
             }
-            newState.gameMap[newState.currentPosition - 1] = "empty"
+            newState.gameMap[detonatePosition - 1] = "empty"
         }
         if (leftBlocksToBlast >= 2) {
-            if (newState.enemyArray.includes(newState.currentPosition - 2)) {
-                const enemyIndex = newState.enemyArray.indexOf(newState.currentPosition - 2)
+            if (newState.enemyArray.includes(detonatePosition - 2)) {
+                const enemyIndex = newState.enemyArray.indexOf(detonatePosition - 2)
                 newState.enemyArray.splice(enemyIndex, 1)
                 newState.enemyMovementArray.splice(enemyIndex, 1)
             }
-            newState.gameMap[newState.currentPosition - 2] = "empty"
+            newState.gameMap[detonatePosition - 2] = "empty"
         }
 
         if (rightBlocksToBlast > 0) {
-            newState.gameMap[newState.currentPosition + 1] = "empty"
+            if (newState.enemyArray.includes(detonatePosition + 1)) {
+                const enemyIndex = newState.enemyArray.indexOf(detonatePosition + 1)
+                newState.enemyArray.splice(enemyIndex, 1)
+                newState.enemyMovementArray.splice(enemyIndex, 1)
+            }
+            newState.gameMap[detonatePosition + 1] = "empty"
         }
         if (rightBlocksToBlast >= 2) {
-            newState.gameMap[newState.currentPosition + 2] = "empty"
+            if (newState.enemyArray.includes(detonatePosition + 2)) {
+                const enemyIndex = newState.enemyArray.indexOf(detonatePosition + 2)
+                newState.enemyArray.splice(enemyIndex, 1)
+                newState.enemyMovementArray.splice(enemyIndex, 1)
+            }
+            newState.gameMap[detonatePosition + 2] = "empty"
         }
-
-        newState.numberLasers -= 1;
+        if (isLaser) {
+            newState.numberLasers -= 1;
+        }
     })
 
     console.log("left blocks: " + leftBlocksToBlast)
@@ -837,5 +873,21 @@ async function dropBlock(stateObj) {
             }
         })
     }
+    return stateObj
+}
+
+async function dropBomb(stateObj) {
+    console.log("dropping bomb")
+    if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty") {
+        stateObj = await immer.produce(stateObj, (newState) => {
+            if (newState.bombCurrentTotal > 0) {
+                newState.gameMap[stateObj.currentPosition+screenwidthBlocks] = "BOMB";
+                newState.bombCurrentTotal -= 1;
+                newState.bombLocation = stateObj.currentPosition+screenwidthBlocks
+                newState.bombTimer = 5;
+            }
+        })
+    }
+    console.log("bomb timer set to " + stateObj.bombTimer)
     return stateObj
 }
