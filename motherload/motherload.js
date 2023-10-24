@@ -41,6 +41,7 @@ let gameStartState = {
     bombTimer: false,
     bombCapacity: 1,
     bombCurrentTotal: 1,
+    bombCost: 200,
 }
 
 fuelCapacityUpgrades = [50, 60, 70, 80, 90, 100, 110, 120, 150, 200]
@@ -53,7 +54,7 @@ let state = {...gameStartState}
 
 let screenwidthBlocks = 10; 
 
-let introBlockSquare = 8
+let introBlockSquare = 4
 let middleBlockSquare = 20
 let totalSquareNumber = screenwidthBlocks * middleBlockSquare
 //let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
@@ -93,11 +94,11 @@ async function renderTopBarStats(stateObj) {
     topBarDiv.appendChild(fuelDiv)
 
     let hullDiv = document.createElement("Div")
-    hullDiv.textContent = "Hull Integrity: " + stateObj.currentHullIntegrity + "/" + stateObj.maxHullIntegrity
+    hullDiv.textContent = "Hull: " + stateObj.currentHullIntegrity + "/" + stateObj.maxHullIntegrity
     
 
     let cashDiv = document.createElement("Div")
-    cashDiv.textContent = "Available Funds: " + stateObj.bankedCash
+    cashDiv.textContent = "Money: " + stateObj.bankedCash
     
     let inventoryDiv = document.createElement("Div")
     inventoryDiv.classList.add("inventory")
@@ -109,12 +110,27 @@ async function renderTopBarStats(stateObj) {
     }
 
     let lasersDiv = document.createElement("Div")
-    lasersDiv.textContent = "Lasers: " + stateObj.numberLasers + "/" + stateObj.laserCapacity
+    laserString = "Lasers: " + stateObj.numberLasers + "/" + stateObj.laserCapacity
+    if (stateObj.numberLasers > 0) {
+        laserString = laserString + " (press L to fire)"
+    }
+    lasersDiv.textContent = laserString
+
+    let bombDiv = document.createElement("Div")
+    bombString = "Bombs: " + stateObj.bombCurrentTotal + "/" + stateObj.bombCapacity
+    if (stateObj.bombCurrentTotal > 0) {
+        bombString = bombString + " (press B to drop)"
+    }
+    bombDiv.textContent = bombString
 
     let dirtDiv = document.createElement("Div")
-    dirtDiv.textContent = "Dirt: " + Math.round((stateObj.dirtReserves/25)*100) + "%"
+    dirtString = "Dirt: " + Math.round((stateObj.dirtReserves/25)*100) + "%"
+    if (stateObj.dirtReserves > 24) {
+        dirtString = dirtString + " (press P to drop dirt)"
+    }
+    dirtDiv.textContent = dirtString
 
-    topBarDiv.append(fuelDiv, cashDiv, hullDiv, lasersDiv, dirtDiv, inventoryDiv)
+    topBarDiv.append(fuelDiv, cashDiv, hullDiv, lasersDiv, bombDiv, dirtDiv, inventoryDiv)
 
     return topBarDiv
 }
@@ -140,7 +156,8 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
         } else {
             let randomNumber = Math.random() 
             const isEnemy = Math.random()
-            if (isEnemy > enemyBar && (j % screenwidthBlocks !== 0) && ((j+1) % screenwidthBlocks !== 0) && j-1 !== chosenSquare) {
+            let enemyVal = (j < (screenwidthBlocks*3)) ? 1 : enemyBar
+            if (isEnemy > enemyVal && (j % screenwidthBlocks !== 0) && ((j+1) % screenwidthBlocks !== 0) && j-1 !== chosenSquare) {
                 arrayObj.pop()
                 arrayObj.push("empty")
                 arrayObj.push("enemy")
@@ -164,8 +181,6 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
                     arrayObj.push("2")
                 } else if (randomNumber > bar1) {
                     arrayObj.push("1")
-                } else if (randomNumber == 0.221) {
-                    arrayObj.push("enemy")
                 } else if (randomNumber > emptybar) {
                     arrayObj.push("empty")
                 } else {
@@ -189,8 +204,8 @@ async function fillMapWithArray(stateObj) {
             tempArray.push("empty")
         };
         // first 12 * 36 squares
-        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=0.998, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=false)
-        tempArray = ProduceBlockSquares(tempArray, introBlockSquare, 0.65, 0.70, 0.90, 0.95, bar4=0.98, bar5=0.995, bar6=1, bar7=1, enemyBar=0.975, isRelic=false)
+        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=0.998, bar5=1, bar6=1, bar7=1, enemyBar=0.985, isRelic=false)
+        //tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.70, 0.90, 0.95, bar4=0.98, bar5=0.995, bar6=1, bar7=1, enemyBar=0.975, isRelic=false)
         // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
         // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
 
@@ -321,7 +336,7 @@ async function renderScreen(stateObj) {
                 mapSquareDiv.textContent = "Store"
             } else if (mapSquare === "BOMB") {
                 mapSquareDiv.classList.add("bomb")
-                mapSquareDiv.textContent = "Bomb"
+                mapSquareDiv.textContent = stateObj.bombTimer
             } else if (mapSquare === "fuelRelic") {
                 mapSquareDiv.classList.add("fuel-relic")
                 mapSquareDiv.textContent = "Fuel ++"
@@ -429,6 +444,20 @@ async function renderScreen(stateObj) {
                 }
             }
         }
+
+        let buyBombDiv = document.createElement("Div")
+        if (stateObj.bombCurrentTotal < stateObj.bombCapacity) {
+            buyBombDiv.classList.add("store-option")
+            buyBombDiv.textContent = "Buy 1 bomb: " + stateObj.bombCost + " gold"
+            buyBombDiv.onclick = function () {
+            }
+            if (stateObj.bankedCash >= stateObj.bombCost) {
+                buyBombDiv.classList.add("store-clickable")
+                buyBombDiv.onclick = function () {
+                    buyBomb(stateObj)
+                }
+            }
+        }
         
     
         let buyNothingDiv = document.createElement("Div")
@@ -440,7 +469,7 @@ async function renderScreen(stateObj) {
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, fuelUpgradeDiv, inventoryUpgradeDiv, hullUpgradeDiv, laserUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, buyBombDiv, fuelUpgradeDiv, inventoryUpgradeDiv, hullUpgradeDiv, laserUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -545,6 +574,14 @@ async function buyLaser(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.numberLasers += 1;
         newState.bankedCash -= stateObj.laserCost
+    })
+    await changeState(stateObj);
+}
+
+async function buyBomb(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.bombCurrentTotal += 1;
+        newState.bankedCash -= stateObj.bombCost
     })
     await changeState(stateObj);
 }
