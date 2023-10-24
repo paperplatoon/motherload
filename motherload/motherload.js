@@ -21,7 +21,7 @@ let gameStartState = {
     laserCost: 200,
     laserUpgradeCost: 1000,
 
-    drillTime: 450,
+    drillTime: 850,
 
     //states
     currentPosition: false,
@@ -819,9 +819,9 @@ async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGai
     }) 
     if (pauseDuration > 0) {
         state.inTransition = true;
-        document.querySelectorAll(".map-square")[stateObj.currentPosition].classList.add("change-empty")
-        await pause(pauseDuration)   
-        document.querySelectorAll(".map-square")[stateObj.currentPosition].classList.remove("change-empty")
+        // document.querySelectorAll(".map-square")[stateObj.currentPosition].classList.add("change-empty")
+        // await pause(pauseDuration)   
+        // document.querySelectorAll(".map-square")[stateObj.currentPosition].classList.remove("change-empty")
         stateObj = immer.produce(stateObj, (newState) => {
             newState.inTransition = false;
         })    
