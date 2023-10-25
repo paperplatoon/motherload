@@ -44,6 +44,16 @@ let gameStartState = {
     bombCapacity: 1,
     bombCurrentTotal: 1,
     bombCost: 200,
+
+
+    currentLevel: 0,
+    barVals: [
+        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+    ],
+    enemyBarVal: 1,
 }
 
 fuelCapacityUpgrades = [50, 60, 70, 80, 90, 100, 110, 120, 150, 200]
@@ -57,7 +67,7 @@ let state = {...gameStartState}
 let screenwidthBlocks = 10; 
 
 let introBlockSquare = 4
-let middleBlockSquare = 20
+let middleBlockSquare = 10
 let totalSquareNumber = screenwidthBlocks * middleBlockSquare
 //let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
 
@@ -137,13 +147,8 @@ async function renderTopBarStats(stateObj) {
     return topBarDiv
 }
 
-function createArrayBlocks(numberRows, hasEnemies=true, discount=0) {
-            
-}
-
-function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, bar4=1, bar5=1, bar6=1, bar7=1, enemyBar=1, isRelic=false) {
+function ProduceBlockSquares(arrayObj, numberRows, stateObj, isRelic=false) {
     let chosenSquare = 50000
-    let stateObj = {...state}
     if (isRelic === true) {
         chosenSquare = Math.floor(Math.random() * screenwidthBlocks*numberRows);
     }
@@ -160,8 +165,9 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
         } else {
             let randomNumber = Math.random() 
             const isEnemy = Math.random()
-            let enemyVal = (j < (screenwidthBlocks*3)) ? 1 : enemyBar
+            let enemyVal = (j < (screenwidthBlocks*3)) ? 1 : stateObj.enemyBarVal
             if (isEnemy > enemyVal && (j % screenwidthBlocks !== 0) && ((j+1) % screenwidthBlocks !== 0) && j-1 !== chosenSquare) {
+                console.log("pyshing enemy")
                 arrayObj.pop()
                 arrayObj.push("empty")
                 arrayObj.push("enemy")
@@ -170,22 +176,23 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
                 state.enemyArray.push(j)
                 state.enemyMovementArray.push(direction)
                 nextSquareEmpty = true;
+                console.log("enemy pushed")
             } else {
-                if (randomNumber > bar7) {
+                if (randomNumber > stateObj.barVals[stateObj.currentLevel][0]) {
                     arrayObj.push("7")
-                } else if (randomNumber > bar6) {
+                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][1]) {
                     arrayObj.push("6")
-                } else if (randomNumber > bar5) {
+                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][2]) {
                     arrayObj.push("5")
-                } else if (randomNumber > bar4) {
+                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][3]) {
                     arrayObj.push("4")
-                } else if (randomNumber > bar3) {
+                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][4]) {
                     arrayObj.push("3")
-                } else if (randomNumber > bar2) {
+                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][5]) {
                     arrayObj.push("2")
-                } else if (randomNumber > bar1) {
+                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][6]) {
                     arrayObj.push("1")
-                } else if (randomNumber > emptybar) {
+                } else if (randomNumber > 0.55) {
                     arrayObj.push("empty")
                 } else {
                     arrayObj.push("0")
@@ -193,19 +200,28 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
             }
         }  
     }
-    const enemy1 = Math.floor(Math.random() * screenwidthBlocks)
-    const enemy2 = Math.floor(Math.random() * screenwidthBlocks)
-    for (let j=0; j < (screenwidthBlocks); j++) {
-        if (j === enemy1 ) {
-            arrayObj.push("enemy")
-            state.enemyArray.push(j+middleLength)
-            state.enemyMovementArray.push("right")
-        } else if (j === enemy2 ) {
-            arrayObj.push("enemy")
-            state.enemyArray.push(j+middleLength)
-            state.enemyMovementArray.push("left")
-        } else {
-            arrayObj.push("empty")
+    console.log("doing enemies")
+    let enemy1 = Math.floor(Math.random() * screenwidthBlocks)
+    let enemy2 = Math.floor(Math.random() * screenwidthBlocks)
+    console.log("enemy randoms assigned")
+    if (stateObj.currentLevel === 0) {
+        for (let j=0; j < (screenwidthBlocks); j++) {
+            console.log("calling inner loop")
+            if (j === enemy1 ) {
+                console.log("assigning enemy")
+                arrayObj.push("enemy")
+                console.log("pushing to enemyArray")
+                state.enemyArray.push(j+middleLength)
+                console.log("pushing to movement array")
+                state.enemyMovementArray.push("right")
+                console.log("enemy assigned")
+            } else if (j === enemy2 ) {
+                arrayObj.push("enemy")
+                state.enemyArray.push(j+middleLength)
+                state.enemyMovementArray.push("left")
+            } else {
+                arrayObj.push("empty")
+            }
         }
     }
     middleLength += screenwidthBlocks
@@ -222,21 +238,24 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
 }
 
 
+async function returnArrayObject(stateObj) {
+    console.log('inside returnArray')
+    tempArray = ["STORE"];
+    for (let i=0; i<screenwidthBlocks-1; i++ ) {
+        tempArray.push("empty")
+    };
+    console.log('About to call produceblocksquares')
+    tempArray = await ProduceBlockSquares(tempArray, middleBlockSquare, stateObj, isRelic=false)
+    console.log('called produceblocksquares')
+    return tempArray
+}
 
 //takes a stateObj, and if the gameMap is not created, creates it
-function fillMapWithArray(stateObj) {
+async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
     if (stateObj.gameMap.length === 0) {
-        tempArray = ["STORE"];
-        for (let i=0; i<screenwidthBlocks-1; i++ ) {
-            tempArray.push("empty")
-        };
-        // first 12 * 36 squares
-        tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.6, 0.75, 0.93, 0.98, bar4=0.998, bar5=1, bar6=1, bar7=1, enemyBar=0.985, isRelic=false)
-        //tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.70, 0.90, 0.95, bar4=0.98, bar5=0.995, bar6=1, bar7=1, enemyBar=0.975, isRelic=false)
-        // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.65, 0.75, 0.88, 0.95, bar4=0.99, bar5=1, bar6=1, bar7=1, enemyBar=0.99, isRelic=true)
-        // tempArray = ProduceBlockSquares(tempArray, middleBlockSquare, 0.64, 0.72, 0.77, 0.87, bar4=0.955, bar5=98, bar6=1, bar7=1, enemyBar=0.96, isRelic=true)
-
+        tempArray = await returnArrayObject(stateObj)
+      
         stateObj.gameMap = tempArray;
 
         if (stateObj.currentPosition === false) {
@@ -249,11 +268,10 @@ function fillMapWithArray(stateObj) {
     return stateObj
 }
 
-async function timeStuff() {
-    setInterval(moveEnemies, 600); // 500 milliseconds (half a second)
-}
 
-timeStuff();
+var enemyMovementTimer = setInterval(moveEnemies, 600); // 500 milliseconds (half a second)
+
+
 
 async function moveEnemies() {
     let stateObj = {...state}
@@ -829,18 +847,24 @@ async function seeStore(stateObj) {
 }
 
 async function goToNextLevel(stateObj) {
+    console.log('inside gtnl')
+    clearInterval(enemyMovementTimer)
+    console.log('interval cleared')
     stateObj = await immer.produce(stateObj, async (newState) => {
-        newState.bankedCash += newState.inventoryCash;
-        newState.inventoryCash = 0;
-        newState.currentInventory = 0;
+        newState.currentLevel += 1;
+        newState.enemyArray = [];
+        newState.enemyMovementArray = [];
+    })
+    console.log('first immer done')
+    let newArray = await returnArrayObject(stateObj)
+    console.log('new array generated with length ' + newArray.length)
+    stateObj = await immer.produce(stateObj, async (newState) => {
+        newState.gameMap = [...newArray];
+        newState.currentPosition = 5;
     })
 
-    let confirmText = ` You won! Click OK to play again`
-    var confirmation = confirm(confirmText);
-
-    if (confirmation) {
-        location.reload();
-    }
+    console.log('second immer done, game map length is ' + stateObj.gameMap.length)
+    stateObj = await changeState(stateObj)
     console.log("you are about to return the stateObj from goToNextLevel")
     return stateObj
 }
