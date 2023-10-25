@@ -1,3 +1,5 @@
+
+
 let gameStartState = {
     gameMap: [],
 
@@ -147,7 +149,9 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
     }
     
     let nextSquareEmpty = false;
-    for (let j=10; j < (screenwidthBlocks*numberRows) + 10; j++) {
+    //the top row is already reserved for store and empty space
+    let middleLength = (screenwidthBlocks*numberRows) + (screenwidthBlocks);
+    for (let j=screenwidthBlocks; j < middleLength; j++) {
         if (j === chosenSquare) {
             arrayObj.push("fuelRelic")
         } else if (nextSquareEmpty === true){
@@ -189,6 +193,30 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
             }
         }  
     }
+    const enemy1 = Math.floor(Math.random() * screenwidthBlocks)
+    const enemy2 = Math.floor(Math.random() * screenwidthBlocks)
+    for (let j=0; j < (screenwidthBlocks); j++) {
+        if (j === enemy1 ) {
+            arrayObj.push("enemy")
+            state.enemyArray.push(j+middleLength)
+            state.enemyMovementArray.push("right")
+        } else if (j === enemy2 ) {
+            arrayObj.push("enemy")
+            state.enemyArray.push(j+middleLength)
+            state.enemyMovementArray.push("left")
+        } else {
+            arrayObj.push("empty")
+        }
+    }
+    middleLength += screenwidthBlocks
+    const exit = Math.floor(Math.random() * screenwidthBlocks)
+    for (let j=0; j < (screenwidthBlocks); j++) {
+        if (j === exit ) {
+            arrayObj.push("EXIT")
+        } else {
+            arrayObj.push("0")
+        }
+    }
     console.log("produce squares array enemy length is " + state.enemyMovementArray.length)
     return arrayObj
 }
@@ -196,7 +224,7 @@ function ProduceBlockSquares(arrayObj, numberRows, emptybar, bar1, bar2, bar3, b
 
 
 //takes a stateObj, and if the gameMap is not created, creates it
-async function fillMapWithArray(stateObj) {
+function fillMapWithArray(stateObj) {
     console.log("filling the Map")
     if (stateObj.gameMap.length === 0) {
         tempArray = ["STORE"];
@@ -290,6 +318,7 @@ async function moveEnemies() {
 
 
 //renders all the map squares. 
+//Can set this to 0 in exitDoor
 //To-DO: Need to set values for mapDiv and each map-square, including elements
 async function renderScreen(stateObj) {
     //console.log("rendering Screen")
@@ -334,6 +363,9 @@ async function renderScreen(stateObj) {
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
                 mapSquareDiv.textContent = "Store"
+            } else if (mapSquare === "EXIT") {
+                mapSquareDiv.classList.add("exit")
+                mapSquareDiv.textContent = "EXIT"
             } else if (mapSquare === "BOMB") {
                 mapSquareDiv.classList.add("bomb")
                 mapSquareDiv.textContent = stateObj.bombTimer
@@ -646,8 +678,6 @@ async function checkForDeath(stateObj) {
         await loseTheGame("You've run out of fuel!");
     }
 
-    console.log("current position " + stateObj.currentPosition)
-
     if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % screenwidthBlocks !== 0) {
         stateObj = await doDamage(stateObj, 50)
     } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition-15) % screenwidthBlocks !== 0) {
@@ -762,6 +792,8 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1, 0)
     } else if (targetSquare === "STORE") {
         stateObj = await seeStore(stateObj)
+    } else if (targetSquare === "EXIT") {
+        stateObj = await goToNextLevel(stateObj)
     } else if (targetSquare === "fuelRelic") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime)
         stateObj = await upgradeFuelRelic(stateObj)
@@ -793,7 +825,23 @@ async function seeStore(stateObj) {
 
         newState.inStore = true;
     })
-     
+    return stateObj
+}
+
+async function goToNextLevel(stateObj) {
+    stateObj = await immer.produce(stateObj, async (newState) => {
+        newState.bankedCash += newState.inventoryCash;
+        newState.inventoryCash = 0;
+        newState.currentInventory = 0;
+    })
+
+    let confirmText = ` You won! Click OK to play again`
+    var confirmation = confirm(confirmText);
+
+    if (confirmation) {
+        location.reload();
+    }
+    console.log("you are about to return the stateObj from goToNextLevel")
     return stateObj
 }
 
@@ -804,7 +852,6 @@ async function handleSquare(stateObj, squareIndexToMoveTo, fuelToLose, goldToGai
         newState.currentPosition = squareIndexToMoveTo;
 
         if (newState.dirtReserves < 25 && newState.gameMap[squareIndexToMoveTo] !== "empty") {
-            console.log("giving dirt")
             newState.dirtReserves += 1;
         }
 
@@ -891,10 +938,6 @@ async function fireLaser(stateObj, detonatePosition, isLaser=true) {
             newState.numberLasers -= 1;
         }
     })
-
-    console.log("left blocks: " + leftBlocksToBlast)
-    console.log("right blocks: " + rightBlocksToBlast)
-
     return stateObj
   
 }
@@ -902,7 +945,6 @@ async function fireLaser(stateObj, detonatePosition, isLaser=true) {
 async function dropBlock(stateObj) {
     console.log("dropping block")
     if (stateObj.gameMap[stateObj.currentPosition + screenwidthBlocks] === "empty") {
-        console.log("below block is empty at position " + (stateObj.currentPosition + screenwidthBlocks))
         stateObj = await immer.produce(stateObj, (newState) => {
             if (newState.dirtReserves >= 25) {
                 newState.gameMap[stateObj.currentPosition+screenwidthBlocks] = "0";
