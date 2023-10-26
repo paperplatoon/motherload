@@ -384,6 +384,10 @@ async function renderScreen(stateObj) {
 
             if (stateObj.currentPosition === squareIndex) {
                 mapSquareDiv.classList.add("player-here")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("player-img")
+                mapSquareImg.src = "img/miner1.png"
+                mapSquareDiv.append(mapSquareImg)
             }
             
             if (mapSquare === "0") {
@@ -392,6 +396,10 @@ async function renderScreen(stateObj) {
                 mapSquareDiv.classList.add("empty")
             } else if (mapSquare === "enemy") {
                 mapSquareDiv.classList.add("enemy")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("enemy-img")
+                mapSquareImg.src = "img/enemy1.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "1") {
                 mapSquareDiv.classList.add("bronze")
             } else if (mapSquare === "2") {
