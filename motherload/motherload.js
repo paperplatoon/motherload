@@ -24,6 +24,7 @@ let gameStartState = {
     laserUpgradeCost: 1000,
 
     drillTime: 850,
+    timeCounter: 0,
 
     //states
     currentPosition: false,
@@ -251,7 +252,23 @@ async function fillMapWithArray(stateObj) {
 
     }
     await updateState(stateObj)
-    console.log(stateObj.currentPosition)
+    let tempEnemyArray = []
+    let tempEnemyMovementArray = []
+    for (i = 0; i < stateObj.gameMap.length; i++) {
+        console.log("map square " + i + " has content " + stateObj.gameMap[i])
+        if (stateObj.gameMap[i] === "enemy") {
+            console.log("found an enemy at square " + i)
+            let direction = (Math.random > 0.5) ? "left" : "right";
+            tempEnemyArray.push(i)
+            tempEnemyMovementArray.push(direction)
+        }
+    }
+    stateObj = await immer.produce(stateObj, (newState) => {
+        newState.enemyArray = tempEnemyArray;
+        newState.enemyMovementArray = tempEnemyMovementArray;
+    })
+    await updateState(stateObj)
+    console.log("enemy array is " + stateObj.enemyArray)
     return stateObj
 }
 
@@ -262,6 +279,15 @@ var enemyMovementTimer = setInterval(moveEnemies, 600); // 500 milliseconds (hal
 
 async function moveEnemies() {
     let stateObj = {...state}
+    if (stateObj.timeCounter === 0) {
+        console.log("calling fillMap function")
+        stateObj = await fillMapWithArray(stateObj)
+        await updateState(stateObj)
+    }
+    stateObj = await immer.produce(stateObj, (newState) => {
+        newState.timeCounter += 1;
+    })
+    await updateState(stateObj)
     // console.log("number of enemies is " + stateObj.enemyMovementArray.length)
     // console.log("enemy positions are " + stateObj.enemyArray)
     for (let i=0; i < stateObj.enemyArray.length; i++) {
@@ -327,11 +353,6 @@ async function moveEnemies() {
 //To-DO: Need to set values for mapDiv and each map-square, including elements
 async function renderScreen(stateObj) {
     //console.log("rendering Screen")
-    if (stateObj.gameMap.length === 0) {
-        console.log("calling fillMap function")
-        stateObj = await fillMapWithArray(stateObj)
-        await updateState(stateObj)
-    }
 
     document.getElementById("app").innerHTML = ""
     //create a mapDiv to append all your new squares to
@@ -629,8 +650,6 @@ async function buyBomb(stateObj) {
 async function startGame(state) {
     
 }
-
-renderScreen(state)
 
 
 
