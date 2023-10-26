@@ -31,8 +31,8 @@ let gameStartState = {
     inStore: false,
     inTransition: false,  
     
-    currentHullIntegrity: 100,
-    maxHullIntegrity: 100,
+    currentHullIntegrity: 1000,
+    maxHullIntegrity: 1000,
     hullUpgradeCost: 1000,
 
     dirtReserves: 0,
@@ -48,13 +48,29 @@ let gameStartState = {
 
 
     currentLevel: 0,
-    barVals: [
-        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
-        [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
-        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
-        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+    floorValues: [
+        {
+            barVals: [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+            enemyValue: 0.97,
+            numberRows: 20,
+            hasRelic: false,
+            floorNumber: 0
+        },
+        {
+            barVals: [1, 0.999, 0.997, 0.99, 0.95, 0.80, 0.7],
+            enemyValue: 0.95,
+            numberRows: 20,
+            hasRelic: false,
+            floorNumber: 1
+        },
+        {
+            barVals: [1, 0.997, 0.99, 0.95, 0.9, 0.80, 0.7],
+            enemyValue: 0.95,
+            numberRows: 20,
+            hasRelic: true,
+            floorNumber: 1
+        },
     ],
-    enemyBarVal: 0.985,
 }
 
 fuelCapacityUpgrades = [50, 60, 70, 80, 90, 100, 110, 120, 150, 200]
@@ -154,13 +170,14 @@ async function renderTopBarStats(stateObj) {
 
 function ProduceBlockSquares(arrayObj, numberRows, stateObj, isRelic=false) {
     let chosenSquare = 50000
-    if (isRelic === true) {
+    let floorObj = stateObj.floorValues[stateObj.currentLevel]
+    if (floorObj.hasRelic === true) {
         chosenSquare = Math.floor(Math.random() * screenwidthBlocks*numberRows);
     }
     
     let nextSquareEmpty = false;
     //the top row is already reserved for store and empty space
-    let middleLength = (screenwidthBlocks*numberRows) + (screenwidthBlocks);
+    let middleLength = (screenwidthBlocks*floorObj.numberRows) + (screenwidthBlocks);
     for (let j=screenwidthBlocks; j < middleLength; j++) {
         if (j === chosenSquare) {
             arrayObj.push("fuelRelic")
@@ -170,26 +187,26 @@ function ProduceBlockSquares(arrayObj, numberRows, stateObj, isRelic=false) {
         } else {
             let randomNumber = Math.random() 
             const isEnemy = Math.random()
-            let enemyVal = (j < (screenwidthBlocks*3)) ? 1 : stateObj.enemyBarVal
+            let enemyVal = (j < (screenwidthBlocks*3)) ? 1 : floorObj.enemyValue
             if (isEnemy > enemyVal && (j % screenwidthBlocks !== 0) && ((j+1) % screenwidthBlocks !== 0) && j-1 !== chosenSquare) {
                 arrayObj.pop()
                 arrayObj.push("empty")
                 arrayObj.push("enemy")
                 nextSquareEmpty = true;
             } else {
-                if (randomNumber > stateObj.barVals[stateObj.currentLevel][0]) {
+                if (randomNumber > floorObj.barVals[0]) {
                     arrayObj.push("7")
-                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][1]) {
+                } else if (randomNumber > floorObj.barVals[1]) {
                     arrayObj.push("6")
-                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][2]) {
+                } else if (randomNumber > floorObj.barVals[2]) {
                     arrayObj.push("5")
-                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][3]) {
+                } else if (randomNumber > floorObj.barVals[3]) {
                     arrayObj.push("4")
-                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][4]) {
+                } else if (randomNumber > floorObj.barVals[4]) {
                     arrayObj.push("3")
-                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][5]) {
+                } else if (randomNumber > floorObj.barVals[5]) {
                     arrayObj.push("2")
-                } else if (randomNumber > stateObj.barVals[stateObj.currentLevel][6]) {
+                } else if (randomNumber > floorObj.barVals[6]) {
                     arrayObj.push("1")
                 } else if (randomNumber > 0.55) {
                     arrayObj.push("empty")
