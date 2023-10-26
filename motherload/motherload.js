@@ -50,7 +50,7 @@ let gameStartState = {
     currentLevel: 0,
     barVals: [
         [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
-        [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+        [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
         [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
         [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
     ],
@@ -68,7 +68,7 @@ let state = {...gameStartState}
 let screenwidthBlocks = 10; 
 
 let introBlockSquare = 4
-let middleBlockSquare = 10
+let middleBlockSquare = 16
 let totalSquareNumber = screenwidthBlocks * middleBlockSquare
 //let totalSquareNumber = introBlockSquare + middleBlockSquare + middleBlockSquare + middleBlockSquare
 
@@ -242,7 +242,6 @@ async function returnArrayObject(stateObj) {
 //takes a stateObj, and if the gameMap is not created, creates it
 async function fillMapWithArray(stateObj) {
     console.log("filling the Map")
-    if (stateObj.gameMap.length === 0) {
         tempArray = await returnArrayObject(stateObj)
 
         stateObj = await immer.produce(stateObj, (newState) => {
@@ -250,7 +249,6 @@ async function fillMapWithArray(stateObj) {
             newState.currentPosition = 2;
         })
 
-    }
     await updateState(stateObj)
     let tempEnemyArray = []
     let tempEnemyMovementArray = []
@@ -859,18 +857,15 @@ async function seeStore(stateObj) {
 
 async function goToNextLevel(stateObj) {
     console.log('inside gtnl')
-    clearInterval(enemyMovementTimer)
     console.log('interval cleared')
     stateObj = await immer.produce(stateObj, async (newState) => {
         newState.currentLevel += 1;
-        newState.enemyArray = [];
-        newState.enemyMovementArray = [];
+        newState.timeCounter = 0;
     })
     console.log('first immer done')
-    let newArray = await returnArrayObject(stateObj)
+    stateObj = await fillMapWithArray(stateObj)
     console.log('new array generated with length ' + newArray.length)
     stateObj = await immer.produce(stateObj, async (newState) => {
-        newState.gameMap = [...newArray];
         newState.currentPosition = 5;
     })
 
