@@ -50,7 +50,7 @@ let gameStartState = {
     currentLevel: 0,
     floorValues: [
         {
-            barVals: [1, 1, 0.999, 0.997, 0.97, 0.85, 0.7],
+            barVals: [1, 1, 0.999, 0.995, 0.99, 0.91, 0.71],
             enemyValue: 0.97,
             numberRows: 20,
             hasRelic: false,
@@ -392,6 +392,10 @@ async function renderScreen(stateObj) {
             
             if (mapSquare === "0") {
                 mapSquareDiv.classList.add("dirt")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("dirt-img")
+                mapSquareImg.src = "img/dirt.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "empty") {
                 mapSquareDiv.classList.add("empty")
             } else if (mapSquare === "enemy") {
@@ -402,14 +406,34 @@ async function renderScreen(stateObj) {
                 mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "1") {
                 mapSquareDiv.classList.add("bronze")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("bronze-img")
+                mapSquareImg.src = "img/bronze.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "2") {
                 mapSquareDiv.classList.add("silver")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("silver-img")
+                mapSquareImg.src = "img/silver.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "3") {
                 mapSquareDiv.classList.add("gold")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("gold-img")
+                mapSquareImg.src = "img/gold.png"
+                mapSquareDiv.append(mapSquareImg)
             }  else if (mapSquare === "4") {
-                mapSquareDiv.classList.add("platinum")
+                mapSquareDiv.classList.add("ruby")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("ruby-img")
+                mapSquareImg.src = "img/ruby.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "5") {
                 mapSquareDiv.classList.add("amethyst")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("amethyst-img")
+                mapSquareImg.src = "img/amethyst.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
                 mapSquareDiv.textContent = "Store"

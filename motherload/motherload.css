@@ -29,32 +29,13 @@
     height: 10vh;
     background-color: rgb(200, 115, 70);
     transition: background-color 1500ms ease-out;
-    border: 0.5px solid rgba(97, 48, 0, 0.756);
+    /* border: 0.5px solid rgba(97, 48, 0, 0.756); */
   }
 
   .bronze, .silver, .gold, .platinum, .amethyst {
     position: relative;
   }
 
-  .bronze:after, .silver:after, .gold:after, .platinum:after, .amethyst:after {
-    content: '';
-    width: 60%;
-    height: 30%;
-    border: solid 1px #fff;
-    position: absolute;
-    background-color: rgb(136, 78, 8);
-    left: 20%;
-    top: 35%;
-    z-index: 1;
-}
-
-.platinum:after, .amethyst:after {
-  width: 50%;
-  height: 50%;
-  left: 25%;
-  top: 25%;
-  border-radius: 100%;
-}
 
 .bronze:after {
   background-color: rgb(136, 78, 8);
@@ -68,13 +49,6 @@
   background-color: rgb(255, 220, 24);
 }
 
-.platinum:after { 
-  background-image: radial-gradient(rgb(157, 255, 255) 0%, rgb(38, 255, 255) 20%, rgb(131, 206, 193) 40%);
-}
-
-.amethyst:after {
-  background-image: radial-gradient(rgb(209, 171, 252) 0%, rgb(197, 38, 255) 20%, rgb(132, 23, 194) 40%);
-}
 
   .enemy {
     position: relative;
@@ -111,7 +85,7 @@
 
   .empty {
     background-color: black;
-    border: 0.5px solid rgba(0, 0, 0, 0);
+    /* border: 0.5px solid rgba(0, 0, 0, 0); */
   }
 
   .store {
@@ -131,14 +105,12 @@
     width: 9.5vw;
     height: 10vh;
     object-fit: contain;
-
   }
 
-  .enemy-img {
+  .bronze-img, .enemy-img, .dirt-img, .silver-img, .gold-img, .ruby-img, .amethyst-img {
     width: 9.5vw;
     height: 10vh;
-    object-fit: contain;
-
+    object-fit: cover;
   }
 
   .change-empty {
