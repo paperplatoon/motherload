@@ -107,7 +107,7 @@
     object-fit: contain;
   }
 
-  .bronze-img, .enemy-img, .dirt-img, .silver-img, .gold-img, .ruby-img, .amethyst-img {
+  .bronze-img, .enemy-img, .dirt-img, .silver-img, .gold-img, .ruby-img, .amethyst-img, .diamond-img, .blkdiamond-img {
     width: 9.5vw;
     height: 10vh;
     object-fit: cover;

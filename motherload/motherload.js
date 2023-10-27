@@ -15,13 +15,14 @@ let gameStartState = {
     inventoryUpgradeCost: 500,
     
 
-    bankedCash: 100,
+    bankedCash: 1000,
     inventoryCash: 0, 
     
     numberLasers: 0,
     laserCapacity: 1,
     laserCost: 200,
     laserUpgradeCost: 1000,
+    laserDistance: 2,
 
     drillTime: 850,
     timeCounter: 0,
@@ -31,8 +32,8 @@ let gameStartState = {
     inStore: false,
     inTransition: false,  
     
-    currentHullIntegrity: 1000,
-    maxHullIntegrity: 1000,
+    currentHullIntegrity: 100,
+    maxHullIntegrity: 100,
     hullUpgradeCost: 1000,
 
     dirtReserves: 0,
@@ -44,32 +45,49 @@ let gameStartState = {
     bombTimer: false,
     bombCapacity: 1,
     bombCurrentTotal: 1,
+    bombUpgradeCost: 1000,
+    bombDistance: 3,
     bombCost: 200,
 
 
     currentLevel: 0,
     floorValues: [
         {
-            barVals: [1, 1, 0.999, 0.995, 0.99, 0.91, 0.71],
-            enemyValue: 0.97,
+            barVals: [1, 1, 1, 0.997, 0.99, 0.9, 0.65],
+            enemyValue: 0.965,
             numberRows: 20,
             hasRelic: false,
             floorNumber: 0
         },
         {
-            barVals: [1, 0.999, 0.997, 0.99, 0.95, 0.80, 0.7],
+            barVals: [1, 0.999, 0.997, 0.99, 0.95, 0.80, 0.65],
             enemyValue: 0.95,
             numberRows: 20,
             hasRelic: false,
             floorNumber: 1
         },
         {
-            barVals: [1, 0.997, 0.99, 0.95, 0.9, 0.80, 0.7],
-            enemyValue: 0.95,
+            barVals: [1, 0.997, 0.99, 0.95, 0.85, 0.75, 0.7],
+            enemyValue: 0.93,
             numberRows: 20,
             hasRelic: true,
-            floorNumber: 1
+            floorNumber: 2
         },
+        {
+            barVals: [0.999, 0.99, 0.96, 0.9, 0.8, 0.72, 0.7],
+            enemyValue: 0.9,
+            numberRows: 20,
+            hasRelic: true,
+            floorNumber: 3
+        },
+        {
+            barVals: [0.99, 0.97, 0.91, 0.85, 0.77, 0.73, 0.7],
+            enemyValue: 0.87,
+            numberRows: 20,
+            hasRelic: true,
+            floorNumber: 4
+        },
+        
     ],
 }
 
@@ -434,6 +452,18 @@ async function renderScreen(stateObj) {
                 mapSquareImg.classList.add("amethyst-img")
                 mapSquareImg.src = "img/amethyst.png"
                 mapSquareDiv.append(mapSquareImg)
+            } else if (mapSquare === "6") {
+                mapSquareDiv.classList.add("diamond")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("diamond-img")
+                mapSquareImg.src = "img/diamond.png"
+                mapSquareDiv.append(mapSquareImg)
+            }  else if (mapSquare === "7") {
+                mapSquareDiv.classList.add("blkdiamond")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("blkdiamond-img")
+                mapSquareImg.src = "img/blkdiamond.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
                 mapSquareDiv.textContent = "Store"
@@ -476,6 +506,17 @@ async function renderScreen(stateObj) {
             laserUpgradeDiv.classList.add("store-clickable")
             laserUpgradeDiv.onclick = function () {
                 laserUpgrade(stateObj)
+            }
+          }
+
+          let bombUpgradeDiv = document.createElement("Div")
+          bombUpgradeDiv.classList.add("store-option")
+          bombUpgradeDiv.classList.add("bomb-upgrade-store")
+          bombUpgradeDiv.textContent = "Bomb Capacity Upgrade: " + stateObj.bombUpgradeCost + " gold"
+        if (stateObj.bankedCash >= stateObj.bombUpgradeCost) {
+            bombUpgradeDiv.classList.add("store-clickable")
+            bombUpgradeDiv.onclick = function () {
+                bombUpgrade(stateObj)
             }
           }
 
@@ -575,7 +616,7 @@ async function renderScreen(stateObj) {
             leaveStore(stateObj)
           }
 
-        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, buyBombDiv, fuelUpgradeDiv, inventoryUpgradeDiv, hullUpgradeDiv, laserUpgradeDiv, buyNothingDiv)
+        storeDiv.append(fillFuelDiv, repairDiv, buyLaserDiv, buyBombDiv, fuelUpgradeDiv, inventoryUpgradeDiv, hullUpgradeDiv, laserUpgradeDiv, bombUpgradeDiv, buyNothingDiv)
 
 
         let testDiv = document.createElement("Div")
@@ -632,6 +673,16 @@ async function laserUpgrade(stateObj) {
     await changeState(stateObj);
 }
 
+async function bombUpgrade(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.bombCapacity += 1;
+        newState.bombCurrentTotal += 1;
+        newState.bankedCash -= stateObj.bombUpgradeCost
+        newState.bombUpgradeCost += 1000;
+    })
+    await changeState(stateObj);
+}
+
 async function upgradeFuel(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.fuelCapacity += 50;
@@ -649,7 +700,6 @@ async function upgradeFuelRelic(stateObj) {
         newState.fuelCapacity += 80;
         newState.currentFuel += 80;
         newState.fuelUpgrades +=1;
-
     })
     await changeState(stateObj);
     return stateObj
@@ -917,9 +967,11 @@ async function goToNextLevel(stateObj) {
     stateObj = await immer.produce(stateObj, async (newState) => {
         newState.currentPosition = 5;
     })
-
+    //window.scrollTo(0, 0)
     console.log('second immer done, game map length is ' + stateObj.gameMap.length)
     stateObj = await changeState(stateObj)
+    var mapDiv = document.getElementById('app')
+    mapDiv.scrollTop = 0
     console.log("you are about to return the stateObj from goToNextLevel")
     return stateObj
 }
@@ -965,60 +1017,48 @@ async function loseTheGame(textString) {
 }
 
 async function fireLaser(stateObj, detonatePosition, isLaser=true) {
-    //
-    let leftBlocksToBlast = 0;
-    if ((detonatePosition-1) % screenwidthBlocks === 0 ) {
-        leftBlocksToBlast = 1;
-    } else if (detonatePosition % screenwidthBlocks !== 0 ) {
-        leftBlocksToBlast = 2;
-    }
-
     let rightBlocksToBlast = 0;
-    if ((detonatePosition+2) % screenwidthBlocks === 0) {
-        rightBlocksToBlast = 1;
-    } else if ((detonatePosition+1) % screenwidthBlocks !== 0) {
-        rightBlocksToBlast = 2;
+    let leftBlocksToBlast = 0;
+    let numberBlocks = (isLaser === true) ? stateObj.laserDistance : stateObj.bombDistance
+    for (i=0; i < numberBlocks+1; i++) {
+        leftBlocksToBlast = i;
+        if ((detonatePosition-i) % screenwidthBlocks === 0) {
+            break;
+        }
     }
-    stateObj = immer.produce(stateObj, (newState) => {
-        if (leftBlocksToBlast > 0) {
-            if (newState.enemyArray.includes(detonatePosition - 1)) {
-                const enemyIndex = newState.enemyArray.indexOf(detonatePosition - 1)
-                newState.enemyArray.splice(enemyIndex, 1)
-                newState.enemyMovementArray.splice(enemyIndex, 1)
-            }
-            newState.gameMap[detonatePosition - 1] = "empty"
+    for (i=0; i < numberBlocks+1; i++) {
+        rightBlocksToBlast = i;
+        if ((detonatePosition+i+1) % screenwidthBlocks === 0) {
+            break;
         }
-        if (leftBlocksToBlast >= 2) {
-            if (newState.enemyArray.includes(detonatePosition - 2)) {
-                const enemyIndex = newState.enemyArray.indexOf(detonatePosition - 2)
-                newState.enemyArray.splice(enemyIndex, 1)
-                newState.enemyMovementArray.splice(enemyIndex, 1)
-            }
-            newState.gameMap[detonatePosition - 2] = "empty"
-        }
+    }
+    
+    for (i=1; i < leftBlocksToBlast+1; i++) {
+        stateObj = await detonateBlock(stateObj, detonatePosition-i)
+    }
 
-        if (rightBlocksToBlast > 0) {
-            if (newState.enemyArray.includes(detonatePosition + 1)) {
-                const enemyIndex = newState.enemyArray.indexOf(detonatePosition + 1)
-                newState.enemyArray.splice(enemyIndex, 1)
-                newState.enemyMovementArray.splice(enemyIndex, 1)
-            }
-            newState.gameMap[detonatePosition + 1] = "empty"
-        }
-        if (rightBlocksToBlast >= 2) {
-            if (newState.enemyArray.includes(detonatePosition + 2)) {
-                const enemyIndex = newState.enemyArray.indexOf(detonatePosition + 2)
-                newState.enemyArray.splice(enemyIndex, 1)
-                newState.enemyMovementArray.splice(enemyIndex, 1)
-            }
-            newState.gameMap[detonatePosition + 2] = "empty"
-        }
-        if (isLaser) {
+    for (i=1; i < rightBlocksToBlast+1; i++) {
+        stateObj = await detonateBlock(stateObj, detonatePosition+i)
+    }
+
+    if (isLaser) {
+        stateObj = immer.produce(stateObj, (newState) => {
             newState.numberLasers -= 1;
+        })
+    }
+    return stateObj
+}
+
+async function detonateBlock(stateObj, blockPosition) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        if (newState.enemyArray.includes(blockPosition)) {
+            const enemyIndex = newState.enemyArray.indexOf(blockPosition)
+            newState.enemyArray.splice(enemyIndex, 1)
+            newState.enemyMovementArray.splice(enemyIndex, 1)
         }
+        newState.gameMap[blockPosition] = "empty"
     })
     return stateObj
-  
 }
 
 async function dropBlock(stateObj) {
