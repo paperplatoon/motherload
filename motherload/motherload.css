@@ -132,8 +132,9 @@
     color: red;
   }
 
-  .fuel-relic, .bomb-distance-relic, .laser-distance-relic {
+  .relic {
     background-color: pink;
+    color: black;
   }
 
   .store-div {

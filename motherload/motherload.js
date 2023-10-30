@@ -59,7 +59,7 @@ let gameStartState = {
             enemyValue: 0.965,
             bottomRowEnemies: [1, 5, 9],
             numberRows: 20,
-            hasRelic: false,
+            hasRelic: true,
             floorNumber: 0
         },
         {
@@ -168,18 +168,32 @@ async function renderTopBarStats(stateObj) {
     }
 
     let lasersDiv = document.createElement("Div")
+    let currentLasersDiv = document.createElement("Div")
     laserString = "Lasers: " + stateObj.numberLasers + "/" + stateObj.laserCapacity
     if (stateObj.numberLasers > 0) {
         laserString = laserString + " (press L to fire)"
     }
-    lasersDiv.textContent = laserString
+    currentLasersDiv.textContent = laserString
+
+    let laserDistanceDiv = document.createElement("Div")
+    laserString2 = "Laser Distance: " + stateObj.laserDistance
+    laserDistanceDiv.textContent = laserString2
+
+    lasersDiv.append(currentLasersDiv, laserDistanceDiv)
 
     let bombDiv = document.createElement("Div")
+    let currentBombsDiv = document.createElement("Div")
     bombString = "Bombs: " + stateObj.bombCurrentTotal + "/" + stateObj.bombCapacity
     if (stateObj.bombCurrentTotal > 0) {
         bombString = bombString + " (press B to drop)"
     }
-    bombDiv.textContent = bombString
+    currentBombsDiv.textContent = bombString
+
+    let bombDistanceDiv = document.createElement("Div")
+    bombString2 = "Bomb Distance: " + stateObj.bombDistance
+    bombDistanceDiv.textContent = bombString2
+
+    bombDiv.append(currentBombsDiv, bombDistanceDiv)
 
     let dirtDiv = document.createElement("Div")
     dirtString = "Dirt: " + Math.round((stateObj.dirtReserves/(stateObj.dirtThresholdNeeded))*100) + "%"
@@ -205,8 +219,8 @@ function ProduceBlockSquares(arrayObj, numberRows, stateObj, isRelic=false) {
     let middleLength = (screenwidthBlocks*floorObj.numberRows) + (screenwidthBlocks);
     for (let j=screenwidthBlocks; j < middleLength; j++) {
         if (j === chosenSquare) {
-            let relicArray = ["fuelRelic", "bombDistanceRelic", "laserDistanceRelic", "dirtRelic"]
-            //let relicArray = ["dirtRelic"]
+            let relicArray = ["fuelRelic", "bombDistanceRelic", "laserDistanceRelic", "dirtRelic", "stopRelic"]
+            //let relicArray = ["stopRelic"]
             let chosenRelic = relicArray[Math.floor(Math.random() * relicArray.length)]
             arrayObj.push(chosenRelic)
         } else if (nextSquareEmpty === true){
@@ -495,17 +509,20 @@ async function renderScreen(stateObj) {
                 mapSquareDiv.classList.add("bomb")
                 mapSquareDiv.textContent = stateObj.bombTimer
             } else if (mapSquare === "fuelRelic") {
-                mapSquareDiv.classList.add("fuel-relic")
+                mapSquareDiv.classList.add("relic")
                 mapSquareDiv.textContent = "Fuel ++"
             } else if (mapSquare === "bombDistanceRelic") {
-                mapSquareDiv.classList.add("bomb-distance-relic")
+                mapSquareDiv.classList.add("relic")
                 mapSquareDiv.textContent = "Bomb Distance ++"
             } else if (mapSquare === "laserDistanceRelic") {
-                mapSquareDiv.classList.add("laser-distance-relic")
+                mapSquareDiv.classList.add("relic")
                 mapSquareDiv.textContent = "Laser Distance ++"
             } else if (mapSquare === "dirtRelic") {
-                mapSquareDiv.classList.add("dirt-relic")
+                mapSquareDiv.classList.add("relic")
                 mapSquareDiv.textContent = "Dirt Efficiency ++"
+            } else if (mapSquare === "stopRelic") {
+                mapSquareDiv.classList.add("relic")
+                mapSquareDiv.textContent = "Pause Enemies"
             }
 
             mapDiv.append(mapSquareDiv)
@@ -780,6 +797,15 @@ async function upgradeFuelRelic(stateObj) {
     return stateObj
 }
 
+async function stopEnemiesRelic(stateObj) {
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.enemyArray = []
+        newState.enemyMovementArray = [];
+    })
+    await changeState(stateObj);
+    return stateObj
+}
+
 async function upgradeBombDistanceRelic(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.bombDistance += 1;
@@ -1026,6 +1052,9 @@ async function calculateMoveChange(stateObj, squaresToMove) {
     } else if (targetSquare === "fuelRelic") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime)
         stateObj = await upgradeFuelRelic(stateObj)  
+    } else if (targetSquare === "stopRelic") {
+        stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime)
+        stateObj = await stopEnemiesRelic(stateObj)  
     } else if (targetSquare === "bombDistanceRelic") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2, 0, stateObj.drillTime)
         stateObj = await upgradeBombDistanceRelic(stateObj)  
