@@ -30,6 +30,7 @@ let gameStartState = {
     //states
     currentPosition: false,
     inStore: false,
+    choosingNextLevel: false,
     inTransition: false,  
     
     currentHullIntegrity: 100,
@@ -56,35 +57,40 @@ let gameStartState = {
         {
             barVals: [1, 1, 1, 0.997, 0.99, 0.9, 0.65],
             enemyValue: 0.965,
+            bottomRowEnemies: [1, 5, 9],
             numberRows: 20,
             hasRelic: false,
             floorNumber: 0
         },
         {
             barVals: [1, 0.999, 0.997, 0.99, 0.95, 0.80, 0.65],
-            enemyValue: 0.95,
-            numberRows: 20,
-            hasRelic: false,
+            enemyValue: 0.94,
+            numberRows: 40,
+            bottomRowEnemies: [0, 3, 7, 9],
+            hasRelic: true,
             floorNumber: 1
         },
         {
             barVals: [1, 0.997, 0.99, 0.95, 0.85, 0.75, 0.7],
             enemyValue: 0.93,
-            numberRows: 20,
+            numberRows: 60,
+            bottomRowEnemies: [1, 3, 5, 7],
             hasRelic: true,
             floorNumber: 2
         },
         {
             barVals: [0.999, 0.99, 0.96, 0.9, 0.8, 0.72, 0.7],
             enemyValue: 0.9,
-            numberRows: 20,
+            numberRows: 80,
+            bottomRowEnemies: [1, 2, 4, 5, 7],
             hasRelic: true,
             floorNumber: 3
         },
         {
             barVals: [0.99, 0.97, 0.91, 0.85, 0.77, 0.73, 0.7],
             enemyValue: 0.87,
-            numberRows: 20,
+            numberRows: 100,
+            bottomRowEnemies: [1, 2, 4, 5, 7],
             hasRelic: true,
             floorNumber: 4
         },
@@ -238,14 +244,11 @@ function ProduceBlockSquares(arrayObj, numberRows, stateObj, isRelic=false) {
             }
         }  
     }
-    console.log("doing enemies")
-    let enemy1 = Math.floor(Math.random() * screenwidthBlocks)
-    let enemy2 = Math.floor(Math.random() * screenwidthBlocks)
-    console.log("enemy randoms assigned")
-
+    let tempDirection = "left";
     for (let j=0; j < (screenwidthBlocks); j++) {
-        console.log("calling inner loop")
-        if (j === enemy1 || j === enemy2) {
+        console.log("calling inner loop for j " + j + " and BRE are " + stateObj.floorValues[stateObj.currentLevel].bottomRowEnemies)
+        if (stateObj.floorValues[stateObj.currentLevel].bottomRowEnemies.includes(j)) {
+            console.log("pushing enemy to square " + j)
             arrayObj.push("enemy")
         } else {
             arrayObj.push("empty")
@@ -258,10 +261,12 @@ function ProduceBlockSquares(arrayObj, numberRows, stateObj, isRelic=false) {
         if (j === exit ) {
             arrayObj.push("EXIT")
         } else {
-            arrayObj.push("0")
+            arrayObj.push("stone")
         }
     }
     console.log("produce squares array enemy length is " + state.enemyMovementArray.length)
+    console.log("some last values " + arrayObj[arrayObj.length-1] + " " + arrayObj[arrayObj.length-2]+ " " + arrayObj[arrayObj.length-3])
+
     return arrayObj
 }
 
@@ -292,10 +297,9 @@ async function fillMapWithArray(stateObj) {
     let tempEnemyArray = []
     let tempEnemyMovementArray = []
     for (i = 0; i < stateObj.gameMap.length; i++) {
-        console.log("map square " + i + " has content " + stateObj.gameMap[i])
         if (stateObj.gameMap[i] === "enemy") {
-            console.log("found an enemy at square " + i)
-            let direction = (Math.random > 0.5) ? "left" : "right";
+            let direction = (Math.random() > 0.5) ? "left" : "right";
+            console.log("found an enemy at square " + i + " pushing direction " + direction)
             tempEnemyArray.push(i)
             tempEnemyMovementArray.push(direction)
         }
@@ -396,7 +400,7 @@ async function renderScreen(stateObj) {
     topBar = await renderTopBarStats(stateObj);
     document.getElementById("app").append(topBar)
 
-    if (stateObj.inStore === false) {
+    if (stateObj.inStore === false && stateObj.choosingNextLevel === false) {
         let mapDiv = document.createElement("Div");
         mapDiv.classList.add("map-div");
 
@@ -409,6 +413,13 @@ async function renderScreen(stateObj) {
                 let mapSquareImg = document.createElement("Img");
                 mapSquareImg.classList.add("player-img")
                 mapSquareImg.src = "img/miner1.png"
+                mapSquareDiv.append(mapSquareImg)
+            }
+            if (mapSquare === "stone") {
+                mapSquareDiv.classList.add("stone")
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("stone-img")
+                mapSquareImg.src = "img/stone.png"
                 mapSquareDiv.append(mapSquareImg)
             }
             
@@ -470,10 +481,16 @@ async function renderScreen(stateObj) {
                 mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "STORE") {
                 mapSquareDiv.classList.add("store")
-                mapSquareDiv.textContent = "Store"
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("store-img")
+                mapSquareImg.src = "img/store.png"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "EXIT") {
                 mapSquareDiv.classList.add("exit")
-                mapSquareDiv.textContent = "EXIT"
+                let mapSquareImg = document.createElement("Img");
+                mapSquareImg.classList.add("exit-img")
+                mapSquareImg.src = "img/exit.jpg"
+                mapSquareDiv.append(mapSquareImg)
             } else if (mapSquare === "BOMB") {
                 mapSquareDiv.classList.add("bomb")
                 mapSquareDiv.textContent = stateObj.bombTimer
@@ -494,9 +511,33 @@ async function renderScreen(stateObj) {
             mapDiv.append(mapSquareDiv)
         })
         document.getElementById("app").append(mapDiv)
+    } else if (stateObj.choosingNextLevel === true) {
+
+        let storeDiv = document.createElement("Div")
+        storeDiv.classList.add("store-div")
+
+        let fewerEnemiesDiv = document.createElement("Div")
+        fewerEnemiesDiv.classList.add("store-option")
+        fewerEnemiesDiv.textContent = "Next level has fewer enemies"
+        fewerEnemiesDiv.classList.add("store-clickable")
+        fewerEnemiesDiv.onclick = function () {
+            fewerEnemiesChoice(stateObj)
+        }
+
+        let moreGoldDiv = document.createElement("Div")
+        moreGoldDiv.classList.add("store-option")
+        moreGoldDiv.textContent = "Next level has more gold ore"
+        moreGoldDiv.classList.add("store-clickable")
+        moreGoldDiv.onclick = function () {
+            moreGold(stateObj)
+        }
+
+        storeDiv.append(fewerEnemiesDiv, moreGoldDiv)
+
+        document.getElementById("app").append(storeDiv)
+
+
     } else {
-        console.log("in store")
-        console.log("fuel upgrade " +stateObj.fuelUpgradeCost )
         let storeDiv = document.createElement("Div")
         storeDiv.classList.add("store-div")
 
@@ -641,6 +682,26 @@ async function renderScreen(stateObj) {
 async function leaveStore(stateObj) {
     stateObj.inStore = false;
     await changeState(stateObj);
+}
+
+async function fewerEnemiesChoice(stateObj) {
+    console.log("current enemy value is  " + stateObj.floorValues[stateObj.currentLevel].enemyValue)
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.floorValues[newState.currentLevel].enemyValue += 0.015
+        newState.choosingNextLevel = false;
+    })
+    await changeState(stateObj);
+    console.log("current enemy value after is  " + stateObj.floorValues[stateObj.currentLevel].enemyValue)
+}
+
+async function moreGold(stateObj) {
+    console.log("current gold value is  " + stateObj.floorValues[stateObj.currentLevel].barVals[4])
+    stateObj = immer.produce(stateObj, (newState) => {
+        newState.floorValues[newState.currentLevel].barVals[4] -= 0.06
+        newState.choosingNextLevel = false;
+    })
+    await changeState(stateObj);
+    console.log("current gold value is  " + stateObj.floorValues[stateObj.currentLevel].barVals[4])
 }
 
 async function fillFuel(stateObj) {
@@ -848,7 +909,7 @@ async function checkForDeath(stateObj) {
 
     if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % screenwidthBlocks !== 0) {
         stateObj = await doDamage(stateObj, 50)
-    } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition-15) % screenwidthBlocks !== 0) {
+    } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition+1) % screenwidthBlocks !== 0) {
         stateObj = await doDamage(stateObj, 50)
     } else if (stateObj.gameMap[stateObj.currentPosition+screenwidthBlocks] === "enemy") {
         stateObj = await doDamage(stateObj, 50)
@@ -926,7 +987,7 @@ async function UpArrow(stateObj, currentHeight, currentWidth, scrollHeight, scro
 }
 
 async function DownArrow(stateObj, currentHeight, currentWidth, scrollHeight, scrollWidth) {
-    if (stateObj.currentPosition < (screenwidthBlocks * totalSquareNumber)) {
+    if (stateObj.currentPosition < (stateObj.gameMap.length-screenwidthBlocks) && stateObj.gameMap[stateObj.currentPosition+screenwidthBlocks] !== "stone") {
         window.scrollTo(currentWidth*scrollWidth- (scrollWidth*3), currentHeight*scrollHeight - (scrollHeight))
         stateObj = await calculateMoveChange(stateObj, screenwidthBlocks)
     }
@@ -1005,24 +1066,17 @@ async function seeStore(stateObj) {
 }
 
 async function goToNextLevel(stateObj) {
-    console.log('inside gtnl')
-    console.log('interval cleared')
     stateObj = await immer.produce(stateObj, async (newState) => {
         newState.currentLevel += 1;
         newState.timeCounter = 0;
     })
-    console.log('first immer done')
     stateObj = await fillMapWithArray(stateObj)
-    console.log('new array generated with length ' + newArray.length)
     stateObj = await immer.produce(stateObj, async (newState) => {
         newState.currentPosition = 5;
+        newState.choosingNextLevel = true;
     })
     //window.scrollTo(0, 0)
-    console.log('second immer done, game map length is ' + stateObj.gameMap.length)
     stateObj = await changeState(stateObj)
-    var mapDiv = document.getElementById('app')
-    mapDiv.scrollTop = 0
-    console.log("you are about to return the stateObj from goToNextLevel")
     return stateObj
 }
 

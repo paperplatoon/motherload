@@ -7,7 +7,6 @@
     height: 100%;
     width: 100%;
     margin-top: 20vh;
-    background-color: brown;
   }
 
   .top-stats-bar {
@@ -53,6 +52,9 @@
   .enemy {
     position: relative;
     background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
     z-index: 2;
   }
 
@@ -89,13 +91,11 @@
   }
 
   .store {
-    background-color: rgb(3, 184, 190);
-    text-align: center;
-    color: rgb(64, 0, 0)
+    background-color: black;
   }
 
   .exit {
-    background-color: rgb(224, 48, 48);
+    background-color: black;
     text-align: center;
     color: rgb(0, 5, 27)
   }
@@ -107,10 +107,21 @@
     object-fit: contain;
   }
 
-  .bronze-img, .enemy-img, .dirt-img, .silver-img, .gold-img, .ruby-img, .amethyst-img, .diamond-img, .blkdiamond-img {
+  .bronze-img, .enemy-img, .dirt-img, .stone-img,  .silver-img, .gold-img, .ruby-img, .amethyst-img, .diamond-img, .blkdiamond-img {
     width: 9.5vw;
     height: 10vh;
     object-fit: cover;
+  }
+
+.store-img, .exit-img {
+  width: 9vw;
+  height: 9vh;
+  object-fit: contain;
+}
+
+  .enemy-img {
+    width: 6vw;
+    height: 6vh;
   }
 
   .change-empty {
@@ -128,8 +139,10 @@
   .store-div {
     margin: auto;
     margin-top: 15vh;
-    height: 85vh;
-    width: 80vw;
+    height: 90vh;
+    width: 95vw;
+    background-image: url(img/store-inside.jpg);
+    background-size: cover;
   }
 
   .test {
