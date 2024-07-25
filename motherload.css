@@ -1,60 +1,203 @@
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.left-button {
+  height: 6vh;
+  width: 6vw;
+  background-color: green;
+}
+
 .map-div {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     padding-top: 6vh;
-    padding: 2vh 0.5vw;
     height: 100%;
     width: 100%;
-    margin-top: 20vh;
-    background-color: brown;
+    margin-top: 12vh;
   }
 
   .top-stats-bar {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    height: 5vh;
+    align-items: center;
+    height: 12vh;
     position: fixed;
-    padding: 1vh 0;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: white;
+    background-color: rgba(255, 237, 220, 0.967);
     z-index: 10;
   }
 
+  .top-vertical-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 11vh;
+    margin: 0.5vh 0vh;
+    background-color: rgba(255, 237, 220, 0.967);
+    z-index: 10;
+  }
+
+.all-weapons-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 8vw;
+  height: 6vh;
+  padding: 0.5vw;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  background-color: rgba(216, 108, 108, 0.668);
+  background: repeating-linear-gradient(
+    135deg,
+    #d5717173 0%,
+    #d5717173 5%,
+    #d15e5e55 5%,
+    #d15e5e55 10%
+  );
+  border: 1vh dashed rgba(90, 0, 0, 0.737);
+}
+
+#craft-total-div {
+  
+}
+
+.craft-ammo-div {
+  background-color: rgb(157, 157, 157);
+  padding: 1vh;
+  border: 0.2vh solid rgb(88, 88, 88);
+  cursor: pointer;
+}
+
+.weapons-div {
+  display: flex;
+  flex-direction: row;
+  margin-left: 1vw;
+  font-size: 1.2vw;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
   .map-square {
-    width: 9.5vw;
+    /* width: 13.5vw;
+    height: 12vh; */
+    width:  10.5vw;
     height: 10vh;
-    background-color: rgb(200, 115, 70);
+    color: mediumspringgreen;
     transition: background-color 1500ms ease-out;
-    border: 0.5px solid rgba(97, 48, 0, 0.756);
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    object-fit: cover;
+    /* border: 0.5px solid rgba(97, 48, 0, 0.756); */
+  }
+
+  .map-square-fish {
+    /* width: 13.5vw;
+    height: 12vh; */
+    width:  7.1vw;
+    height: 6.5vh;
+    color: mediumspringgreen;
+    transition: background-color 1500ms ease-out;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    object-fit: cover;
+    /* border: 0.5px solid rgba(97, 48, 0, 0.756); */
+  }
+
+  #fuel-div, #hull-div, .inventory {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 23vw;
+  }
+
+  .level-div, .score-div {
+    background-color: rgb(208, 205, 205);
+    border: 0.5vh solid grey;
+    width: 3.5vw;
+    height: 4vh;
+    font-size: 1vw;
+    margin-top: 0.3vh;
+  }
+
+  .score-div {
+    width: 5vw;
+    font-size: 1.3vw;
+  }
+
+  .score-level-div {
+    flex-direction: column;
+  }
+
+  .bars-text-div {
+    margin-right: 1vw; 
+  }
+
+  .bars-div {
+    width: 23vw;
+    height: 10vh;
+    margin-top: 0.5vh;
+    font-size: 1.1vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 0.6vh dashed grey;
+    background: repeating-linear-gradient(
+    45deg,
+    #c7b21755 0%,
+    #c7b21750 5%,
+    #9f9e954e 5%,
+    #9f9e954b 10%
+  );
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   }
 
   .bronze, .silver, .gold, .platinum, .amethyst {
     position: relative;
   }
 
-  .bronze:after, .silver:after, .gold:after, .platinum:after, .amethyst:after {
-    content: '';
-    width: 60%;
-    height: 30%;
-    border: solid 1px #fff;
-    position: absolute;
-    background-color: rgb(136, 78, 8);
-    left: 20%;
-    top: 35%;
-    z-index: 1;
-}
+  .centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 
-.platinum:after, .amethyst:after {
-  width: 50%;
-  height: 50%;
-  left: 25%;
-  top: 25%;
-  border-radius: 100%;
-}
+  .space-between-column {
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  #goldText {
+    position: absolute;
+    color: black;
+    margin: 0;
+  }
 
 .bronze:after {
   background-color: rgb(136, 78, 8);
@@ -68,81 +211,654 @@
   background-color: rgb(255, 220, 24);
 }
 
-.platinum:after { 
-  background-image: radial-gradient(rgb(157, 255, 255) 0%, rgb(38, 255, 255) 20%, rgb(131, 206, 193) 40%);
-}
-
-.amethyst:after {
-  background-image: radial-gradient(rgb(209, 171, 252) 0%, rgb(197, 38, 255) 20%, rgb(132, 23, 194) 40%);
-}
 
   .enemy {
-    background-color: rgb(203, 13, 13);
     position: relative;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
     z-index: 2;
   }
 
   .enemy:after {
     content: '';
-    width: 200%;
-    height: 200%;
+    width: 250%;
+    height: 150%;
     position: absolute;
     background-color: rgba(230, 97, 97, 0.651);
     border-radius: 100%;
-    left: -50%;
-    top: -50%;
+    left: -75%;
+    top: -25%;
     z-index: 0;
   }
 
-  .empty-fuel-bar {
-    width: 10vw;
+  .enemy:before {
+    content: '';
+    width: 100%;
+    height: 300%;
+    position: absolute;
+    background-color: rgba(230, 97, 97, 0.651);
+    border-radius: 100%;
+    left: 0;
+    top: -100%;
+    z-index: 0;
+  }
+
+  .empty-fuel-bar, .empty-hull-bar, .empty-inv-bar {
+    width: 10vmax;
     height: 2vh;
+    margin-right: 1vw;
     background-color: grey;
     position: relative;
+    transition: 0.5s all;
   }
   
-  .current-fuel-bar {
-    background-color: blue;
+  .current-fuel-bar, .current-hull-bar, .current-inv-bar {
     position: absolute;
     top:-1px;
     left: -1px;
     height: 2.2vh;
   }
 
+  .full-fuel-bar {
+    background-color: rgb(249, 170, 1);
+  }
+  .low-fuel-bar {
+    background-color: rgb(184, 112, 17);
+  }
+
+  .flash {
+    animation: flash 1s infinite;
+  }
+
+  .full-hull-bar {
+    background-color: rgb(169, 4, 4);
+  }
+  .low-hull-bar {
+    background-color: rgb(232, 29, 29);
+  }
+
+  .normal-inv-bar {
+    background-color: rgb(15, 24, 195);
+  }
+
   .empty {
     background-color: black;
-    border: 0.5px solid rgba(0, 0, 0, 0);
+    /* border: 0.5px solid rgba(0, 0, 0, 0); */
   }
 
   .store {
-    background-color: rgb(3, 184, 190);
-    text-align: center;
-    color: rgb(64, 0, 0)
+    background-color: black;
   }
 
-  .player-here {
-    background-color: rgb(22, 64, 200);
-    color: black;
+  .exit {
+    background-color: black;
+    text-align: center;
+    color: rgb(0, 5, 27)
+  }
 
+.player-here {
+  position: relative;
+  /* width:  10.5vw;
+  height: 10vh; */
+
+}
+  .player-img {
+    position: absolute;
+    height: 100%;
+    width: auto;
+    left: 20%;
+    transition: all 0.3s ease-out;
+  }
+
+  .player-img-damaged {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(0deg) brightness(126%) contrast(63%);
+    position: absolute;
+    height: 100%;
+    width: auto;
+    left: 20%;
+    transition: all 0.3s ease-out;
+  }
+
+  .player-img-full {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(200deg) brightness(126%) contrast(63%);
+    position: absolute;
+    height: 100%;
+    width: auto;
+    left: 20%;
+    transition: all 0.3s ease-out;
+  }
+
+  .player-img-low-fuel {
+    position: absolute;
+    filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(50deg) brightness(126%) contrast(63%);
+    height: 100%;
+    width: auto;
+    left: 20%;
+    transition: all 0.3s ease-out;
+    -webkit-animation: low-fuel 1s;
+    animation: low-fuel 1s infinite;
+  }
+
+  .taking-damage-1 {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(0deg) brightness(126%) contrast(63%);
+  }
+
+  .taking-damage-2 {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(747%) hue-rotate(0deg) brightness(126%) contrast(63%);
+  }
+
+  /* @keyframes low-fuel {
+    0% {
+      filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(40deg) brightness(126%) contrast(63)
+    }
+  
+    100% {
+      filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(35deg) brightness(126%) contrast(63)
+    }
+  } */
+
+  .move-left-animation {
+    animation: moveleft 1s linear 1;
+  }
+  
+.black-change {
+  height: 30vh;
+}
+
+  @keyframes moveleft {
+    0% {
+      left: 20%;
+    }
+  
+    100% {
+      left: 0%;
+    }
+  }
+
+  .bronze-img, .enemy-img, .dirt-img, .stone-img,  .silver-img, .gold-img, .ruby-img, .amethyst-img, .diamond-img, .blkdiamond-img,
+  .stone-amethyst-img, .stone-diamond-img, .stone-blkdiamond-img, .crate-img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+  }
+
+  .craft-button-row {
+    margin-left: 3vw;
+    background-color: white;
+    cursor: pointer;
+  }
+
+  .bar-relic-div {
+    display: flex;
+    flex-direction: row;
+    height: 9vh;
+    border: 0.6vh solid rgb(41, 41, 41);
+    width: 4.5vw;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .bar-relic-upgrades-1 {
+    border: 0.75vh solid rgba(223, 153, 88, 0.797);
+  }
+
+  .bar-relic-upgrades-2 {
+    border: 1vh solid rgba(187, 187, 187, 0.735);
+  }
+
+  .bar-relic-upgrades-3 {
+    border: 1.25vh solid rgba(203, 190, 77, 0.735);
+  }
+
+  .bar-relic-upgrades-4 {
+    border: 1.5vh solid rgba(205, 78, 78, 0.735);
+  }
+
+  .relics-div {
+    width: 100%;
+  }
+
+  .relic-img {
+    width: 8vw;
+    height: 8vh;
+    margin: 2vh 0.5vw;
+    object-fit: contain;
+  }
+
+  .store-relic-img {
+    height: 8vh;
+    width: auto;
+    object-fit: contain;
+  }
+
+  #weapons-price-popup, #thorns-popup, #enemy-damage-popup, 
+  #enemy-damage-fuel-popup, #kill-enemies-fuel-popup, #dirt-fuel-popup,
+  #bomb-timer-popup, #money-dirt-popup, #laser-piercing-popup, #kill-enemies-heal-popup,
+  #bronze-silver-popup, #kill-enemies-money-popup, #pacifist-popup, #cheaper-shops-popup,
+  #splinter-cell-popup, #oil-well-popup, #silver-heal-popup, #bronze-fuel-popup, .none-display {
+    display: none;
+    position: absolute;
+    top: 15vh;
+    left: 70%;
+    z-index: 2;
+    width: 20vw;
+    height: 10vh;
+    font-size: 3vmin;
+    background-color: #f9f9f9;
+    pointer-events: none;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.dirt-div {
+  background-color: rgba(93, 53, 31, 0.849);
+  height: 8vh;
+  width: 8vw;
+  margin-top: 1.7vh;
+  color: white;
+  border: 0.3vh dashed rgb(207, 167, 127);
+  background: linear-gradient(to right, rgb(123, 67, 11) 0%, rgb(148, 88, 28) 20%, rgb(123, 72, 21) 40%, rgb(91, 52, 12) 70%, rgb(131, 76, 22) 79%, rgb(123, 72, 21) 80%, rgb(123, 72, 21) );
+}
+
+.store-img, .exit-img {
+  object-fit: cover;
+  height: 10vh;
+  width: auto;
+}
+
+.store-img-fish, .exit-img-fish {
+  object-fit: cover;
+  height: 8vh;
+  width: auto;
+}
+
+.store-sub-img {
+  height: 7vh;
+  width: auto;
+  object-fit: contain;
+}
+
+.max-100 {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.sell-row, .inv-row {
+  padding: 0.5vh 1vw;
+  display: flex;
+  justify-content: left;
+  font-size: 1vw;
+  align-items: center;
+  transition: 1s all; 
+  border-top: 0.2vh solid grey;
+  border-bottom: 0.2vh solid grey;
+  background-color: rgba(187, 186, 186, 0.861); 
+}
+
+.sell-row {
+  width: 20vw;
+}
+
+.inv-row {
+  width: 50vw;
+}
+
+.selling-items-div, .start-div, .choose-robot-div, .lost-div {
+  display: flex;
+  flex-direction: column;
+  width: 80vw;
+  height: 75vh;
+  justify-content: center;
+  align-items: center;
+  border: 0.8vw dashed rgba(71, 71, 71, 0.726);
+  outline: 0.3vw dashed rgba(139, 137, 11, 0.526);
+  outline-offset: -0.5vw;
+  background: linear-gradient(rgba(249, 249, 249, 0.844) 0%, rgba(228, 228, 228, 0.85) 10%, rgba(223, 223, 223, 0.85) 40%,
+  rgba(228, 228, 228, 0.85) 90%, rgba(249, 249, 249, 0.85)); 
+  font-family: monospace;
+  box-shadow: 1vw 1vw 1vw rgba(113, 113, 113, 0.619);
+  transition: 1s all;
+}
+
+.selling-items-div {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.sell-ore-div, .trade-ore-div {
+  width: 25vw;
+  height: 55vh;
+  display: flex;
+  justify-content: start;
+  border: 1px dashed grey;
+  margin: 1vh;
+}
+
+.trade-ore-div {
+  width: 46vw;
+}
+
+.sell-title, .sell-button {
+  margin: 1vh 0vh;
+}
+
+.trade-relics-div {
+  flex-wrap: wrap;
+}
+
+.choose-robot-div {
+  flex-direction: row;
+  width: 80vw;
+  justify-content: space-evenly;
+}
+
+.viewing-inv-div {
+  display: flex;
+  flex-direction: column;
+  width: 70vw;
+  height: 60vh;
+  justify-content: center;
+  align-items: center;
+  border: 0.8vw dashed rgba(71, 71, 71, 0.726);
+  outline: 0.3vw dashed rgba(139, 137, 11, 0.526);
+  outline-offset: -0.5vw;
+  background: linear-gradient(rgba(249, 249, 249, 0.844) 0%, rgba(228, 228, 228, 0.85) 10%, rgba(223, 223, 223, 0.85) 40%,
+  rgba(228, 228, 228, 0.85) 90%, rgba(249, 249, 249, 0.85)); 
+  font-family: monospace;
+  box-shadow: 1vw 1vw 1vw rgba(113, 113, 113, 0.619);
+  transition: 1s all;
+}
+
+.ruby-relic-div, .ore-relic-div, .kill-enemy-div {
+  width: 25vw;
+  height: 20vh;
+  display: flex;
+  margin-top: 1vh;
+  padding: 0.5vh 0.5vw;
+  font-size: 1vw;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: grey;
+  color: rgb(203, 203, 203);
+  font-family: monospace;
+  cursor: not-allowed;
+}
+
+.swap-relic-div, .to-swap-relic-div {
+  height: 30vh;
+  width: 15vw;
+  margin: 1vh;
+  padding: 0.5vh;
+  background: linear-gradient(to right, rgb(50, 201, 50) 0%, rgb(108, 238, 108) 20%, rgb(113, 232, 113) 40%, rgb(151, 238, 151) 70%, rgb(159, 245, 159) 75%, rgb(59, 216, 59));
+  transition: 0.5s all;
+  cursor: pointer;
+}
+
+.swap-relic-div:hover {
+  background: linear-gradient(to right, rgb(17, 69, 17) 0%, rgb(41, 90, 41) 20%, rgb(39, 80, 39) 40%, rgb(54, 86, 54) 70%, rgb(52, 81, 52) 75%, rgb(19, 70, 19));
+  color: white;
+}
+
+.to-swap-relic-div {
+  border: 1vh solid black;
+  height: 18vh;
+  width: 25vw;
+}
+
+.scrap-button-relic {
+  height: 18vh;
+  width: 11vw;
+  background: rgb(221, 55, 55);
+  color: black;
+  transition: 0.5s all;
+  cursor: pointer;
+  
+}
+
+.scrap-button-relic:hover {
+  background: rgb(138, 0, 0);
+  color: white;
+  height: 17vh;
+  width: 11vw;
+  border: 1vh solid rgb(203, 27, 27)
+
+}
+
+.sell-button, .ruby-relic-hover, .diamond-relic-hover, .choose-robot-button, .ore-relic-hover {
+  width: 20vw;
+  height: 5vh;
+  display: flex;
+  padding: 0.5vh 0.5vw;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, rgb(50, 201, 50) 0%, rgb(108, 238, 108) 20%, rgb(113, 232, 113) 40%, rgb(151, 238, 151) 70%, rgb(159, 245, 159) 75%, rgb(59, 216, 59));
+  cursor: pointer;
+  color: black;
+  font-weight: 1000;
+  transition: 1s all;
+}
+
+.choose-robot-button {
+  height: 19vh;
+}
+
+.hull-gold-upgrade-hover, .fuel-gold-upgrade-hover {
+  background: linear-gradient(to right, rgb(50, 201, 50) 0%, rgb(108, 238, 108) 20%, rgb(113, 232, 113) 40%, rgb(151, 238, 151) 70%, rgb(159, 245, 159) 75%, rgb(59, 216, 59));
+  margin-top: 1vh;
+  cursor: pointer;
+  color: black;
+}
+
+.padding-width {
+  padding: 0.1vh 2vw;
+}
+
+.hull-gold-upgrade-div, .fuel-gold-upgrade-div {
+  cursor: auto;
+}
+
+.sell-button:hover, .hull-gold-upgrade-hover:hover, .fuel-gold-upgrade-hover:hover, .ruby-relic-hover:hover,  .ore-relic-hover:hover {
+  border: 0.5vh dashed rgb(144, 255, 144);
+  height: 5.5vh;
+  background: linear-gradient(to right, rgb(31, 125, 31) 0%, rgb(60, 133, 60) 20%, rgb(59, 122, 59) 40%, rgb(80, 126, 80) 70%, rgb(64, 100, 64) 75%, rgb(30, 111, 30));
+  cursor: pointer;
+  font-weight: 1300;
+  color: white;
+}
+
+.ruby-relic-hover:hover,  .ore-relic-hover:hover {
+  height: 19vh;
+}
+
+body:has(.hull-gold-upgrade-hover:hover) .gold-sell-row {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  border-bottom: 0.2vh solid white;
+  border-top: 0.2vh solid white;
+  background-color: rgb(78, 78, 78);
+  color: white;
+}
+
+body:has(.ruby-relic-hover:hover) .ruby-sell-row {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  border-bottom: 0.2vh solid white;
+  border-top: 0.2vh solid white;
+  background-color: rgb(78, 78, 78);
+  color: white;
+  animation: flash 1s infinite;
+}
+
+body:has(.diamond-relic-hover:hover) .diamond-sell-row {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  border-bottom: 0.2vh solid white;
+  border-top: 0.2vh solid white;
+  background-color: rgb(78, 78, 78);
+  color: white;
+  animation: flash 1s infinite;
+}
+
+body:has(.sell-button:hover) .sell-row {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  border-bottom: 0.2vh solid white;
+  border-top: 0.2vh solid white;
+  background-color: rgb(78, 78, 78);
+  color: white;
+}
+
+.can-convert:hover, .sell-row:hover {
+  border-bottom: 0.2vh solid white;
+  border-top: 0.2vh solid white;
+  background-color: rgb(78, 78, 78);
+  color: white;
+  cursor: pointer;
+}
+
+body:has(.sell-button:hover) .selling-items-div {
+  box-shadow: 1vw 1vw 1vw rgba(159, 159, 159, 0.619);
+}
+
+body:has(#store-fuel-div:hover) #empty-fuel-bar {
+  background-color: rgba(197, 185, 16, 0.6);
+  animation: flash 1s infinite;
+}
+
+body:has(.hull-gold-upgrade-hover:hover) #empty-hull-bar {
+  background-color: rgba(16, 46, 197, 0.6);
+  animation: flash 1s infinite;
+}
+
+body:has(.fuel-gold-upgrade-hover:hover) #empty-fuel-bar {
+  background-color: rgba(197, 185, 16, 0.6);
+  animation: flash 1s infinite;
+}
+
+body:has(#store-fuel-div:hover) #fuel-opening-text {
+  color: rgb(115, 115, 115);
+  animation: flash 1s infinite;
+}
+
+body:has(#store-repair-div:hover) #empty-hull-bar {
+  background-color: rgba(201, 20, 20, 0.6);
+  animation: flash 1s infinite;
+}
+
+body:has(.store-clickable#store-bomb-capacity-upgrade-div:hover) #current-bombs-text,
+body:has(.store-clickable#store-buy-bomb-div:hover) #current-bombs-text {
+  color: rgb(115, 115, 115);
+  animation: flash 1s infinite;
+}
+
+body:has(.store-clickable#store-laser-capacity-upgrade-div:hover) #current-lasers-text,
+body:has(.store-clickable#store-buy-laser-div:hover) #current-lasers-text {
+  color: rgb(115, 115, 115);
+  animation: flash 1s infinite;
+}
+
+
+
+#max-fuel-text {
+  transition: 0.5s all
+}
+
+body:has(.store-clickable#store-fuel-upgrade-div:hover) #max-fuel-text,
+body:has(.store-clickable#store-fuel-upgrade-div:hover) #empty-fuel-bar,
+body:has(.store-clickable#store-fuel-upgrade-div:hover) #full-fuel-bar,
+body:has(.store-clickable#store-fuel-upgrade-div:hover) #low-fuel-bar {
+  font-size: 120%;
+  color: green;
+  -webkit-animation: flash 1s;
+  animation: flash 1s infinite;
+}
+
+
+body:has(.store-clickable#store-hull-upgrade-div:hover) #hull-integrity-text,
+body:has(.store-clickable#store-hull-upgrade-div:hover) #empty-hull-bar,
+body:has(.store-clickable#store-hull-upgrade-div:hover) #full-hull-bar,
+body:has(.store-clickable#store-hull-upgrade-div:hover) #low-hull-bar {
+  font-size: 120%;
+  color: green;
+  -webkit-animation: flash 1s;
+  animation: flash 1s infinite;
+}
+
+body:has(.store-clickable#store-inventory-upgrade-div:hover) #inventory-size-text,
+body:has(.store-clickable#store-inventory-upgrade-div:hover) #empty-inv-bar,
+body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
+  font-size: 120%;
+  color: green;
+  -webkit-animation: flash 1s;
+  animation: flash 1s infinite;
+}
+
+.inventory-full {
+  color: red;
+  font-size: 105%;
+}
+
+.inventory-full-text {
+  color: red;
+  animation: flashcolor 1.5s infinite;
+}
+
+@keyframes flashcolor {
+  0% {color: red;}
+  50% {color: black};
+  100% {color: red;}
+}
+
+@keyframes flash {
+  0% {opacity: 1;}
+  100% {opacity: 0.1};
+}
+
+  .enemy-img {
+    width: 6vw;
+    height: 6vh;
   }
 
   .change-empty {
     background-color: black;
   }
 
-  .inventory-full {
-    color: red;
-  }
+ 
 
-  .fuel-relic {
-    background-color: pink;
+  .relic {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(79, 38, 8);
+    color: black;
   }
 
   .store-div {
     margin: auto;
     margin-top: 15vh;
-    height: 85vh;
-    width: 80vw;
+    height: 80vh;
+    width: 95vw;
+    background-image: url(img/store-inside.jpg);
+    background-size: cover;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    transition: 2s all;
+  }
+
+  .start-div {
+    justify-content: left;
+    text-align: left;
   }
 
   .test {
@@ -152,36 +868,417 @@
     background-color: red;
   }
 
-  .store-option {
-    color: rgb(0, 105, 105);
-    width: 65vw;
-    height: 5vh;
-    background-color: rgb(122, 253, 253);
-    margin: auto;
-    margin-top: 3vh;
-    padding-top: 2vh;
-    justify-content: center;
+  .store-option, .next-level-option {
+    width: 16vw;
+    height: 8vh;
+    font-size: 1.4vw;
+    background-color: rgba(78, 152, 152, 0.867);
+    margin: 0.5vw;
+    padding: 1vh;
+    justify-content: space-around;
     display: flex;
-    transition: 0.2s all;
+    flex-direction: column;
+    transition: 0.4s all;
   }
 
-  .store-clickable:hover {
-    background-color: rgb(78, 238, 238);
-    border: 1px dashed rgb(0, 147, 147);
-    
+  .roulette-option {
+    width: 20vw;
+    height: 25vh;
+    font-size: 1.4vw;
+    background-color: rgba(153, 238, 230, 0.977);
+    margin: 2vw;
+    padding: 1vh;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    transition: 0.4s all;
+    font-family: monospace;
+  }
+
+  .roulette-title {
+    font-size: 1.8vw;
+    width: 100%;
+    padding: 0.5vh 0.2vw;
+  }
+
+  .roulette-rarity {
+    font-size: 1vw;
+    padding: 0.2vh 0.4vw;
+  }
+
+  .roulette-option:hover {
+    background-color: rgba(13, 72, 66, 0.977);
+    width: 18vw;
+    height: 23vh;
+    color: rgba(133, 235, 225, 0.977);
     cursor: pointer;
-    font-size: 140%;
+    border: 3px solid rgb(0, 144, 120)
+  }
+
+  .roulette-title-common, .roulette-rarity-common {
+    background-color: rgba(223, 153, 88, 0.797);
+  }
+
+  .roulette-title-uncommon, .roulette-rarity-uncommon {
+    background-color: rgba(187, 187, 187, 0.735);
+  }
+
+  .roulette-title-rare, .roulette-rarity-rare {
+    background-color: rgba(203, 190, 77, 0.735);
+  }
+
+  .roulette-title-legendary, .roulette-rarity-legendary {
+    background-color: rgba(205, 78, 78, 0.735);
+  }
+
+  .roulette-choice-pick {
+    font-size: 5vw;
+    text-align: center;
+    width: 100%;
+    padding: 2vh 2vw;
+    margin: 1vw;
+    color: rgb(226, 253, 255);
+    background-color: rgba(105, 105, 105, 0.605);
+  }
+
+  .next-level-option {
+    background-color: rgba(87, 202, 202, 0.995);
+    color: rgba(156, 234, 218, 0.976);
+  }
+
+  .store-title {
+    font-size: 2vw;
+    margin-top: 1vh;
+    height: 7vh;
+    width: 19vw;
+    color: rgb(243, 243, 243);
+    background-color: rgba(81, 81, 81, 0.81);
+    padding: 0.2vw;
+  }
+
+
+
+
+  .store-sub-div {
+    height: 55vh;
+    width: 25vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 2px dashed grey;
+    margin: 1vw; 
+  }
+
+  .relic-option {
+    width: 17.5vw;
+    height: 18vh;
+  }
+  .trade-relic-option {
+    width: 20vw;
+    height: 18vh;
+    margin-right: 1vw;
+    justify-content: space-evenly;
+  }
+
+  .next-level-option {
+    color: rgb(0, 105, 105);
+    height: 20vh;
+    width: 15vw;
+    justify-content: center;
+  }
+
+  .store-option-text {
+    color: rgb(0, 105, 105);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .store-clickable {
+    background-color: rgba(87, 202, 202, 0.995);
+    /* color: rgba(156, 234, 218, 0.976); */
+  }
+
+  #store-buy-laser-div, #store-buy-bomb-div, #store-laser-capacity-upgrade-div, #store-bomb-capacity-upgrade-div {
+    height: 6vh;
+  }
+
+  #store-fuel-div {
+    transition: 0.5s all;
+  }
+
+  .store-clickable:hover#store-fuel-div,
+  .store-clickable:hover#store-fuel-upgrade-div {
+    border: 1vh solid rgb(249, 170, 1);
+  }
+
+  .store-clickable:hover#store-repair-div,
+  .store-clickable:hover#store-hull-upgrade-div {
+    border: 1vh solid rgb(169, 4, 4);
+  }
+
+  .store-clickable:hover#store-inventory-upgrade-div {
+    border: 1vh solid rgb(15, 24, 195);
+  }
+
+  .store-clickable:hover#store-laser-capacity-upgrade-div,
+  .store-clickable:hover#store-bomb-capacity-upgrade-div,
+  .store-clickable:hover#store-buy-bomb-div,
+  .store-clickable:hover#store-buy-laser-div {
+    border: 1vh dashed rgba(90, 0, 0, 0.737);
+    background: repeating-linear-gradient(
+    135deg,
+    #d57171e6 0%,
+    #d57171e6 5%,
+    #d15e5ede 5%,
+    #d15e5ee1 10%
+  );
+  }
+
+
+  .store-clicked {
+    animation: storeClicked 0.3s linear
+  }
+
+  .emphasis {
+    animation: emphasis 0.5s linear
+  }
+
+  .taking-damage {
+    animation: damage 0.1s linear
+  }
+
+  .mini-emphasis {
+    animation: mini-emphasis 0.3s linear
+  }
+
+  .fill-fuel-animation {
+    animation: fillfuel 0.5s linear;
+  }
+
+  .enemy-death {
+    animation: enemydeath 0.1s;
+  }
+
+  .converted {
+    animation: converted 0.3s;
+  }
+
+  #cash-div {
+    height: 8vh;
+    width: 5vw;
+    background-color: green;
+    color: rgb(0, 84, 6);
+    margin-top: 1vh;
+    font-size: 1.5vw;
+    border: 1vh dashed rgba(255, 237, 220, 0.967);
+    background: linear-gradient(to right, rgb(50, 201, 50) 0%, rgb(108, 238, 108) 20%, rgb(113, 232, 113) 40%, rgb(151, 238, 151) 70%, rgb(159, 245, 159) 75%, rgb(59, 216, 59));
+    font-family: Impact, Haettenschweiler, 'Arial Narrow', sans-serif;
+  }
+
+  @keyframes enemydeath {
+    0% {
+      scale: 1;
+    }
+    100% {
+      scale: 0.3;
+    }
+  }
+
+  @keyframes fillfuel {
+    0% {
+      width: 0vw;
+    }
+    100% {
+      width: 10vw;
+    }
+  }
+
+  @keyframes storeClicked {
+    0% {
+      scale: 1;
+      background-color: rgb(122, 253, 253);
+    }
+    30% {
+      scale: 1.5;
+      background-color: rgb(213, 253, 253);
+    }
+    100% {
+      scale: 1;
+      background-color: rgb(122, 253, 253);
+    }
+  }
+
+  @keyframes emphasis {
+    0% {
+      scale: 1;
+    }
+    50% {
+      scale: 2;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  @keyframes damage {
+    0% {
+      scale: 1,
+    }
+    50% {
+      scale: 0.5,
+    }
+    100% {
+      scale: 1
+    }
+  }
+
+  @keyframes mini-emphasis {
+    0% {
+      scale: 1;
+    }
+    50% {
+      scale: 1.3;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  @keyframes converted {
+    0% {
+      color: black;
+    }
+    50% {
+      color: white
+    }
+    100% {
+      color: black;
+    }
+  }
+
+
+  .store-clickable.store-option:hover {
+    /* background-color: rgb(0, 95, 95); */
+    background-color: rgb(146, 232, 206);
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(0, 100, 147);
+    cursor: pointer;
+  }
+
+  .next-level-clickable:hover {
+    background-color: rgb(2, 196, 196);
+    border: 6px solid rgb(0, 147, 147);
+    height: 19vh;
+    width: 14vw;
+    cursor: pointer;
   }
 
   .return-to-map {
-    background-color: rgb(211, 121, 121);
+    background-color: rgb(206, 64, 64);
+    color: rgb(58, 0, 0);
+    height: 10vh;
+    width: 15vw;
+    margin: 0vw 1vw;
   }
 
   .return-to-map:hover {
-    background-color: rgb(210, 81, 81);
+    background-color: rgb(210, 98, 98);
+    color: rgb(88, 14, 14);
     border: 1px dashed rgb(0, 59, 59);
     cursor: pointer;
-    font-size: 140%;
+    font-size: 110%;
   }
 
+  #sell-return-map-div, #sell-see-store-div {
+    width: 30vw;
+    height: 4.5vh;
+    padding: 0.5vh 0.5vw;
+    margin-top: 1vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.4s all;
+  }
+
+  .upgraded-stat {
+    color: rgb(4, 170, 4)
+  }
+
+  .bomb {
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .bomb-img {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(46%) saturate(7487%) hue-rotate(0deg) brightness(126%) contrast(63%);
+  }
+
+  .bomb-effect {
+    background: linear-gradient(red 20%, orange, red 80%)
+  }
+
+  .laser-effect {
+    background: linear-gradient(black 40%, red, black 80%)
+  }
+
+  .arrow-bar {
+    width: 90vw;
+    height: 10vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: pink;
+    position: fixed;
+    top: 10vh;
+    left: 0;
+    z-index: 10000;
+  }
  
+  .arrow {
+    border: solid black;
+    height: 8vh;
+    width: 8vw;
+    padding: 3px;
+    background-color: green;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .robot-div {
+    width: 12vw;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    border: 1px dotted black;
+    transition: 1s all;
+  }
+
+  .robot-div:hover {
+    background-color: rgb(103, 103, 103);
+    color: white;
+    border: 3px dotted green;
+    cursor: pointer;
+    box-shadow: 1vw 1vw 1vw rgba(113, 113, 113, 0.619);
+  }
+
+  .robot-img {
+    width: 12vw;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .poison-dirt {
+    filter: hue-rotate(220deg)
+  }
