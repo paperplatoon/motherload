@@ -63,10 +63,6 @@ html, body {
   border: 1vh dashed rgba(90, 0, 0, 0.737);
 }
 
-#craft-total-div {
-  
-}
-
 .craft-ammo-div {
   background-color: rgb(157, 157, 157);
   padding: 1vh;
@@ -384,9 +380,15 @@ html, body {
     width: 100%;
   }
 
-  .craft-button-row {
-    margin-left: 3vw;
-    background-color: white;
+  .craft-button-row, .bronze-fuel-row {
+    position: absolute;
+    right: -10vw; /* Move 10vw to the right */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 8vw;
+    height: 2vh;
+    background-color: rgb(4, 255, 0);
     cursor: pointer;
   }
 
@@ -490,6 +492,7 @@ html, body {
   display: flex;
   justify-content: left;
   font-size: 1vw;
+  position: relative;
   align-items: center;
   transition: 1s all; 
   border-top: 0.2vh solid grey;
@@ -502,7 +505,7 @@ html, body {
 }
 
 .inv-row {
-  width: 50vw;
+  width: 30vw;
 }
 
 .selling-items-div, .start-div, .choose-robot-div, .lost-div {
@@ -1040,11 +1043,15 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
 
 
   .store-clicked {
-    animation: storeClicked 0.3s linear
+    animation: storeClicked 0.2s linear
   }
 
   .emphasis {
     animation: emphasis 0.5s linear
+  }
+
+  .brief-emphasis {
+    animation: emphasis 0.2s linear
   }
 
   .taking-damage {
@@ -1282,3 +1289,48 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
   .poison-dirt {
     filter: hue-rotate(220deg)
   }
+
+  .fuel-tank {
+    display: flex;
+    width: 16vw; /* Adjust as needed */
+    height: 5vh; /* Adjust as needed */
+  }
+  
+  .tank-section {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .tank-section:first-child {
+    border-radius: 25px 0 0 25px;
+  }
+  
+  .tank-section:last-child {
+    border-radius: 0 25px 25px 0;
+  }
+  
+  .tank-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #323232; /* Default color */
+  }
+  
+  .tank-section:first-child .tank-fill {
+    border-radius: 25px 0 0 25px;
+  }
+  
+  .tank-section:last-child .tank-fill {
+    border-radius: 0 25px 25px 0;
+  }
+  
+  /* Fuel colors */
+  .fuel-1 { background-color: #cd7f32; } /* Bronze */
+  .fuel-2 { background-color: #c0c0c0; } /* Silver */
+  .fuel-3 { background-color: #ffd700; } /* Gold */
+  .fuel-4 { background-color: #ff0000; } /* Red */
+
+  

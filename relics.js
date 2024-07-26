@@ -4,6 +4,22 @@
 //upgrade poisonblocks image
 //pause relic should change to "frozen" bc removing from array breaks interactions with killEnemies
 
+//relics that can be turned into things to buy:
+
+//EVERY LEVEL:
+//remove enemy shields -> bronze?
+//build teleporter -> silver? (square under shop)
+//build final relay -> gold? (at end of level)
+//relic upgrade -> ruby (in shop?)
+
+
+
+//Possible options (ruby??)
+//pauseEnemies
+//spareTank
+//thornsRelic
+
+
 let potentialRelics = [
     //0
     pauseEnemies = {

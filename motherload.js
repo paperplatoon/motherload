@@ -3,6 +3,13 @@
 //
 
 let gameStartState = {
+    playerShip: {
+        hullArmorPlating: [0, 0, 0, 0, 0, 0, 0, 0],
+        fuelTank: [0, 0, 0, 0, 0, 0, 0, 0],
+        laserLevel: 0,
+        bombLevel: 0
+    },
+
     gameMap: [],
     robotPath: "img/map/miner1.png",
     score: 0,
@@ -25,10 +32,11 @@ let gameStartState = {
     levelOresConverted: 0,
     levelEnemiesKilled: 0,
 
+    //
+
     //states
     currentPosition: false,
     inStore: false,
-    sellingItems: false,
     viewingInventory: false,
     choosingNextLevel: false,
     inTransition: false, 
@@ -42,12 +50,12 @@ let gameStartState = {
     choosingRelicToUpgrade: false,
     
 
-    currentInventory: 0,
+    currentInventory: 10,
     inventoryMax: 12,
     inventoryUpgrades: 0,
     inventoryUpgradeCost: 750,
-    bronzeInventory: 0,
-    silverInventory: 0,
+    bronzeInventory: 5,
+    silverInventory: 5,
     goldInventory: 0,
     rubyInventory: 0,
     amethystInventory: 0,
@@ -98,7 +106,7 @@ let gameStartState = {
     rubyIncrease: 0,
     overallHullModifier: 1,
     overallFuelModifier: 1,
-    playerRelicArray: [],
+    playerRelicArray: [silverHealingRelic],
     storeUpgradeArray: [],
     fishEyeLens: false,
 
@@ -157,7 +165,7 @@ let gameStartState = {
     totalLevelEnemies: 0,
     floorValues: [
         {
-            barVals: [1, 1, 1, 0.999, 0.99, 0.95, 0.9],
+            barVals: [1, 1, 1, 0.999, 0.99, 0.96, 0.85],
             //barVals: [0.99, 0.97, 0.91, 0.85, 0.77, 0.73, 0.7],
             enemyValue: 0.985,
             bottomRowEnemies: [1, 5, 9],
@@ -165,7 +173,7 @@ let gameStartState = {
             relicNumber: 1,
             floorNumber: 0,
             storeRelicPrice: 1500,
-            rubyRelicPrice: 2,
+            rubyRelicPrice: 1,
             amethystRelicPrice: 0,
             hullGoldUpgradePrice: 5,
             rubyHullUpgradePrice: 0,
@@ -174,15 +182,15 @@ let gameStartState = {
             isRoulette: 0.985,
         },
         {
-            barVals: [1, 0.9995, 0.999, 0.99, 0.975, 0.95, 0.9],
+            barVals: [1, 0.9999, 0.9995, 0.99, 0.98, 0.94, 0.85],
             enemyValue: 0.965,
             numberRows: 25,
             bottomRowEnemies: [0, 3, 7, 9],
             relicNumber: 1,
             floorNumber: 1,
-            storeRelicPrice: 6000,
-            rubyRelicPrice: 0,
-            amethystRelicPrice: 2,
+            storeRelicPrice: 3000,
+            rubyRelicPrice: 2,
+            amethystRelicPrice: 0,
             hullGoldUpgradePrice: 10,
             rubyHullUpgradePrice: 0,
             screenwidthBlocks: 15,
@@ -190,15 +198,15 @@ let gameStartState = {
             isRoulette: 0.991,
         },
         {
-            barVals: [1, 0.999, 0.995, 0.98, 0.96, 0.93, 0.9],
+            barVals: [1, 0.999, 0.995, 0.98, 0.96, 0.92, 0.85],
             enemyValue: 0.95,
             numberRows: 30,
             bottomRowEnemies: [1, 3, 5, 7],
             relicNumber: 1,
             floorNumber: 2,
-            storeRelicPrice: 20000,
-            rubyRelicPrice: 0,
-            amethystRelicPrice: 5,
+            storeRelicPrice: 6000,
+            rubyRelicPrice: 3,
+            amethystRelicPrice: 0,
             hullGoldUpgradePrice: 0,
             rubyHullUpgradePrice: 5,
             screenwidthBlocks: 16,
@@ -206,32 +214,32 @@ let gameStartState = {
             isRoulette: 0.996,
         },
         {
-            barVals: [0.9995, 0.995, 0.98, 0.95, 0.94, 0.925, 0.8],
+            barVals: [0.9995, 0.995, 0.98, 0.95, 0.94, 0.925, 0.85],
             enemyValue: 0.935,
             numberRows: 35,
             screenwidthBlocks: 17,
             bottomRowEnemies: [1, 2, 4, 5, 7],
             relicNumber: 1,
             floorNumber: 3,
-            storeRelicPrice: 40000,
-            rubyRelicPrice: 0,
-            amethystRelicPrice: 10,
+            storeRelicPrice: 10000,
+            rubyRelicPrice: 4,
+            amethystRelicPrice: 0,
             hullGoldUpgradePrice: 0,
             rubyHullUpgradePrice: 10,
             potentialRelicUpgrades: 1,
             isRoulette: 0.998,
         },
         {
-            barVals: [0.995, 0.99, 0.98, 0.96, 0.93, 0.92, 0.9],
+            barVals: [0.995, 0.99, 0.98, 0.96, 0.93, 0.92, 0.85],
             enemyValue: 0.91,
             numberRows: 50,
             screenwidthBlocks: 18,
             bottomRowEnemies: [1, 2, 4, 5, 7],
             relicNumber: 1,
             floorNumber: 4,
-            storeRelicPrice: 100000,
+            storeRelicPrice: 20000,
             rubyRelicPrice: 0,
-            amethystRelicPrice: 15,
+            amethystRelicPrice: 2,
             hullGoldUpgradePrice: 0,
             rubyHullUpgradePrice: 15,
             potentialRelicUpgrades: 1,
@@ -492,7 +500,7 @@ async function moveEnemies() {
     }
     stateObj.timeCounter += 1
     await updateState(stateObj)
-    if (!stateObj.inStore && !stateObj.choosingRobot && !stateObj.choosingNextLevel && !stateObj.sellingItems  
+    if (!stateObj.inStore && !stateObj.choosingRobot && !stateObj.choosingNextLevel
         && !stateObj.viewingInventory && !stateObj.startTheGame  && !stateObj.choosingRoulette  && !stateObj.lostTheGame 
         && !stateObj.choosingRelicToReplace && !stateObj.choosingRelicToUpgrade) {
 
@@ -676,9 +684,6 @@ async function renderScreen(stateObj) {
         storeDiv = chooseRobot(stateObj)
     } else if (stateObj.startTheGame) {
         storeDiv = renderStart(stateObj)
-    } else if (stateObj.sellingItems) {
-        storeDiv = renderSellingItems(stateObj)
-        addTopBar = true;
     } else if (stateObj.viewingInventory) {
         addTopBar = true;
         storeDiv = renderInventory(stateObj)
@@ -714,14 +719,6 @@ async function renderScreen(stateObj) {
 
 async function leaveStore(stateObj) {
     stateObj.inStore = false;
-    stateObj.sellingItems = false;
-    stateObj.viewingInventory = false;
-    await changeState(stateObj);
-}
-
-async function seeSellItems(stateObj) {
-    stateObj.inStore = false;
-    stateObj.sellingItems = true;
     stateObj.viewingInventory = false;
     await changeState(stateObj);
 }
@@ -779,9 +776,8 @@ async function chooseRobot5(stateObj) {
 
 async function viewStore(stateObj) {
     stateObj.inStore = true;
-    stateObj.sellingItems = false;
-
     await changeState(stateObj);
+    return stateObj
 }
 
 async function convertBronze(stateObj) {
@@ -1176,7 +1172,6 @@ async function buyRelic2Func(stateObj, relicPrice) {
             newState.choosingRelicToReplace = true
             newState.inStore = false
             newState.choosingRoulette = false
-            newState.sellingItems = false
         })
     }
     
@@ -1202,7 +1197,6 @@ async function buyRelic3Func(stateObj, relicPrice) {
             newState.choosingRelicToReplace = true
             newState.inStore = false
             newState.choosingRoulette = false
-            newState.sellingItems = false
         })
     }
     document.getElementById("store-relic-3-div").classList.add("store-clicked")
@@ -1224,7 +1218,6 @@ async function buyRelic4Func(stateObj) {
             newState.choosingRelicToReplace = true
             newState.inStore = false
             newState.choosingRoulette = false
-            newState.sellingItems = false
         })
     }
     document.querySelector(".ore-relic-div").classList.add("store-clicked")
@@ -1241,15 +1234,6 @@ async function killEnemiesStoreFunc(stateObj, value) {
     document.querySelector(".kill-enemy-div").classList.add("store-clicked")
     await pause(300)
     await changeState(stateObj);
-}
-
-async function viewSellingItems(stateObj) {
-    stateObj = await immer.produce(stateObj, async (newState) => {
-        newState.sellingItems = true;
-        newState.choosingRelicToUpgrade = false;
-    })
-    await changeState(stateObj);
-    return stateObj
 }
 
 killEnemiesStoreFunc
@@ -1287,7 +1271,6 @@ async function upgradeRelic(stateObj, index) {
 async function viewUpgradeRelic(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.choosingRelicToUpgrade = true;
-        newState.sellingItems = false;
     })
     await changeState(stateObj);
 }
@@ -1312,9 +1295,30 @@ async function craftAmmo(stateObj) {
             newState.currentInventory -= 1
         })
         document.querySelector(".craft-button-row").classList.add("store-clicked")
-        await pause(300)
-        document.querySelector(".ammo-text-div").classList.add("emphasis")
-        await pause(300)
+        await pause(150)
+        document.querySelector(".ammo-text-div").classList.add("brief-emphasis")
+        await pause(150)
+        await changeState(stateObj);
+    }
+}
+
+async function makeFuel(stateObj) {
+    if (stateObj.bronzeInventory > 0 && stateObj.currentFuel < stateObj.fuelTankMax) {
+        stateObj = immer.produce(stateObj, (newState) => {
+            let amountToRegain = (Math.floor(50/(1+stateObj.currentLevel)));
+            let missingFuel = newState.fuelTankMax - newState.currentFuel
+            if ( amountToRegain < missingFuel) {
+                newState.currentFuel += amountToRegain
+            } else {
+                newState.currentFuel = newState.fuelTankMax 
+            }
+            newState.bronzeInventory -= 1
+            newState.currentInventory -= 1
+        })
+        document.querySelector(".bronze-fuel-row").classList.add("store-clicked")
+        await pause(150)
+        document.querySelector("#max-fuel-text").classList.add("brief-emphasis")
+        await pause(150)
         await changeState(stateObj);
     }
 }
@@ -1388,7 +1392,7 @@ document.addEventListener('keydown', async function(event) {
   });
 
 async function checkForDeath(stateObj) {
-    if (stateObj.sellingItems === false && stateObj.inStore === false) {
+    if (stateObj.inStore === false) {
         
 
         if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks !== 0) {
@@ -1636,7 +1640,9 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await doDamage(stateObj, 75)
         stateObj = await handleSquare(stateObj, targetSquareNum, 1)
     } else if (targetSquare === "STORE") {
-        stateObj = await sellItemsScreen(stateObj)
+        console.log('entering store with stateObj ' + stateObj.inStore)
+        stateObj = await viewStore(stateObj)
+        console.log('entering store with stateObj ' + stateObj.inStore)
     } else if (targetSquare === "EXIT") {
         stateObj = await goToNextLevel(stateObj)
     } else if (targetSquare === "relic1") {
@@ -1652,7 +1658,6 @@ async function calculateMoveChange(stateObj, squaresToMove) {
                 newState.choosingRelicToReplace = true
                 newState.inStore = false
                 newState.choosingRoulette = false
-                newState.sellingItems = false
             })
         }
         
@@ -1669,7 +1674,6 @@ async function calculateMoveChange(stateObj, squaresToMove) {
                 newState.choosingRelicToReplace = true
                 newState.inStore = false
                 newState.choosingRoulette = false
-                newState.sellingItems = false
             })
         }
     } else {
@@ -1687,34 +1691,6 @@ async function calculateMoveChange(stateObj, squaresToMove) {
 
 function pause(timeValue) {
     return new Promise(res => setTimeout(res, timeValue))
-}
-
-async function sellItemsScreen(stateObj, emptyInv=false) {
-    stateObj = await immer.produce(stateObj, async (newState) => {
-        newState.sellingItems = true;
-        newState.choosingRelicToUpgrade = false;
-    })
-    return stateObj
-}
-
-async function sellItems(stateObj, sellTotal) {
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory = 0;
-            newState.bronzeInventory = 0;
-            newState.silverInventory = 0;
-            newState.goldInventory = 0;
-            newState.rubyInventory = 0;
-            newState.amethystInventory = 0;
-            newState.diamondInventory = 0;
-            newState.blackDiamondInventory = 0;
-            if (sellTotal) {
-                newState.bankedCash += sellTotal;
-            }
-        })
-    }
-    stateObj = await changeState(stateObj)
-    return stateObj
 }
 
 async function sellBronze(stateObj, sellTotal) {
