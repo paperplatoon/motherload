@@ -3,16 +3,11 @@ let commonRouletteChoices = [
         name: "Fuel Tank +",
         rarity: "common",
         text:  (stateObj) => {
-            return "Increase Fuel Tank by " + Math.ceil(3*stateObj.overallFuelModifier)
+            return "bronze Fuel Tank part "
         },
-        value: 3,
+        value: 1,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.fuelTankMax += Math.ceil(value * newState.overallFuelModifier);;
-                newState.currentFuel += Math.ceil(value * newState.overallFuelModifier);;
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeFuelRoulette(stateObj, value)
             return stateObj
         },
         type: "tank"
@@ -22,16 +17,11 @@ let commonRouletteChoices = [
         name: "Hull Armor +",
         rarity: "common",
         text:  (stateObj) => {
-            return "Increase Hull Armor by " + Math.ceil(3*stateObj.overallHullModifier)
+            return "bronze Hull Armor part "
         },
-        value: 3,
+        value: 1,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.hullArmorMax += Math.ceil(value  * newState.overallHullModifier);
-                newState.currentHullArmor += Math.ceil(value  * newState.overallHullModifier)
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeHullRoulette(stateObj, value)
             return stateObj
         },
         type: "hull"
@@ -102,16 +92,11 @@ let uncommonRouletteChoices = [
         name: "Fuel Tank ++",
         rarity: "uncommon",
         text:  (stateObj) => {
-            return "Increase Fuel Tank by " + Math.ceil(5*stateObj.overallFuelModifier)
+            return "silver Fuel Tank part"
         },
-        value: 5,
+        value: 2,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.fuelTankMax += Math.ceil(value * newState.overallFuelModifier);;
-                newState.currentFuel += Math.ceil(value * newState.overallFuelModifier);;
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeFuelRoulette(stateObj, value)
             return stateObj
         },
         type: "tank"
@@ -121,16 +106,10 @@ let uncommonRouletteChoices = [
         name: "Hull Armor ++",
         rarity: "uncommon",
         text:  (stateObj) => {
-            return "Increase Hull Armor by " + Math.ceil(5*stateObj.overallHullModifier)
-        },
-        value: 5,
+            return "silver Hull Armor part"        },
+        value: 2,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.hullArmorMax += Math.ceil(value  * newState.overallHullModifier);
-                newState.currentHullArmor += Math.ceil(value  * newState.overallHullModifier);
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeHullRoulette(stateObj, value)
             return stateObj
         },
         type: "hull"
@@ -216,16 +195,11 @@ let rareRouletteChoices = [
         name: "Fuel Tank +++",
         rarity: "rare",
         text:  (stateObj) => {
-            return "Increase Fuel Tank by " + Math.ceil(10*stateObj.overallFuelModifier)
+            return "gold Fuel Tank part"
         },
-        value: 10,
+        value: 3,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.fuelTankMax += Math.ceil(value * newState.overallFuelModifier);
-                newState.currentFuel += Math.ceil(value * newState.overallFuelModifier);;
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeFuelRoulette(stateObj, value)
             return stateObj
         },
         type: "tank"
@@ -235,16 +209,11 @@ let rareRouletteChoices = [
         name: "Hull Armor +++",
         rarity: "rare",
         text:  (stateObj) => {
-            return "Increase Hull Armor by " + Math.ceil(10*stateObj.overallHullModifier)
+            return "gold Hull Armor part"
         },
-        value: 10,
+        value: 3,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.hullArmorMax += Math.ceil(value  * newState.overallHullModifier);
-                newState.currentHullArmor += Math.ceil(value  * newState.overallHullModifier);
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeHullRoulette(stateObj, value)
             return stateObj
         },
         type: "hull"
@@ -313,16 +282,11 @@ let legendaryRouletteChoices = [
         name: "Fuel Tank ++++",
         rarity: "legendary",
         text:  (stateObj) => {
-            return "Increase Fuel Tank by " + Math.ceil(12*stateObj.overallFuelModifier)
+            return "ruby Fuel Tank part "
         },
-        value: 12,
+        value: 4,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.fuelTankMax += Math.ceil(value * newState.overallFuelModifier);;
-                newState.currentFuel += Math.ceil(value * newState.overallFuelModifier);;
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeFuelRoulette(stateObj, value)
             return stateObj
         },
         type: "tank"
@@ -332,16 +296,11 @@ let legendaryRouletteChoices = [
         name: "Hull Armor ++++",
         rarity: "legendary",
         text:  (stateObj) => {
-            return "Increase Hull Armor by " + Math.ceil(12*stateObj.overallHullModifier)
+            return "ruby Hull Armor part"
         },
-        value: 12,
+        value: 4,
         rouletteFunc: async (stateObj, value) => {
-            stateObj = immer.produce(stateObj, (newState) => {
-                newState.hullArmorMax += Math.ceil(value  * newState.overallHullModifier);
-                newState.currentHullArmor += Math.ceil(value  * newState.overallHullModifier);
-                newState.choosingRoulette = false;
-            })
-            await changeState(stateObj);
+            stateObj = upgradeHullRoulette(stateObj, value)
             return stateObj
         },
         type: "hull"

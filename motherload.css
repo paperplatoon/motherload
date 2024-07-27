@@ -380,16 +380,34 @@ html, body {
     width: 100%;
   }
 
-  .craft-button-row, .bronze-fuel-row {
+  .craft-button-row, .bronze-fuel-row, .gold-repair-row, .scrap-inv-row {
     position: absolute;
-    right: -10vw; /* Move 10vw to the right */
+    text-align: center;
+    right: -14vw; /* Move 10vw to the right */
     top: 50%;
     transform: translateY(-50%);
     z-index: 2;
-    width: 8vw;
+    padding: 0.1vmin;
+    border-radius: 5%;
+    border: 1px solid black;
+    width: 12vw;
     height: 2vh;
     background-color: rgb(4, 255, 0);
     cursor: pointer;
+  }
+
+  .inventory-bar-vis-div {
+    display: flex;
+    width: 60vw;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1vh;
+  }
+
+  .craft-button-row:hover, .bronze-fuel-row:hover, .gold-repair-row:hover, .scrap-inv-row:hover {
+    color: white;
+    background-color: rgb(3, 171, 0);
   }
 
   .bar-relic-div {
@@ -562,7 +580,7 @@ html, body {
   flex-direction: column;
   width: 70vw;
   height: 60vh;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   border: 0.8vw dashed rgba(71, 71, 71, 0.726);
   outline: 0.3vw dashed rgba(139, 137, 11, 0.526);
@@ -572,6 +590,10 @@ html, body {
   font-family: monospace;
   box-shadow: 1vw 1vw 1vw rgba(113, 113, 113, 0.619);
   transition: 1s all;
+}
+
+.margin-top-10 {
+  margin-top: 8vh;
 }
 
 .ruby-relic-div, .ore-relic-div, .kill-enemy-div {
@@ -859,6 +881,10 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
     transition: 2s all;
   }
 
+  .inventory-div {
+    justify-content: start;
+  }
+
   .start-div {
     justify-content: left;
     text-align: left;
@@ -1043,15 +1069,15 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
 
 
   .store-clicked {
-    animation: storeClicked 0.2s linear
+    animation: storeClicked 0.3s linear
   }
 
-  .emphasis {
-    animation: emphasis 0.5s linear
+  .text-emphasis {
+    animation: text-emphasis 0.5s linear;
   }
 
   .brief-emphasis {
-    animation: emphasis 0.2s linear
+    animation: emphasis 0.3s linear
   }
 
   .taking-damage {
@@ -1128,6 +1154,21 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
     }
     100% {
       scale: 1;
+    }
+  }
+
+  @keyframes text-emphasis {
+    0% {
+      scale: 1;
+      color: lightgreen;
+    }
+    50% {
+      scale: 1.3;
+      color: green;
+    }
+    100% {
+      scale: 1;
+      color: lightgreen;
     }
   }
 

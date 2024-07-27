@@ -292,12 +292,33 @@ function createCraftAmmoButton(stateObj) {
       return craftAmmoButton
 }
 
+
+function createUpgradeInvDiv(stateObj) {
+    let craftAmmoButton = document.createElement("div");
+      craftAmmoButton.classList.add("scrap-inv-row");
+      craftAmmoButton.textContent = "Expand Inventory";
+      craftAmmoButton.onclick = async function () {
+        await expandInventory(stateObj);
+      };
+      return craftAmmoButton
+}
+
 function createRefillFuelButton(stateObj) {
     let craftAmmoButton = document.createElement("div");
       craftAmmoButton.classList.add("bronze-fuel-row");
       craftAmmoButton.textContent = "Make Fuel";
       craftAmmoButton.onclick = async function () {
         await makeFuel(stateObj);
+      };
+      return craftAmmoButton
+}
+
+function createRepairHullButton(stateObj) {
+    let craftAmmoButton = document.createElement("div");
+      craftAmmoButton.classList.add("gold-repair-row");
+      craftAmmoButton.textContent = "Repair Hull";
+      craftAmmoButton.onclick = async function () {
+        await repairHull(stateObj);
       };
       return craftAmmoButton
 }
@@ -322,17 +343,44 @@ function createInventoryDiv(stateObj, type, inventory, conversionRate, nextType,
     inventoryDiv.textContent = textString;
 
     if (type === "Bronze") {
-        let craftAmmoButton = createRefillFuelButton(stateObj)
-        inventoryDiv.append(craftAmmoButton);
+        if (stateObj.currentFuel < stateObj.fuelTankMax) {
+            let refillFuelButton = createRefillFuelButton(stateObj)
+            inventoryDiv.append(refillFuelButton);
+        }
     } else if (type === "Silver") {
       let craftAmmoButton = createCraftAmmoButton(stateObj)
       inventoryDiv.append(craftAmmoButton);
-    }
+    } else if (type === "Gold") {
+        if (stateObj.currentHullArmor < stateObj.hullArmorMax) {
+            let repairHullButton = createRepairHullButton(stateObj)
+            inventoryDiv.append(repairHullButton);
+        }
+        
+      }
     return inventoryDiv
   } else {
         return false
   }
 }
+
+function createScrapDiv(stateObj) {
+    if (stateObj.scrapInventory > 0) {
+      let inventoryDiv = document.createElement("div");
+      inventoryDiv.classList.add("inv-row");
+      
+      let textString = `Scrap Metal (${stateObj.scrapInventory})`;
+      inventoryDiv.textContent = textString;
+
+      if (stateObj.scrapInventory > 2) {
+        let upgradeInvDiv = createUpgradeInvDiv(stateObj)
+        inventoryDiv.append(upgradeInvDiv);
+      }
+  
+      return inventoryDiv
+    } else {
+        return false
+    }
+  }
 
 function createFuelTankVisualStoreDiv(fuelArray) {
     const fuelTankDiv = document.createElement('div');
@@ -355,6 +403,8 @@ function createFuelTankVisualStoreDiv(fuelArray) {
   
     return fuelTankDiv;
 }
+
+
 
 // function createInvOreDivs(stateObj) {
 
