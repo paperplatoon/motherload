@@ -1,8 +1,5 @@
-//make enemies drop scrap when they die! make sure enemies can pass thru it though ??
-//let player upgrade iventory with dropped scrap 
 //require higher level enemies to be hit w certain weapons
-//add ability for player to upgrade relics (or buy a new one) back to shop
-
+//add ability for player to or buy a new relic back to shop
 //let players heal/fuel from main screen
 
 
@@ -145,11 +142,11 @@ let gameStartState = {
     totalLevelEnemies: 0,
     floorValues: [
         {
-            barVals: [1, 1, 1, 0.999, 0.99, 0.96, 0.75],
+            barVals: [1, 1, 1, 0.999, 0.99, 0.96, 0.85],
             //barVals: [0.99, 0.97, 0.91, 0.85, 0.77, 0.73, 0.7],
             enemyValue: 0.985,
             bottomRowEnemies: [1, 5, 9],
-            numberRows: 25,
+            numberRows: 20,
             relicNumber: 1,
             floorNumber: 0,
             rubyRelicPrice: 1,
@@ -167,7 +164,7 @@ let gameStartState = {
             rubyRelicPrice: 2,
             amethystRelicPrice: 0,
             screenwidthBlocks: 15,
-            isRoulette: 0.991,
+            isRoulette: 0.993,
         },
         {
             barVals: [1, 0.999, 0.995, 0.98, 0.96, 0.92, 0.85],
@@ -187,7 +184,7 @@ let gameStartState = {
         {
             barVals: [0.9995, 0.995, 0.98, 0.95, 0.94, 0.925, 0.85],
             enemyValue: 0.935,
-            numberRows: 35,
+            numberRows: 40,
             screenwidthBlocks: 17,
             bottomRowEnemies: [1, 2, 4, 5, 7],
             relicNumber: 1,
@@ -199,7 +196,7 @@ let gameStartState = {
         {
             barVals: [0.995, 0.99, 0.98, 0.96, 0.93, 0.92, 0.85],
             enemyValue: 0.91,
-            numberRows: 50,
+            numberRows: 60,
             screenwidthBlocks: 18,
             bottomRowEnemies: [1, 2, 4, 5, 7],
             relicNumber: 1,
@@ -672,9 +669,14 @@ function renderScreen(stateObj) {
     return stateObj
 }
 
-async function leaveStore(stateObj) {
-    stateObj.inStore = false;
-    stateObj.viewingInventory = false;
+async function returnToMap(stateObj) {
+    stateObj = immer.produce(stateObj, (draft) => {
+        draft.inStore = false;
+        draft.viewingInventory = false;
+        draft.choosingRoulette = false;
+        draft.choosingRelicToUpgrade = false
+    })
+    
     changeState(stateObj);
 }
 
@@ -973,31 +975,6 @@ async function dirtEfficiencyChoice(stateObj) {
 //STORE FUNCTIONS
 //------------------------------------------------------------------------------------
 
-async function fillFuel(stateObj) {
-    let missingFuel = Math.floor(stateObj.fuelTankMax-stateObj.currentFuel)
-    let fuelPrice = 1+stateObj.currentLevel
-    let fuelCost = Math.ceil((missingFuel * fuelPrice - (1-stateObj.cheaperShops))/2)
-    stateObj = immer.produce(stateObj, (newState) => {
-        if (missingFuel > 0) {
-            if (newState.freeFuel === true ) {
-                newState.currentFuel = newState.fuelTankMax
-            } else {
-                if (newState.bankedCash > fuelCost) {
-                    newState.currentFuel += missingFuel;
-                    newState.bankedCash -= fuelCost
-                } else {
-                    newState.currentFuel += ((newState.bankedCash/fuelPrice)*2);
-                    newState.bankedCash = 0;    
-                }
-            }
-        }
-    })
-    document.getElementById("current-fuel-bar").classList.add("emphasis")
-    document.getElementById("store-fuel-div").classList.add("store-clicked")
-    await pause(300)
-    changeState(stateObj);
-}
-
 async function buyRelic2Func(stateObj, relicPrice) {
     let index = stateObj.playerRelicArray.map(function(e) { return e.name; }).indexOf(stateObj.storeRelic2.name);
     if (stateObj.playerRelicArray.length < 5 || (index !== -1)) {
@@ -1056,7 +1033,9 @@ async function upgradeRelic(stateObj, index) {
 async function viewUpgradeRelic(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.choosingRelicToUpgrade = true;
+        newState.inStore = false;
     })
+    console.log("choosingRelicToUpgrade to true " + stateObj.choosingRelicToUpgrade)
     changeState(stateObj);
 }
 
@@ -1090,12 +1069,10 @@ async function expandInventory(stateObj) {
     }
 }
 
-
-
 async function makeFuel(stateObj) {
     if (stateObj.bronzeInventory > 0 && stateObj.currentFuel < stateObj.fuelTankMax) {
         stateObj = immer.produce(stateObj, (newState) => {
-            let amountToRegain = (Math.floor(50/(1+stateObj.currentLevel)));
+            let amountToRegain = newState.fuelTankMax/2;
             let missingFuel = newState.fuelTankMax - newState.currentFuel
             if ( amountToRegain < missingFuel) {
                 newState.currentFuel += amountToRegain
@@ -1116,7 +1093,7 @@ async function makeFuel(stateObj) {
 async function repairHull(stateObj) {
     if (stateObj.goldInventory > 0 && stateObj.currentHullArmor < stateObj.hullArmorMax) {
         stateObj = immer.produce(stateObj, (newState) => {
-            let amountToRegain = (Math.floor(50/(1+stateObj.currentLevel)));
+            let amountToRegain = newState.hullArmorMax/2;
             let missingHull = newState.hullArmorMax - newState.currentHullArmor
             if ( amountToRegain < missingHull) {
                 newState.currentHullArmor += amountToRegain
@@ -1193,15 +1170,15 @@ document.addEventListener('keydown', async function(event) {
 async function checkForDeath(stateObj) {
     if (stateObj.inStore === false) {
         
-
+        const damageAmount = 50 + (stateObj.currentLevel * 25)
         if (stateObj.gameMap[stateObj.currentPosition-1] === "enemy" && stateObj.currentPosition % stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks !== 0) {
-            stateObj = await doDamage(stateObj, 50, -1)
+            stateObj = await doDamage(stateObj, damageAmount, -1)
         } else if (stateObj.gameMap[stateObj.currentPosition+1] === "enemy" && (stateObj.currentPosition+1) % stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks !== 0) {
-            stateObj = await doDamage(stateObj, 50, 1)
+            stateObj = await doDamage(stateObj, damageAmount, 1)
         } else if (stateObj.gameMap[stateObj.currentPosition+stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks] === "enemy") {
-            stateObj = await doDamage(stateObj, 50, stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks)
+            stateObj = await doDamage(stateObj, damageAmount, stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks)
         } else if (stateObj.gameMap[stateObj.currentPosition-stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks] === "enemy") {
-            stateObj = await doDamage(stateObj, 50, -stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks)
+            stateObj = await doDamage(stateObj, damageAmount, -stateObj.floorValues[stateObj.currentLevel].screenwidthBlocks)
         }
     
         changeState(stateObj)

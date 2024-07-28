@@ -282,14 +282,14 @@ let potentialRelics = [
                     newState.playerRelicArray[index].upgrades +=1
                 }
             })
-            await changeState(stateObj);
+             changeState(stateObj);
             return stateObj
         },
         resetFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.enemyDamageModifier = 1;
             })
-            await changeState(stateObj);
+             changeState(stateObj);
             return stateObj
         },
         imgPath: "img/relics/shield2.png",
@@ -341,7 +341,7 @@ let potentialRelics = [
     },
 
     
-
+    //NEED TO FIX
     bronzeSilverBonusRelic = {
         name: "Basic Ore Refiner",
         varName: "bronzeSilverBonusRelic",
@@ -656,14 +656,14 @@ let potentialRelics = [
                     newState.playerRelicArray[index].upgrades +=1
                 }
             })
-            await changeState(stateObj);
+             changeState(stateObj);
             return stateObj
         },
         resetFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.bombDistance = 2;
             })
-            await changeState(stateObj);
+             changeState(stateObj);
             return stateObj
         },
         imgPath: "img/relics/bombupgrader.png",

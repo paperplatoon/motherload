@@ -272,13 +272,7 @@ function renderInventory(stateObj) {
 
 
 
-  let buyNothingDiv = document.createElement("Div")
-  buyNothingDiv.setAttribute("id", "sell-return-map-div")
-  buyNothingDiv.classList.add("return-to-map")
-  buyNothingDiv.textContent = "Return to Map"
-  buyNothingDiv.onclick = function () {
-      leaveStore(stateObj)
-  }
+  let buyNothingDiv = createReturnToMapButton(stateObj)
 
   let shipStatsDiv = document.createElement("Div")
     shipStatsDiv.classList.add("ship-stats")
@@ -680,224 +674,38 @@ function renderNextLevelChoice(stateObj) {
   return storeDiv
 }
 
-function renderStore(stateObj) {
-  let storeDiv = document.createElement("Div")
-  storeDiv.classList.add("store-div")
 
-  let fillFuelDiv = document.createElement("Div")
-  fillFuelDiv.setAttribute("id", "store-fuel-div")
-  let missingFuel = Math.floor(stateObj.fuelTankMax-stateObj.currentFuel)
-  let fuelPrice = Math.ceil((missingFuel * Math.floor((2+stateObj.currentLevel)*0.5) - (1-stateObj.cheaperShops))/2)
-  if (missingFuel > 0) {
-      fillFuelDiv.classList.add("store-option")
-      let fillText1 = document.createElement("Div")
-      fillText1.classList.add("store-option-text")
-      let fillText2 = document.createElement("Div")
-      fillText2.classList.add("store-option-text")
-      
-      if (stateObj.freeFuel === true) {
-          fillText1.textContent = "Refill fuel" 
-          fillText2.textContent = "Free"
-      } else if (stateObj.bankedCash < fuelPrice) {
-          fillText1.textContent = "Spend all money on fuel" 
-          fillText2.textContent = "$" + stateObj.bankedCash
-      } else {
-          fillText1.textContent = "Refill fuel" 
-          fillText2.textContent = "$" + fuelPrice
-      }
-
-      fillFuelDiv.append(fillText1, fillText2)
-      fillFuelDiv.classList.add("store-clickable")
-      fillFuelDiv.onclick = function () {
-              fillFuel(stateObj)
-      }
-  }
-
-  let repairDiv = document.createElement("Div")
-  repairDiv.setAttribute("id", "store-repair-div")
-  let missingHull = stateObj.hullArmorMax-stateObj.currentHullArmor
-  if (missingHull > 0) {
-      repairDiv.classList.add("store-option")
-      let repairText1 = document.createElement("Div")
-      repairText1.classList.add("store-option-text")
-      let repairText2 = document.createElement("Div")
-      repairText1.classList.add("store-option-text")
-      
-      if ((missingHull*5) * (stateObj.currentLevel+1) > (stateObj.bankedCash * (1-stateObj.cheaperShops))) {
-          repairText1.textContent = "Spend all money on repairing Hull Armor" 
-          repairText2.textContent = "$" + Math.ceil(stateObj.bankedCash) * (1-stateObj.cheaperShops)
-      } else {
-          repairText1.textContent = "Repair Hull Armor fully " 
-          repairText2.textContent = "$" +  Math.ceil(missingHull*5  ) * (stateObj.currentLevel+1) * (1-stateObj.cheaperShops)
-      }
-      repairText2.classList.add("store-option-text")
-      repairDiv.append(repairText1, repairText2)
-      repairDiv.classList.add("store-clickable")
-      
-      repairDiv.onclick = function () {
-              repairHull(stateObj)
-  }
-  }
-
-  let inventoryUpgradeDiv = document.createElement("Div")
-  inventoryUpgradeDiv.classList.add("store-option")
-  inventoryUpgradeDiv.setAttribute("id", "store-inventory-upgrade-div")
-  let invText1 = document.createElement("Div")
-  invText1.classList.add("store-option-text")
-  let invText2 = document.createElement("Div")
-  invText2.classList.add("store-option-text")
-  invText1.textContent = "Cargo Bay Upgrade" 
-  invText2.textContent = "$" + stateObj.inventoryUpgradeCost * (stateObj.currentLevel+1) * (1-stateObj.cheaperShops)
-  inventoryUpgradeDiv.append(invText1, invText2)
-  if (stateObj.bankedCash >= stateObj.inventoryUpgradeCost * (stateObj.currentLevel+1) * (1-stateObj.cheaperShops)) {
-      inventoryUpgradeDiv.classList.add("store-clickable")
-      inventoryUpgradeDiv.onclick = function () {
-          upgradeInventory(stateObj)
-      }
-  }
-
-
-  let buyRelic1Div = document.createElement("Div")
-  if (stateObj.storeRelic3 !== false) {
-    buyRelic1Div.setAttribute("id", "store-relic-3-div")
-    buyRelic1Div.classList.add("store-option")
-    buyRelic1Div.classList.add("relic-option")
-      let relicText1 = document.createElement("Div")
-      relicText1.classList.add("store-option-text")
-      let relicText2 = document.createElement("Div")
-      relicText2.classList.add("store-option-text")
-      relicText1.textContent = stateObj.storeRelic3.storeText(stateObj)
-      let relicPrice = Math.ceil(stateObj.floorValues[stateObj.currentLevel].storeRelicPrice * (1-stateObj.cheaperShops))
-      relicText2.textContent = "$" + relicPrice
-      let relicImg = document.createElement("Img");
-      relicImg.classList.add("store-relic-img")
-      relicImg.src = stateObj.storeRelic3.imgPath
-      buyRelic1Div.append(relicText1, relicImg, relicText2)
-      if (stateObj.bankedCash >= relicPrice) {
-          buyRelic1Div.classList.add("store-clickable")
-          buyRelic1Div.onclick = function () {
-              buyRelic3Func(stateObj, relicPrice)
-          }
-      }
-  }
-
-  let buyRelic2Div = document.createElement("Div")
-  if (stateObj.storeRelic2 !== false) {
-      buyRelic2Div.setAttribute("id", "store-relic-2-div")
-      buyRelic2Div.classList.add("store-option")
-      buyRelic2Div.classList.add("relic-option")
-      let relicText1 = document.createElement("Div")
-      relicText1.classList.add("store-option-text")
-      let relicText2 = document.createElement("Div")
-      relicText2.classList.add("store-option-text")
-      relicText1.textContent = stateObj.storeRelic2.storeText(stateObj)
-      let relicPrice2 = Math.ceil(stateObj.floorValues[stateObj.currentLevel].storeRelicPrice * (1-stateObj.cheaperShops))
-      relicText2.textContent = "$" + relicPrice2
-      let relicImg = document.createElement("Img");
-      relicImg.classList.add("store-relic-img")
-      relicImg.src = stateObj.storeRelic2.imgPath
-      buyRelic2Div.append(relicText1, relicImg, relicText2)
-      if (stateObj.bankedCash >= relicPrice2) {
-          buyRelic2Div.classList.add("store-clickable")
-          buyRelic2Div.onclick = function () {
-              buyRelic2Func(stateObj, relicPrice2)
-          }
-      }
-  }
-
-  let buyNothingDiv = document.createElement("Div")
-  document.createElement("Div")
-  buyNothingDiv.setAttribute("id", "store-return-map-div")
-  buyNothingDiv.classList.add("return-to-map")
-  buyNothingDiv.classList.add("centered")
-  buyNothingDiv.textContent = "Return to Map"
-  buyNothingDiv.onclick = function () {
-      leaveStore(stateObj)
-  }
-
-  let returnSellDiv = document.createElement("Div")
-  document.createElement("Div")
-  returnSellDiv.setAttribute("id", "store-return-selling-div")
-  returnSellDiv.classList.add("return-to-map")
-  returnSellDiv.classList.add("centered")
-  returnSellDiv.textContent = "Sell/Trade Ore"
-  returnSellDiv.onclick = function () {
-      seeSellItems(stateObj)
-  }
-
-  let fuelSubDiv = document.createElement("Div")
-  fuelSubDiv.classList.add("store-sub-div")
-  let fuelTitle = document.createElement("Div")
-  fuelTitle.classList.add("row")
-  fuelTitle.classList.add("store-title")
-  let fuelSubTitle = document.createElement("Div")
-  let fuelImgDiv = document.createElement("Div")
-  fuelImgDiv.classList.add("centered")
-  fuelImgDiv.classList.add("store-sub-img")
-  let fuelImg = document.createElement("Img");
-  fuelImg.src = "img/fueltank.png"
-  fuelImg.classList.add("max-100")
-  fuelImgDiv.append(fuelImg)
-  fuelSubTitle.textContent = "Fueling Station"
-  fuelSubTitle.classList.add("centered")
-  fuelTitle.append(fuelSubTitle, fuelImgDiv)
-  fuelSubDiv.append(fuelTitle, fillFuelDiv, fuelUpgradeDiv)
-
-  let hullSubDiv = document.createElement("Div")
-  hullSubDiv.classList.add("store-sub-div")
-  let hullTitle = document.createElement("Div")
-  hullTitle.classList.add("row")
-  hullTitle.classList.add("store-title")
-  let hullSubTitle = document.createElement("Div")
-  let hullImgDiv = document.createElement("Div")
-  hullImgDiv.classList.add("centered")
-  hullImgDiv.classList.add("store-sub-img")
-  let hullImg = document.createElement("Img");
-  hullImg.src = "img/redshield.png"
-  hullImg.classList.add("max-100")
-  hullImgDiv.append(hullImg)
-  hullSubTitle.textContent = "Armor Station"
-  hullSubTitle.classList.add("centered")
-  hullTitle.append(hullSubTitle, hullImgDiv)
-  hullSubDiv.append(hullTitle, repairDiv, hullUpgradeDiv, inventoryUpgradeDiv)
-
-  let weaponsSubDiv = document.createElement("Div")
-  weaponsSubDiv.classList.add("store-sub-div")
-  let weaponsTitle = document.createElement("Div")
-  weaponsTitle.classList.add("row")
-  weaponsTitle.classList.add("store-title")
-  let weaponSubTitle = document.createElement("Div")
-  let weaponImgDiv = document.createElement("Div")
-  weaponImgDiv.classList.add("centered")
-  weaponImgDiv.classList.add("store-sub-img")
-  let weaponImg = document.createElement("Img");
-  weaponImg.src = "img/missile.png"
-  weaponImg.classList.add("max-100")
-  weaponImgDiv.append(weaponImg)
-  weaponSubTitle.textContent = "Weapons Depot"
-  weaponSubTitle.classList.add("centered")
-  weaponsTitle.append(weaponSubTitle, weaponImgDiv)
-  weaponsSubDiv.append(weaponsTitle, buyLaserDiv, laserUpgradeDiv, buyBombDiv, bombUpgradeDiv)
-
-  let relicsSubDiv = document.createElement("Div")
-  relicsSubDiv.classList.add("store-sub-div")
-  let relicTitle = document.createElement("Div")
-  relicTitle.classList.add("row")
-  relicTitle.classList.add("store-title")
-  relicTitle.textContent = "Relic Shop"
-  relicsSubDiv.append(relicTitle, buyRelic1Div, buyRelic2Div)
-
-
-  return storeDiv
-}
+  // let buyRelic1Div = document.createElement("Div")
+  // if (stateObj.storeRelic3 !== false) {
+  //   buyRelic1Div.setAttribute("id", "store-relic-3-div")
+  //   buyRelic1Div.classList.add("store-option")
+  //   buyRelic1Div.classList.add("relic-option")
+  //     let relicText1 = document.createElement("Div")
+  //     relicText1.classList.add("store-option-text")
+  //     let relicText2 = document.createElement("Div")
+  //     relicText2.classList.add("store-option-text")
+  //     relicText1.textContent = stateObj.storeRelic3.storeText(stateObj)
+  //     let relicPrice = Math.ceil(stateObj.floorValues[stateObj.currentLevel].storeRelicPrice * (1-stateObj.cheaperShops))
+  //     relicText2.textContent = "$" + relicPrice
+  //     let relicImg = document.createElement("Img");
+  //     relicImg.classList.add("store-relic-img")
+  //     relicImg.src = stateObj.storeRelic3.imgPath
+  //     buyRelic1Div.append(relicText1, relicImg, relicText2)
+  //     if (stateObj.bankedCash >= relicPrice) {
+  //         buyRelic1Div.classList.add("store-clickable")
+  //         buyRelic1Div.onclick = function () {
+  //             buyRelic3Func(stateObj, relicPrice)
+  //         }
+  //     }
+  // }
 
 function renderStore(stateObj) {
 
   let storeDiv = document.createElement("Div")
-  storeDiv.classList.add("store-div")
+  storeDiv.classList.add("store-div", "flex-column-centered")
 
   let optionsDiv = document.createElement("Div")
-  optionsDiv.classList.add("store-options-container")
+  optionsDiv.classList.add("store-options-container", "flex-row-centered")
 
   // Fuel Tank Upgrade
   let fuelUpgradeDiv = createUpgradeOption(stateObj, "Fuel Tank", stateObj.playerShip.fuelTank, upgradeFuelTank)
@@ -909,17 +717,16 @@ function renderStore(stateObj) {
   let hullUpgradeDiv = createUpgradeOption(stateObj, "Hull Armor", stateObj.playerShip.hullArmorPlating, upgradeHullArmor)
   hullUpgradeDiv.append(hullArray)
 
-  // Laser Upgrade
   let laserUpgradeDiv = createWeaponUpgradeOption(stateObj, "Laser", stateObj.playerShip.laserLevel, upgradeLaser)
-
-  // Bomb Upgrade
   let bombUpgradeDiv = createWeaponUpgradeOption(stateObj, "Bomb", stateObj.playerShip.bombLevel, upgradeBomb)
+  let relicUpgradeDiv = createUpgradeRelicsDiv(stateObj)
 
   // ... other store options ...
 
-  storeDiv.append(fuelUpgradeDiv, hullUpgradeDiv, laserUpgradeDiv, bombUpgradeDiv)
+  optionsDiv.append(fuelUpgradeDiv, hullUpgradeDiv, relicUpgradeDiv)
 
-  let leaveStoreButton = createLeaveStoreButton(stateObj)
+  let leaveStoreButton = createReturnToMapButton(stateObj)
+  leaveStoreButton.classList.add("margin-top-10")
   storeDiv.append(optionsDiv, leaveStoreButton)
   
   return storeDiv
@@ -1082,10 +889,6 @@ function renderChooseUpgradeRelic(stateObj) {
   relicRowDiv.classList.add("relic-row-div")
   relicRowDiv.classList.add("row")
 
-  
-  let rubyPrice = stateObj.floorValues[stateObj.currentLevel].rubyRelicPrice
-  let amethystPrice = stateObj.floorValues[stateObj.currentLevel].amethystRelicPrice
-
 
   for (let i=0; i < stateObj.playerRelicArray.length; i++) {
     if (stateObj.playerRelicArray[i].upgrades) {
@@ -1131,7 +934,7 @@ function renderChooseUpgradeRelic(stateObj) {
   scrapRelicButton.classList.add("centered")
   scrapRelicButton.classList.add("scrap-button-relic")
   scrapRelicButton.onclick = async function () {
-      await viewSellingItems(stateObj)
+      await viewStore(stateObj)
     }
   
   relicToSwapDiv.append(scrapRelicButton)
@@ -1187,7 +990,7 @@ async function upgradeFuelTank(stateObj, upgradeLevel) {
               draft.playerShip.fuelTank[lowestIndex] = upgradeLevel
               draft[`${gemType}Inventory`] -= cost
               draft.currentInventory -= cost
-              draft.fuelTankMax = calculateMaxFuel(draft.playerShip.fuelTank)
+              draft.fuelTankMax = calculateMaxFuel(draft, draft.playerShip.fuelTank)
           }
       }
   })
@@ -1200,7 +1003,7 @@ async function upgradeFuelRoulette(stateObj, upgradeLevel) {
           const lowestIndex = draft.playerShip.fuelTank.findIndex(value => value === Math.min(...draft.playerShip.fuelTank))
           if (lowestIndex !== -1) {
               draft.playerShip.fuelTank[lowestIndex] = upgradeLevel
-              draft.fuelTankMax = calculateMaxFuel(draft.playerShip.fuelTank)
+              draft.fuelTankMax = calculateMaxFuel(draft, draft.playerShip.fuelTank)
               draft.choosingRoulette = false
       }
   })
@@ -1219,7 +1022,7 @@ async function upgradeHullArmor(stateObj, upgradeLevel) {
               draft.playerShip.hullArmorPlating[lowestIndex] = upgradeLevel
               draft[`${gemType}Inventory`] -= cost
               draft.currentInventory -= cost
-              draft.hullArmorMax = calculateMaxHullArmor(draft.playerShip.hullArmorPlating)
+              draft.hullArmorMax = calculateMaxHullArmor(draft, draft.playerShip.hullArmorPlating)
               draft.currentHullArmor = Math.min(draft.currentHullArmor + 20, draft.hullArmorMax)  // Increase armor, but don't exceed max
           }
       }
@@ -1233,7 +1036,7 @@ async function upgradeHullRoulette(stateObj, upgradeLevel) {
         const lowestIndex = draft.playerShip.hullArmorPlating.findIndex(value => value === Math.min(...draft.playerShip.hullArmorPlating))
           if (lowestIndex !== -1) {
               draft.playerShip.hullArmorPlating[lowestIndex] = upgradeLevel
-              draft.hullArmorMax = calculateMaxHullArmor(draft.playerShip.hullArmorPlating)
+              draft.hullArmorMax = calculateMaxHullArmor(draft, draft.playerShip.hullArmorPlating)
               draft.choosingRoulette = false
       }
   })
@@ -1251,34 +1054,34 @@ function getGemTypeForUpgrade(upgradeLevel) {
   }
 }
 
-function calculateMaxFuel(fuelTankArray) {
+function calculateMaxFuel(stateObj, fuelTankArray) {
   return 100 + fuelTankArray.reduce((total, level) => {
     switch(level) {
       case 1:
-        return total + 10;
+        return total + (10 * stateObj.overallFuelModifier);
       case 2:
-        return total + 15;
+        return total + (15 * stateObj.overallFuelModifier);
       case 3:
-        return total + 20;
+        return total + (20 * stateObj.overallFuelModifier);
       case 4:
-        return total + 30;
+        return total + (30 * stateObj.overallFuelModifier);
       default:
         return total;
     }
   }, 0);
 }
 
-function calculateMaxHullArmor(fuelTankArray) {
+function calculateMaxHullArmor(stateObj, fuelTankArray) {
   return 100 + fuelTankArray.reduce((total, level) => {
     switch(level) {
       case 1:
-        return total + 10;
+        return total + (10 * stateObj.overallHullModifier);
       case 2:
-        return total + 15;
+        return total + (15 * stateObj.overallHullModifier);
       case 3:
-        return total + 20;
+        return total + (20 * stateObj.overallHullModifier);
       case 4:
-        return total + 30;
+        return total + (30 * stateObj.overallHullModifier);
       default:
         return total;
     }

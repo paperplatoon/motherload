@@ -592,10 +592,6 @@ html, body {
   transition: 1s all;
 }
 
-.margin-top-10 {
-  margin-top: 8vh;
-}
-
 .ruby-relic-div, .ore-relic-div, .kill-enemy-div {
   width: 25vw;
   height: 20vh;
@@ -987,6 +983,20 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
   }
 
 
+  .flex-row-centered {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flex-column-centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
 
 
   .store-sub-div {
@@ -1245,7 +1255,6 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
     width: 30vw;
     height: 4.5vh;
     padding: 0.5vh 0.5vw;
-    margin-top: 1vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1374,4 +1383,6 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
   .fuel-3 { background-color: #ffd700; } /* Gold */
   .fuel-4 { background-color: #ff0000; } /* Red */
 
-  
+  .margin-top-10 {
+    margin-top: 8vh;
+  }

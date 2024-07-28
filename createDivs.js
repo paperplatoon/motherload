@@ -227,19 +227,22 @@ function createTopBarRelicDiv(stateObj, topBarDiv) {
     return topBarDiv
 }
 
-function createLeaveStoreButton(stateObj) {
+function createReturnToMapButton(stateObj) {
     let buyNothingDiv = document.createElement("Div")
     buyNothingDiv.setAttribute("id", "sell-return-map-div")
     buyNothingDiv.classList.add("return-to-map")
     buyNothingDiv.textContent = "Return to Map"
     buyNothingDiv.onclick = function () {
-        leaveStore(stateObj)
+        returnToMap(stateObj)
     }
     return buyNothingDiv
 }
 
-function upgradeRelicsDiv(stateObj) {
+function createUpgradeRelicsDiv(stateObj) {
     let upgradeableRelics = stateObj.playerRelicArray.filter(obj => obj.upgrades)
+    let rubyPrice = stateObj.floorValues[stateObj.currentLevel].rubyRelicPrice
+    let amethystPrice = stateObj.floorValues[stateObj.currentLevel].amethystRelicPrice
+
   let upgradeDiv = document.createElement("Div")
   if (upgradeableRelics.length > 0) {
     upgradeDiv.classList.add("ruby-relic-div")
@@ -257,6 +260,7 @@ function upgradeRelicsDiv(stateObj) {
       if (rubyPrice > 0) {
         costString += rubyPrice + " rubies"
         if (stateObj.rubyInventory >= rubyPrice) {
+            console.log("have " + stateObj.rubyInventory + " and price " + rubyPrice)
           upgradeDiv.classList.add("ruby-relic-hover")
           upgradeDiv.onclick = async function () {
             await viewUpgradeRelic(stateObj)
