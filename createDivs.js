@@ -283,6 +283,19 @@ function createUpgradeRelicsDiv(stateObj) {
   return upgradeDiv
 }
 
+function createLevelChoiceDiv(stateObj, levelObject) {
+    console.log('stateObj ' + stateObj.currentFuel)
+    console.log('levelObj ' + JSON.stringify(levelObject))
+    let levelChoiceDiv = document.createElement("Div")
+    levelChoiceDiv.classList.add("next-level-option")
+    levelChoiceDiv.textContent = levelObject.name +  " - " + levelObject.text
+    levelChoiceDiv.classList.add("next-level-clickable")
+    levelChoiceDiv.onclick = function () {
+        levelObject.levelFunc(stateObj)
+    }
+    return levelChoiceDiv
+}
+
 //add both a "exchange one bronze " and a 'fill up' feature
 //ADD INTO INVENTORY SCREEN LIKE SILVER
 

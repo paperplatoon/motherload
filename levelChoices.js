@@ -7,8 +7,9 @@ let levelChoices = [
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.floorValues[newState.currentLevel].enemyValue += 0.015
+                newState.choosingNextLevel = false
             })
-            await changeState(stateObj);
+            changeState(stateObj);
             return stateObj
         },
         rarity: "common",
@@ -24,6 +25,7 @@ let levelChoices = [
                 newState.floorValues[newState.currentLevel].barVals[1] -= 0.005
                 newState.floorValues[newState.currentLevel].barVals[2] -= 0.01
                 newState.floorValues[newState.currentLevel].barVals[3] -= 0.015
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -31,12 +33,13 @@ let levelChoices = [
         rarity: "common",
     },
 
-    highValue = {
+    friendlyMerchant = {
         name: "Friendly Merchant",
         text:  "Shops are slightly cheaper",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.cheaperShops += 0.1
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -46,10 +49,11 @@ let levelChoices = [
 
     oilWell = {
         name: "Oil Well",
-        text:  "Fuel is free on the next level",
+        text:  "Fuel is twice as effective for the next level",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.freeFuel = true;
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -64,6 +68,7 @@ let levelChoices = [
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.splinterCellModifier += 1;
                 newState.splinterCellOn = true;
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -71,12 +76,14 @@ let levelChoices = [
         rarity: "uncommon",
     },
 
+    //5
     goldVein = {
         name: "Gold Veins",
         text:  "Level has slightly more gold",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.floorValues[newState.currentLevel].barVals[4] -= 0.04
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -85,11 +92,12 @@ let levelChoices = [
     },
 
     silverVein = {
-        name: "Gold Veins",
+        name: "Silver Veins",
         text:  "Level has slightly more silver",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.floorValues[newState.currentLevel].barVals[5] -= 0.08
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -102,7 +110,8 @@ let levelChoices = [
         text:  "Level has slightly more rubies",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
-                newState.floorValues[newState.currentLevel].barVals[3] -= 0.02
+                newState.floorValues[newState.currentLevel].barVals[3] -= 0.01
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -119,6 +128,7 @@ let levelChoices = [
                 newState.floorValues[newState.currentLevel].barVals[1] = 1
                 newState.floorValues[newState.currentLevel].barVals[2] = 1
                 newState.floorValues[newState.currentLevel].barVals[3] = 1
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -128,10 +138,11 @@ let levelChoices = [
 
     fightingFines = {
         name: "Fines for Fighting",
-        text:  "Gain 50 gold for each enemy still alive after the end of the level ",
+        text:  "Gain 1 gold for each enemy still alive after the end of the level ",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
-                newState.isPacifist += 50;
+                newState.isPacifist += 1;
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -139,25 +150,28 @@ let levelChoices = [
         rarity: "common",
     },
 
+    //10
     teleporter = {
         name: "Local Teleporter",
         text:  "Level contains a teleporter that returns you to store",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.levelTeleport = true;
+                newState.choosingNextLevel = false
             })
-            await changeState(stateObj);
+             changeState(stateObj);
             return stateObj
         },
         rarity: "uncommon",
     },
 
-    teleporter = {
+    denseSoil = {
         name: "Dense Soil",
         text:  "All empty space in the level is replaced with bronze ore",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.noEmptySquares = true;
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -167,10 +181,11 @@ let levelChoices = [
 
     bounty = {
         name: "Bounty System",
-        text:  "Gain 100 gold for each enemy killed",
+        text:  "Gain 1 gold for each enemy killed",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
-                newState.killEnemiesForMoney += 100;
+                newState.killEnemiesForMoney += 1;
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -184,6 +199,7 @@ let levelChoices = [
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
                 newState.floorValues[newState.currentLevel].numberRows -= 10
+                newState.choosingNextLevel = false
             })
             await changeState(stateObj);
             return stateObj
@@ -191,14 +207,29 @@ let levelChoices = [
         rarity: "common",
     },
 
+    twoRelics = {
+        name: "Burial Ground",
+        text:  "Next level has two relics, but more enemies",
+        levelFunc: async (stateObj) => {
+            stateObj = immer.produce(stateObj, (newState) => {
+                newState.floorValues[newState.currentLevel].relicNumber += 1
+                newState.floorValues[newState.currentLevel].enemyValue -= 0.02
+                newState.choosingNextLevel = false
+            })
+            await changeState(stateObj);
+            return stateObj
+        },
+        rarity: "common",
+    },
 
+    //15
 ]
 
 async function longerLevelChoice(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.choosingNextLevel = false;
         newState.floorValues[newState.currentLevel].relicNumber += 1
-        newState.floorValues[newState.currentLevel].numberRows *= 2
+        newState.floorValues[newState.currentLevel].enemyValue *= 2
     })
     await changeState(stateObj);
 }
@@ -213,29 +244,6 @@ async function dirtEfficiencyChoice(stateObj) {
     await changeState(stateObj);
 }
 
-let fewerEnemiesDiv = document.createElement("Div")
-  fewerEnemiesDiv.classList.add("next-level-option")
-  fewerEnemiesDiv.textContent = "SAFE PASSAGE - The next level has fewer enemies"
-  fewerEnemiesDiv.classList.add("next-level-clickable")
-  fewerEnemiesDiv.onclick = function () {
-      fewerEnemiesChoice(stateObj)
-  }
-
-  let moreGoldDiv = document.createElement("Div")
-  moreGoldDiv.classList.add("next-level-option")
-  moreGoldDiv.textContent = "PROSPECTOR - The next level has more gold ore"
-  moreGoldDiv.classList.add("next-level-clickable")
-  moreGoldDiv.onclick = function () {
-      moreGold(stateObj)
-  }
-
-  let cowardDiv = document.createElement("Div")
-  cowardDiv.classList.add("next-level-option")
-  cowardDiv.textContent = "COWARD - The enemies in the next level do not move, but the level only contains bronze, silver, and gold ore"
-  cowardDiv.classList.add("next-level-clickable")
-  cowardDiv.onclick = function () {
-      cowardChoice(stateObj)
-  }
 
   let dirtEfficiencyDiv = document.createElement("Div")
   dirtEfficiencyDiv.classList.add("next-level-option")
@@ -243,84 +251,4 @@ let fewerEnemiesDiv = document.createElement("Div")
   dirtEfficiencyDiv.classList.add("next-level-clickable")
   dirtEfficiencyDiv.onclick = function () {
       dirtEfficiencyChoice(stateObj)
-  }
-
-  let pacifistDiv = document.createElement("Div")
-  pacifistDiv.classList.add("next-level-option")
-  pacifistDiv.textContent = "PACIFIST - After completing this next level, gain $50 for every enemy that is still alive"
-  pacifistDiv.classList.add("next-level-clickable")
-  pacifistDiv.onclick = function () {
-      pacifistChoice(stateObj)
-  }
-
-  let killEnemiesForMoneyDiv = document.createElement("Div")
-  killEnemiesForMoneyDiv.classList.add("next-level-option")
-  killEnemiesForMoneyDiv.textContent = "SCRAP METAL - Gain $100 for each enemy killed (next level only)"
-  killEnemiesForMoneyDiv.classList.add("next-level-clickable")
-  killEnemiesForMoneyDiv.onclick = function () {
-      killEnemiesForMoneyChoice(stateObj)
-  }
-
-  let shorterDiv = document.createElement("Div")
-  shorterDiv.classList.add("next-level-option")
-  shorterDiv.textContent = "SPEEDY - The next level is smaller, and has fewer enemies"
-  shorterDiv.classList.add("next-level-clickable")
-  shorterDiv.onclick = function () {
-      shorterLevelChoice(stateObj)
-  }
-
-  let longerDiv = document.createElement("Div")
-  longerDiv.classList.add("next-level-option")
-  longerDiv.textContent = "ODYSSEY - The next level is twice as long, but has two relics"
-  longerDiv.classList.add("next-level-clickable")
-  longerDiv.onclick = function () {
-      longerLevelChoice(stateObj)
-  }
-
-  let moreEnemiesDiv = document.createElement("Div")
-  moreEnemiesDiv.classList.add("next-level-option")
-  moreEnemiesDiv.textContent = "HOSTILE - The next level has more enemies, but a higher chance of rare gems"
-  moreEnemiesDiv.classList.add("next-level-clickable")
-  moreEnemiesDiv.onclick = function () {
-      moreEnemies(stateObj)
-  }
-
-  let cheaperShopsDiv = document.createElement("Div")
-  cheaperShopsDiv.classList.add("next-level-option")
-  cheaperShopsDiv.textContent = "BARGAINER - The next level's shop prices are slightly cheaper"
-  cheaperShopsDiv.classList.add("next-level-clickable")
-  cheaperShopsDiv.onclick = function () {
-      cheaperShopsChoice(stateObj)
-  }
-
-  let freeFuelDiv = document.createElement("Div")
-  freeFuelDiv.classList.add("next-level-option")
-  freeFuelDiv.textContent = "OIL WELL - Fuel is free for the next level. The level is also shorter"
-  freeFuelDiv.classList.add("next-level-clickable")
-  freeFuelDiv.onclick = function () {
-      freeFuelChoice(stateObj)
-  }
-
-  let splinterCellDiv = document.createElement("Div")
-  splinterCellDiv.classList.add("next-level-option")
-  splinterCellDiv.textContent = "COVERT OPS - Gems are worth double for the next level. Prices revert back to normal after killing an enemy"
-  splinterCellDiv.classList.add("next-level-clickable")
-  splinterCellDiv.onclick = function () {
-      splinterCellChoice(stateObj)
-  }
-
-  let teleporterChoiceDiv = document.createElement("Div")
-  teleporterChoiceDiv.classList.add("next-level-option")
-  teleporterChoiceDiv.textContent = "TELEPORTER - Next level contains a teleporter that returns you to the store"
-  teleporterChoiceDiv.classList.add("next-level-clickable")
-  teleporterChoiceDiv.onclick = function () {
-    teleporterChoice(stateObj)
-  }
-
-  let noEmptySquaresDiv = document.createElement("Div")
-  noEmptySquaresDiv.classList.add("next-level-option")
-  noEmptySquaresDiv.textContent = "EXTRA BRONZE - Next level has bronze ore instead of any empty squares"
-  noEmptySquaresDiv.classList.add("next-level-clickable")
-  noEmptySquaresDiv.onclick = function () {
-    noEmptySquaresChoice(stateObj)
   }

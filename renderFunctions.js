@@ -546,131 +546,23 @@ function renderNextLevelChoice(stateObj) {
   let storeDiv = document.createElement("Div")
   storeDiv.classList.add("store-div")
 
-  let fewerEnemiesDiv = document.createElement("Div")
-  fewerEnemiesDiv.classList.add("next-level-option")
-  fewerEnemiesDiv.textContent = "SAFE PASSAGE - The next level has fewer enemies"
-  fewerEnemiesDiv.classList.add("next-level-clickable")
-  fewerEnemiesDiv.onclick = function () {
-      fewerEnemiesChoice(stateObj)
-  }
-
-  let moreGoldDiv = document.createElement("Div")
-  moreGoldDiv.classList.add("next-level-option")
-  moreGoldDiv.textContent = "PROSPECTOR - The next level has more gold ore"
-  moreGoldDiv.classList.add("next-level-clickable")
-  moreGoldDiv.onclick = function () {
-      moreGold(stateObj)
-  }
-
-  let cowardDiv = document.createElement("Div")
-  cowardDiv.classList.add("next-level-option")
-  cowardDiv.textContent = "COWARD - The enemies in the next level do not move, but the level only contains bronze, silver, and gold ore"
-  cowardDiv.classList.add("next-level-clickable")
-  cowardDiv.onclick = function () {
-      cowardChoice(stateObj)
-  }
-
-  let dirtEfficiencyDiv = document.createElement("Div")
-  dirtEfficiencyDiv.classList.add("next-level-option")
-  dirtEfficiencyDiv.textContent = "MINER - PERMANENT upgrade to dirt processing efficiency, letting you drop dirt blocks more often"
-  dirtEfficiencyDiv.classList.add("next-level-clickable")
-  dirtEfficiencyDiv.onclick = function () {
-      dirtEfficiencyChoice(stateObj)
-  }
-
-  let pacifistDiv = document.createElement("Div")
-  pacifistDiv.classList.add("next-level-option")
-  pacifistDiv.textContent = "PACIFIST - After completing this next level, gain $50 for every enemy that is still alive"
-  pacifistDiv.classList.add("next-level-clickable")
-  pacifistDiv.onclick = function () {
-      pacifistChoice(stateObj)
-  }
-
-  let killEnemiesForMoneyDiv = document.createElement("Div")
-  killEnemiesForMoneyDiv.classList.add("next-level-option")
-  killEnemiesForMoneyDiv.textContent = "SCRAP METAL - Gain $100 for each enemy killed (next level only)"
-  killEnemiesForMoneyDiv.classList.add("next-level-clickable")
-  killEnemiesForMoneyDiv.onclick = function () {
-      killEnemiesForMoneyChoice(stateObj)
-  }
-
-  let shorterDiv = document.createElement("Div")
-  shorterDiv.classList.add("next-level-option")
-  shorterDiv.textContent = "SPEEDY - The next level is smaller, and has fewer enemies"
-  shorterDiv.classList.add("next-level-clickable")
-  shorterDiv.onclick = function () {
-      shorterLevelChoice(stateObj)
-  }
-
-  let longerDiv = document.createElement("Div")
-  longerDiv.classList.add("next-level-option")
-  longerDiv.textContent = "ODYSSEY - The next level is twice as long, but has two relics"
-  longerDiv.classList.add("next-level-clickable")
-  longerDiv.onclick = function () {
-      longerLevelChoice(stateObj)
-  }
-
-  let moreEnemiesDiv = document.createElement("Div")
-  moreEnemiesDiv.classList.add("next-level-option")
-  moreEnemiesDiv.textContent = "HOSTILE - The next level has more enemies, but a higher chance of rare gems"
-  moreEnemiesDiv.classList.add("next-level-clickable")
-  moreEnemiesDiv.onclick = function () {
-      moreEnemies(stateObj)
-  }
-
-  let cheaperShopsDiv = document.createElement("Div")
-  cheaperShopsDiv.classList.add("next-level-option")
-  cheaperShopsDiv.textContent = "BARGAINER - The next level's shop prices are slightly cheaper"
-  cheaperShopsDiv.classList.add("next-level-clickable")
-  cheaperShopsDiv.onclick = function () {
-      cheaperShopsChoice(stateObj)
-  }
-
-  let freeFuelDiv = document.createElement("Div")
-  freeFuelDiv.classList.add("next-level-option")
-  freeFuelDiv.textContent = "OIL WELL - Fuel is free for the next level. The level is also shorter"
-  freeFuelDiv.classList.add("next-level-clickable")
-  freeFuelDiv.onclick = function () {
-      freeFuelChoice(stateObj)
-  }
-
-  let splinterCellDiv = document.createElement("Div")
-  splinterCellDiv.classList.add("next-level-option")
-  splinterCellDiv.textContent = "COVERT OPS - Gems are worth double for the next level. Prices revert back to normal after killing an enemy"
-  splinterCellDiv.classList.add("next-level-clickable")
-  splinterCellDiv.onclick = function () {
-      splinterCellChoice(stateObj)
-  }
-
-  let teleporterChoiceDiv = document.createElement("Div")
-  teleporterChoiceDiv.classList.add("next-level-option")
-  teleporterChoiceDiv.textContent = "TELEPORTER - Next level contains a teleporter that returns you to the store"
-  teleporterChoiceDiv.classList.add("next-level-clickable")
-  teleporterChoiceDiv.onclick = function () {
-    teleporterChoice(stateObj)
-  }
-
-  let noEmptySquaresDiv = document.createElement("Div")
-  noEmptySquaresDiv.classList.add("next-level-option")
-  noEmptySquaresDiv.textContent = "EXTRA BRONZE - Next level has bronze ore instead of any empty squares"
-  noEmptySquaresDiv.classList.add("next-level-clickable")
-  noEmptySquaresDiv.onclick = function () {
-    noEmptySquaresChoice(stateObj)
-  }
-
-  //14 choices
-  let levelChoiceArray = [freeFuelDiv, fewerEnemiesDiv, moreGoldDiv, cowardDiv, dirtEfficiencyDiv, 
-    noEmptySquaresDiv, pacifistDiv, shorterDiv, longerDiv, moreEnemiesDiv, 
-    cheaperShopsDiv, killEnemiesForMoneyDiv, splinterCellDiv, teleporterChoiceDiv]
-  //levelChoiceArray = [freeFuelDiv, noEmptySquaresDiv, teleporterChoiceDiv]
   let chosenLevels = []
   for (i = 0; i < 3; i++) {
-      let chosenLevel = Math.floor(Math.random() * levelChoiceArray.length);
-      chosenLevels.push(levelChoiceArray[chosenLevel])
-      levelChoiceArray.splice(chosenLevel, 1)
+      let chosenLevel = Math.floor(Math.random() * levelChoices.length);
+      chosenLevels.push(levelChoices[chosenLevel])
+      levelChoices.splice(chosenLevel, 1)
   }
 
-  storeDiv.append(chosenLevels[0], chosenLevels[1], chosenLevels[2])
+  let level1 = createLevelChoiceDiv(stateObj, chosenLevels[0])
+  console.log('level1' + JSON.stringify(level1))
+
+  let level2 = createLevelChoiceDiv(stateObj, chosenLevels[1])
+  console.log('level2' + JSON.stringify(level2))
+
+  let level3= createLevelChoiceDiv(stateObj, chosenLevels[2])
+  console.log('level3' + JSON.stringify(level3))
+
+  storeDiv.append(level1, level2, level3)
   return storeDiv
 }
 

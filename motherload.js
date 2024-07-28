@@ -1,6 +1,12 @@
+//fix level choices
+//fix roulette choices
+
 //require higher level enemies to be hit w certain weapons
 //add ability for player to or buy a new relic back to shop
 //let players heal/fuel from main screen
+
+//FIGURE OUT SOMETHING TO DO WITH AMETHYST +
+//weapon upgrades??
 
 
 let gameStartState = {
@@ -875,7 +881,6 @@ async function freeFuelChoice(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.freeFuel = true;
         newState.choosingNextLevel = false;
-        newState.floorValues[newState.currentLevel].numberRows -= 10
     })
     changeState(stateObj);
 }
@@ -913,7 +918,7 @@ async function cowardChoice(stateObj) {
 async function pacifistChoice(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.choosingNextLevel = false;
-        newState.isPacifist += 50;
+        newState.isPacifist += 1;
     })
     changeState(stateObj);
 }
@@ -937,7 +942,7 @@ async function noEmptySquaresChoice(stateObj) {
 async function killEnemiesForMoneyChoice(stateObj) {
     stateObj = immer.produce(stateObj, (newState) => {
         newState.choosingNextLevel = false;
-        newState.killEnemiesForMoney += 100;
+        newState.killEnemiesForMoney += 1;
     })
     changeState(stateObj);
 }
@@ -1072,7 +1077,7 @@ async function expandInventory(stateObj) {
 async function makeFuel(stateObj) {
     if (stateObj.bronzeInventory > 0 && stateObj.currentFuel < stateObj.fuelTankMax) {
         stateObj = immer.produce(stateObj, (newState) => {
-            let amountToRegain = newState.fuelTankMax/2;
+            let amountToRegain =  (newState.freeFuel) ? newState.fuelTankMax/2 : newState.fuelTankMax 
             let missingFuel = newState.fuelTankMax - newState.currentFuel
             if ( amountToRegain < missingFuel) {
                 newState.currentFuel += amountToRegain
@@ -1220,8 +1225,9 @@ async function doDamage(stateObj, damageAmount, enemyLocation) {
                     newState.hullArmorMax += Math.ceil(newState.killEnemiesHullModifier * newState.overallHullModifier)
                 }
     
-                if (newState.killEnemiesForMoney > 0) {
-                    newState.bankedCash += newState.killEnemiesForMoney
+                if (newState.killEnemiesForMoney > 0 && stateObj.inventoryMax > stateObj.currentInventory) {
+                    newState.goldInventory += 1
+                    newState.currentInventory += 1
                 }
 
                 if (newState.halfDamageFullFuel < 1 && newState.currentFuel >= (newState.fuelTankMax/2)) {
@@ -1319,18 +1325,20 @@ async function calculateMoveChange(stateObj, squaresToMove) {
     targetSquare = stateObj.gameMap[targetSquareNum];
 
     //check if target square has an enemy nearby
+
+    let gemsToGain = 1 * stateObj.splinterCellModifier
     
     if (targetSquare === "0" || targetSquare === "poison-0") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)   
     } else if (targetSquare === "1") {
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 if (stateObj.bronzeSilverConverter > 0) {
                     newState.silverInventory += stateObj.bronzeSilverConverter
                     newState.score += 100
                 } else {
-                    newState.bronzeInventory += 1
+                    newState.bronzeInventory += gemsToGain
                     newState.score += 40
                 }
                 
@@ -1346,9 +1354,9 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) {  
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.silverInventory += 1
+                newState.silverInventory += gemsToGain
                 newState.score += 100
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 if (stateObj.silverHealing > 0) {
                     if (newState.hullArmorMax - newState.currentHullArmor < newState.silverHealing) {
                         newState.currentHullArmor = newState.hullArmorMax
@@ -1366,9 +1374,9 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.goldInventory += 1
+                newState.goldInventory += gemsToGain
                 newState.score += 250
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 if (stateObj.goldMaxInventory > 0) {
                     newState.inventoryMax += stateObj.goldMaxInventory;
                 }
@@ -1378,33 +1386,33 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 newState.score += 600
-                newState.rubyInventory += 1})
+                newState.rubyInventory += gemsToGain})
         } 
     } else if (targetSquare === "5") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 newState.score += 1500
-                newState.amethystInventory += 1})
+                newState.amethystInventory += gemsToGain})
         } 
     } else if (targetSquare === "6") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) {  
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 newState.score += 4000
-                newState.diamondInventory += 1})
+                newState.diamondInventory += gemsToGain})
         } 
     } else if (targetSquare === "7") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory +=1
+                newState.currentInventory +=gemsToGain
                 newState.score += 10000
-                newState.blackDiamondInventory += 1})
+                newState.blackDiamondInventory += gemsToGain})
         } 
     } else if (targetSquare === "empty") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1)
@@ -1631,8 +1639,15 @@ async function goToNextLevel(stateObj) {
                 }
                 return acc;
               }, 0);
-
-            newState.bankedCash += (stateObj.isPacifist*countEnemyOccurrences)
+              
+            let invSpace = stateObj.inventoryMax - stateObj.currentInventory
+            if (countEnemyOccurrences < invSpace) {
+                newState.currentInventory += countEnemyOccurrences
+                newState.goldInventory += countEnemyOccurrences
+            } else {
+                newState.currentInventory += invSpace
+                newState.goldInventory += invSpace
+            }
         }
         newState.isPacifist = 0;
         newState.cheaperShops = 0;
