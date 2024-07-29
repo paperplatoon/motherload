@@ -13,7 +13,7 @@ let gameStartState = {
     playerShip: {
         hullArmorPlating: [0, 0, 0, 0, 0, 0, 0, 0],
         fuelTank: [0, 0, 0, 0, 0, 0, 0, 0],
-        laserLevel: 1,
+        laserLevel: 0,
         bombLevel: 0
     },
 
@@ -750,7 +750,7 @@ async function chooseRobot5(stateObj) {
 async function upgradeLaser(stateObj) {
     let cost = (1+stateObj.playerShip.laserLevel) * 3
     
-    return immer.produce(stateObj, draft => {
+    stateObj = immer.produce(stateObj, draft => {
         if (draft.amethystInventory >= cost) {
             draft.playerShip.laserLevel++
             draft.laserPiercingLeft = draft.playerShip.laserLevel
@@ -759,6 +759,23 @@ async function upgradeLaser(stateObj) {
             draft.currentInventory -= cost
         }
     })
+    changeState(stateObj)
+    return stateObj
+  }
+
+  async function upgradeBomb(stateObj) {
+    let cost = (1+stateObj.playerShip.bombLevel) * 3
+    
+    stateObj = immer.produce(stateObj, draft => {
+        if (draft.amethystInventory >= cost) {
+            draft.playerShip.bombLevel++
+            draft.bombDistance++
+            draft.amethystInventory -= cost
+            draft.currentInventory -= cost
+        }
+    })
+    changeState(stateObj)
+    return stateObj
   }
 
 async function viewStore(stateObj) {
@@ -920,13 +937,9 @@ async function upgradeStoreRelic(stateObj, index, rubyPrice=false, amethystPrice
 
 async function upgradeRelic(stateObj, index) {
     stateObj = await stateObj.playerRelicArray[index].relicFunc(stateObj)
-    let rubyPrice = stateObj.floorValues[stateObj.currentLevel].rubyRelicPrice
-    let amethystPrice = stateObj.floorValues[stateObj.currentLevel].amethystRelicPrice
     stateObj = immer.produce(stateObj, (newState) => {
-        newState.rubyInventory -= rubyPrice
-        newState.currentInventory -= rubyPrice
-        newState.amethystInventory -= amethystPrice
-        newState.currentInventory -= amethystPrice
+        newState.diamondInventory -= 2
+        newState.currentInventory -= 2
         newState.choosingRelicToUpgrade = false
     })
     changeState(stateObj);

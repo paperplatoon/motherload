@@ -243,11 +243,11 @@ function createLaserUpgradeDiv(stateObj) {
     upgradeDiv.classList.add("store-option")
     
     let upgradeText = document.createElement("Div")
-    upgradeText.textContent = `Upgrade Lasers - (Pierce through ${stateObj.playerShip.laserLevel + 1} extra enem${(stateObj.playerShip.laserLevel==0) ? "ies" : "y"})`
+    upgradeText.textContent = `Upgrade Lasers - (Pierce through ${stateObj.playerShip.laserLevel + 1} extra enem${(stateObj.playerShip.laserLevel==0) ? "y" : "ies"})`
     
     let cost = (1+stateObj.playerShip.laserLevel) * 3
     let costText = document.createElement("Div")
-    costText.textContent = `Cost: ${cost} + amethysts`
+    costText.textContent = `Cost: ${cost} amethysts`
     
     upgradeDiv.append(upgradeText, costText)
     
@@ -255,14 +255,44 @@ function createLaserUpgradeDiv(stateObj) {
         upgradeDiv.classList.add("store-clickable")
         upgradeDiv.onclick = () => upgradeLaser(stateObj)
     }
-    
     return upgradeDiv
   }
 
+  function createBombUpgradeDiv(stateObj) {
+    let upgradeDiv = document.createElement("Div")
+    upgradeDiv.classList.add("store-option")
+    
+    let upgradeText = document.createElement("Div")
+    upgradeText.textContent = `Upgrade Bomb - (Increase radius to ${stateObj.bombDistance + 1} squares)`
+    
+    let cost = (1+stateObj.playerShip.bombLevel) * 3
+    let costText = document.createElement("Div")
+    costText.textContent = `Cost: ${cost} amethysts`
+    
+    upgradeDiv.append(upgradeText, costText)
+    
+    if (stateObj.amethystInventory >= cost) {
+        upgradeDiv.classList.add("store-clickable")
+        upgradeDiv.onclick = () => upgradeBomb(stateObj)
+    }
+    return upgradeDiv
+  }
+
+function createWeaponUpgradeDivs(stateObj) {
+    let weaponOptionsDiv = document.createElement("Div")
+    weaponOptionsDiv.classList.add("upgrade-options")
+
+    let laserUpgradeDiv = createLaserUpgradeDiv(stateObj)
+    let bombUpgradeDiv = createBombUpgradeDiv(stateObj)
+
+    weaponOptionsDiv.append(laserUpgradeDiv, bombUpgradeDiv)
+    return weaponOptionsDiv
+}
+
+
+
 function createUpgradeRelicsDiv(stateObj) {
     let upgradeableRelics = stateObj.playerRelicArray.filter(obj => obj.upgrades)
-    let rubyPrice = stateObj.floorValues[stateObj.currentLevel].rubyRelicPrice
-    let amethystPrice = stateObj.floorValues[stateObj.currentLevel].amethystRelicPrice
 
   let upgradeDiv = document.createElement("Div")
   if (upgradeableRelics.length > 0) {
@@ -277,25 +307,12 @@ function createUpgradeRelicsDiv(stateObj) {
       let costDiv = document.createElement("Div")
       costDiv.classList.add("centered")
   
-      let costString = "Costs "
-      if (rubyPrice > 0) {
-        costString += rubyPrice + " rubies"
-        if (stateObj.rubyInventory >= rubyPrice) {
-            console.log("have " + stateObj.rubyInventory + " and price " + rubyPrice)
-          upgradeDiv.classList.add("ruby-relic-hover")
-          upgradeDiv.onclick = async function () {
+      let costString = "Costs 2 Diamonds" 
+      if (stateObj.diamondInventory >= 2) {
+        upgradeDiv.classList.add("ruby-relic-hover")
+        upgradeDiv.onclick = async function () {
             await viewUpgradeRelic(stateObj)
           }
-        }
-
-      } else if (amethystPrice > 0) {
-        costString += amethystPrice + " amethysts"
-        if (stateObj.amethystInventory >= amethystPrice) {
-          upgradeDiv.classList.add("diamond-relic-hover")
-          upgradeDiv.onclick = async function () {
-            await viewUpgradeRelic(stateObj)
-          }
-        }
       }
   
     costDiv.textContent = costString

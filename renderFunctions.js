@@ -609,13 +609,17 @@ function renderStore(stateObj) {
   let hullUpgradeDiv = createUpgradeOption(stateObj, "Hull Armor", stateObj.playerShip.hullArmorPlating, upgradeHullArmor)
   hullUpgradeDiv.append(hullArray)
 
-  let laserUpgradeDiv = createLaserUpgradeDiv(stateObj)
-  let bombUpgradeDiv = createWeaponUpgradeOption(stateObj, "Bomb", stateObj.playerShip.bombLevel, upgradeBomb)
+  
   let relicUpgradeDiv = createUpgradeRelicsDiv(stateObj)
 
   // ... other store options ...
 
   optionsDiv.append(fuelUpgradeDiv, hullUpgradeDiv, relicUpgradeDiv)
+
+  if (stateObj.currentLevel > 0) {
+    let weapons = createWeaponUpgradeDivs(stateObj)
+    optionsDiv.append(weapons)
+  }
 
   let leaveStoreButton = createReturnToMapButton(stateObj)
   leaveStoreButton.classList.add("margin-top-10")
