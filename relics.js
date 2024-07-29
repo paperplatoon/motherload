@@ -1005,17 +1005,24 @@ let potentialRelics = [
         name: "Bronze Refiner",
         varName: "bronzeSilverRelic",
         text: (stateObj) => {
-            return "Mined bronze ore gets converted to silver"
+            let val = stateObj.bronzeSilverConverter
+            return `Bronze ore yields ${val} extra ore`
         },
         storeText: (stateObj) => {
-            return "Mined bronze ore gets converted to silver"
+            let val = stateObj.bronzeSilverConverter
+            return `Bronze ore yields ${val+1} extra ore`
         },
         relicFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
+                let index = newState.playerRelicArray.map(function(e) { return e.name; }).indexOf('Bronze Refiner');
+                if (index === -1) {
+                    newState.playerRelicArray.push(bronzeSilverConverter)
+                } else {
+                    newState.playerRelicArray[index].upgrades +=1
+                }
                 newState.bronzeSilverConverter += 1;
-                newState.playerRelicArray.push(bronzeSilverConverter)
             })
-            await changeState(stateObj);
+             changeState(stateObj);
             return stateObj
         },
         resetFunc: async (stateObj) => {
@@ -1028,7 +1035,7 @@ let potentialRelics = [
         imgPath: "img/relics/bronzesilverconverter.png",
         levelRelic: true,
         shopRelic: true,
-        upgrades: false,
+        upgrades: 1,
         isAvailable: async (stateObj) => {
             if (stateObj.bronzeSilverConverter) {
                 return false

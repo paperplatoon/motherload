@@ -68,9 +68,9 @@ let gameStartState = {
     ammoBonus: 0,
 
     firingLaserLeft: false,
-    laserPiercingLeft: 1,
+    laserPiercingLeft: 0,
     firingLaserRight: false,
-    laserPiercingRight: 1,
+    laserPiercingRight: 0,
     laserExplosion: false,
     
     //relic values relicValues
@@ -987,7 +987,7 @@ async function expandInventory(stateObj) {
 async function makeFuel(stateObj) {
     if (stateObj.bronzeInventory > 0 && stateObj.currentFuel < stateObj.fuelTankMax) {
         stateObj = immer.produce(stateObj, (newState) => {
-            let amountToRegain =  (newState.freeFuel) ? newState.fuelTankMax/2 : newState.fuelTankMax 
+            let amountToRegain =  (newState.freeFuel) ? newState.fuelTankMax : newState.fuelTankMax/2 
             let missingFuel = newState.fuelTankMax - newState.currentFuel
             if ( amountToRegain < missingFuel) {
                 newState.currentFuel += amountToRegain
@@ -1243,14 +1243,8 @@ async function calculateMoveChange(stateObj, squaresToMove) {
     } else if (targetSquare === "1") {
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory +=gemsToGain
-                if (stateObj.bronzeSilverConverter > 0) {
-                    newState.silverInventory += stateObj.bronzeSilverConverter
-                    newState.score += 100
-                } else {
-                    newState.bronzeInventory += gemsToGain
-                    newState.score += 40
-                }
+                newState.currentInventory += (gemsToGain + stateObj.bronzeSilverConverter)
+                newState.bronzeInventory += (gemsToGain + stateObj.bronzeSilverConverter)
                 
                 if (stateObj.bronzeMaxHull > 0) {
                     newState.currentHullArmor += Math.ceil(stateObj.bronzeMaxHull * newState.overallHullModifier);
@@ -1738,8 +1732,9 @@ async function detonateBlock(stateObj, blockPosition, isLaser=false) {
                 newState.hullArmorMax += Math.ceil(newState.killEnemiesHullModifier  * newState.overallHullModifier)
             }
 
-            if (newState.killEnemiesForMoney > 0) {
-                newState.bankedCash += newState.killEnemiesForMoney
+            if (newState.killEnemiesForMoney > 0 && stateObj.inventoryMax > stateObj.currentInventory) {
+                newState.goldInventory += 1
+                newState.currentInventory += 1
             }
             if (newState.killEnemiesForHealing > 0) {
                 if (newState.hullArmorMax - newState.currentHullArmor < newState.killEnemiesForHealing) {
@@ -1749,11 +1744,13 @@ async function detonateBlock(stateObj, blockPosition, isLaser=false) {
                 }
             }
 
-            if (isLaser === false && stateObj.bombRefill > 0 && newState.bombCurrentTotal < newState.bombCapacity) {
+            if (isLaser === false && stateObj.bombRefill > 0) {
                 newState.ammo += stateObj.bombRefill;
             }
 
-            if (isLaser === true && stateObj.laserGemRefill > 0 && newState.numberLasers < newState.laserCapacity)
+            if (isLaser === true && stateObj.laserGemRefill > 0) {
+                newState.ammo += stateObj.laserGemRefill
+            }
 
             if (newState.splinterCellModifier > 1) {
                 newState.splinterCellModifier = 1;

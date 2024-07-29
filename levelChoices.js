@@ -184,7 +184,7 @@ let levelChoices = [
         text:  "Gain 1 gold for each enemy killed",
         levelFunc: async (stateObj) => {
             stateObj = immer.produce(stateObj, (newState) => {
-                newState.killEnemiesForMoney += 1;
+                newState.killEnemiesForMoney++;
                 newState.choosingNextLevel = false
             })
             await changeState(stateObj);

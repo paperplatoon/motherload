@@ -951,12 +951,12 @@ function getGemTypeForUpgrade(upgradeLevel) {
 }
 
 function calculateMaxFuel(stateObj, fuelTankArray) {
-  return 100 + fuelTankArray.reduce((total, level) => {
+  return stateObj.fuelTankMax + fuelTankArray.reduce((total, level) => {
     switch(level) {
       case 1:
-        return total + (10 * stateObj.overallFuelModifier);
+        return total + (5 * stateObj.overallFuelModifier);
       case 2:
-        return total + (15 * stateObj.overallFuelModifier);
+        return total + (10 * stateObj.overallFuelModifier);
       case 3:
         return total + (20 * stateObj.overallFuelModifier);
       case 4:
@@ -968,12 +968,12 @@ function calculateMaxFuel(stateObj, fuelTankArray) {
 }
 
 function calculateMaxHullArmor(stateObj, fuelTankArray) {
-  return 100 + fuelTankArray.reduce((total, level) => {
+  return stateObj.hullArmorMax + fuelTankArray.reduce((total, level) => {
     switch(level) {
       case 1:
-        return total + (10 * stateObj.overallHullModifier);
+        return total + (5 * stateObj.overallHullModifier);
       case 2:
-        return total + (15 * stateObj.overallHullModifier);
+        return total + (10 * stateObj.overallHullModifier);
       case 3:
         return total + (20 * stateObj.overallHullModifier);
       case 4:
