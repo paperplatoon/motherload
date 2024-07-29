@@ -609,7 +609,7 @@ function renderStore(stateObj) {
   let hullUpgradeDiv = createUpgradeOption(stateObj, "Hull Armor", stateObj.playerShip.hullArmorPlating, upgradeHullArmor)
   hullUpgradeDiv.append(hullArray)
 
-  let laserUpgradeDiv = createWeaponUpgradeOption(stateObj, "Laser", stateObj.playerShip.laserLevel, upgradeLaser)
+  let laserUpgradeDiv = createLaserUpgradeDiv(stateObj)
   let bombUpgradeDiv = createWeaponUpgradeOption(stateObj, "Bomb", stateObj.playerShip.bombLevel, upgradeBomb)
   let relicUpgradeDiv = createUpgradeRelicsDiv(stateObj)
 
@@ -978,22 +978,6 @@ function calculateMaxHullArmor(stateObj, fuelTankArray) {
         return total;
     }
   }, 0);
-}
-
-async function upgradeLaser(stateObj) {
-  let upgradeLevel = stateObj.playerShip.laserLevel + 1
-  let gemType = getGemTypeForWeaponUpgrade(upgradeLevel).toLowerCase()
-  let cost = getWeaponUpgradeCost(upgradeLevel)
-  
-  return immer.produce(stateObj, draft => {
-      if (draft[`${gemType}Inventory`] >= cost) {
-          draft.playerShip.laserLevel++
-          draft[`${gemType}Inventory`] -= cost
-          draft.currentInventory -= cost
-          draft.numberLasers++
-          draft.laserCapacity++
-      }
-  })
 }
 
 async function upgradeBomb(stateObj) {

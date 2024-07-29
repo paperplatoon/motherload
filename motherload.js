@@ -13,7 +13,7 @@ let gameStartState = {
     playerShip: {
         hullArmorPlating: [0, 0, 0, 0, 0, 0, 0, 0],
         fuelTank: [0, 0, 0, 0, 0, 0, 0, 0],
-        laserLevel: 0,
+        laserLevel: 1,
         bombLevel: 0
     },
 
@@ -66,9 +66,11 @@ let gameStartState = {
     
     ammo: 2,
     ammoBonus: 0,
-    
+
     firingLaserLeft: false,
+    laserPiercingLeft: 1,
     firingLaserRight: false,
+    laserPiercingRight: 1,
     laserExplosion: false,
     
     //relic values relicValues
@@ -569,12 +571,16 @@ async function moveEnemies() {
                     if (stateObj.gameMap[stateObj.firingLaserLeft - 1] !== "STORE") {
                         stateObj = await detonateBlock(stateObj, stateObj.firingLaserLeft - 1, isLaser=true )
                         stateObj = await immer.produce(stateObj, (newState) => {
-                            if (stateObj.laserPiercing === false) {   
+                            if (newState.laserPiercing === false && newState.laserPiercingLeft === 0  ) {   
                                 newState.firingLaserLeft = false;
+                                newState.laserPiercingLeft = newState.playerShip.laserLevel
                             } else {
                                 newState.gameMap[stateObj.firingLaserLeft - 1] = "active-laser"
                                 newState.gameMap[stateObj.firingLaserLeft] = "empty"
                                 newState.firingLaserLeft -= 1
+                                if (newState.laserPiercingLeft > 0) {
+                                    newState.laserPiercingLeft -= 1
+                                }
                             }
                         })
                     } else {
@@ -603,12 +609,16 @@ async function moveEnemies() {
                 } else {
                     stateObj = await detonateBlock(stateObj, stateObj.firingLaserRight + 1, isLaser=true)
                     stateObj = await immer.produce(stateObj, (newState) => {
-                        if (stateObj.laserPiercing === false) { 
-                            newState.firingLaserRight = false;        
+                        if (newState.laserPiercing === false && newState.laserPiercingRight === 0  ) {   
+                            newState.firingLaserRight = false;
+                            newState.laserPiercingRight = newState.playerShip.laserLevel
                         } else {
                             newState.gameMap[stateObj.firingLaserRight + 1] = "active-laser"
                             newState.gameMap[stateObj.firingLaserRight] = "empty"
                             newState.firingLaserRight += 1
+                            if (newState.laserPiercingRight > 0) {
+                                newState.laserPiercingRight -= 1
+                            }
                         }
                     })
                 }
@@ -737,6 +747,20 @@ async function chooseRobot5(stateObj) {
     changeState(stateObj);
 }
 
+async function upgradeLaser(stateObj) {
+    let cost = (1+stateObj.playerShip.laserLevel) * 3
+    
+    return immer.produce(stateObj, draft => {
+        if (draft.amethystInventory >= cost) {
+            draft.playerShip.laserLevel++
+            draft.laserPiercingLeft = draft.playerShip.laserLevel
+            draft.laserPiercingRight = draft.playerShip.laserLevel
+            draft.amethystInventory -= cost
+            draft.currentInventory -= cost
+        }
+    })
+  }
+
 async function viewStore(stateObj) {
     stateObj.inStore = true;
     changeState(stateObj);
@@ -848,133 +872,6 @@ async function convertDiamond(stateObj) {
 //------------------------------------------------------------------------------------
 //BETWEEN LEVEL CHOICES
 //------------------------------------------------------------------------------------
-
-async function fewerEnemiesChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.floorValues[newState.currentLevel].enemyValue += 0.015
-        newState.choosingNextLevel = false;
-    })
-    changeState(stateObj);
-}
-
-async function moreEnemies(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.floorValues[newState.currentLevel].enemyValue -= 0.02
-        newState.floorValues[newState.currentLevel].barVals[0] -= 0.0005
-        newState.floorValues[newState.currentLevel].barVals[1] -= 0.005
-        newState.floorValues[newState.currentLevel].barVals[2] -= 0.01
-        newState.floorValues[newState.currentLevel].barVals[3] -= 0.015
-        newState.choosingNextLevel = false;
-    })
-    changeState(stateObj);
-}
-
-async function cheaperShopsChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.cheaperShops += 0.1
-        newState.choosingNextLevel = false;
-    })
-    changeState(stateObj);
-}
-
-async function freeFuelChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.freeFuel = true;
-        newState.choosingNextLevel = false;
-    })
-    changeState(stateObj);
-}
-
-async function splinterCellChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.splinterCellModifier += 1;
-        newState.splinterCellOn = true;
-        newState.choosingNextLevel = false;
-    })
-    changeState(stateObj);
-    return stateObj
-}
-
-async function moreGold(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.floorValues[newState.currentLevel].barVals[4] -= 0.06
-        newState.choosingNextLevel = false;
-    })
-    changeState(stateObj);
-}
-
-async function cowardChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.floorValues[newState.currentLevel].barVals[0] = 1
-        newState.floorValues[newState.currentLevel].barVals[1] = 1
-        newState.floorValues[newState.currentLevel].barVals[2] = 1
-        newState.floorValues[newState.currentLevel].barVals[3] = 1
-        newState.choosingNextLevel = false;
-        newState.isLevelCoward = true;
-    })
-    changeState(stateObj);
-}
-
-async function pacifistChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.choosingNextLevel = false;
-        newState.isPacifist += 1;
-    })
-    changeState(stateObj);
-}
-
-async function teleporterChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.choosingNextLevel = false;
-        newState.levelTeleport = true;
-    })
-    changeState(stateObj);
-}
-
-async function noEmptySquaresChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.choosingNextLevel = false;
-        newState.noEmptySquares = true;
-    })
-    changeState(stateObj);
-}
-
-async function killEnemiesForMoneyChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.choosingNextLevel = false;
-        newState.killEnemiesForMoney += 1;
-    })
-    changeState(stateObj);
-}
-
-async function shorterLevelChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.choosingNextLevel = false;
-        newState.floorValues[newState.currentLevel].numberRows -= 10
-        newState.floorValues[newState.currentLevel].enemyValue += 0.02
-    })
-    changeState(stateObj);
-}
-
-async function longerLevelChoice(stateObj) {
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.choosingNextLevel = false;
-        newState.floorValues[newState.currentLevel].relicNumber += 1
-        newState.floorValues[newState.currentLevel].numberRows *= 2
-    })
-    changeState(stateObj);
-}
-
-async function dirtEfficiencyChoice(stateObj) {
-    if (stateObj.dirtThresholdNeeded > 10) {
-        stateObj = immer.produce(stateObj, (newState) => {
-            newState.dirtThresholdNeeded -= 10;
-            newState.choosingNextLevel = false;
-        })
-    }
-    changeState(stateObj);
-}
-
 
 //------------------------------------------------------------------------------------
 //STORE FUNCTIONS

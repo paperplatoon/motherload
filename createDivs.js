@@ -238,6 +238,27 @@ function createReturnToMapButton(stateObj) {
     return buyNothingDiv
 }
 
+function createLaserUpgradeDiv(stateObj) {
+    let upgradeDiv = document.createElement("Div")
+    upgradeDiv.classList.add("store-option")
+    
+    let upgradeText = document.createElement("Div")
+    upgradeText.textContent = `Upgrade Lasers - (Pierce through ${stateObj.playerShip.laserLevel + 1} extra enem${(stateObj.playerShip.laserLevel==0) ? "ies" : "y"})`
+    
+    let cost = (1+stateObj.playerShip.laserLevel) * 3
+    let costText = document.createElement("Div")
+    costText.textContent = `Cost: ${cost} + amethysts`
+    
+    upgradeDiv.append(upgradeText, costText)
+    
+    if (stateObj.amethystInventory >= cost) {
+        upgradeDiv.classList.add("store-clickable")
+        upgradeDiv.onclick = () => upgradeLaser(stateObj)
+    }
+    
+    return upgradeDiv
+  }
+
 function createUpgradeRelicsDiv(stateObj) {
     let upgradeableRelics = stateObj.playerRelicArray.filter(obj => obj.upgrades)
     let rubyPrice = stateObj.floorValues[stateObj.currentLevel].rubyRelicPrice
