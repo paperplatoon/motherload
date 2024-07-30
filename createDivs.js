@@ -347,6 +347,16 @@ function createCraftAmmoButton(stateObj) {
       return craftAmmoButton
 }
 
+function createBreakDownButton(stateObj, lowString, highString) {
+    let craftAmmoButton = document.createElement("div");
+      craftAmmoButton.classList.add("breakdown-button-row");
+      craftAmmoButton.textContent = "Break down";
+      craftAmmoButton.onclick = async function () {
+        await breakDownOre(stateObj, lowString, highString);
+      };
+      return craftAmmoButton
+}
+
 
 function createUpgradeInvDiv(stateObj) {
     let craftAmmoButton = document.createElement("div");
@@ -378,40 +388,39 @@ function createRepairHullButton(stateObj) {
       return craftAmmoButton
 }
 
-function createInventoryDiv(stateObj, type, inventory, conversionRate, nextType, conversionFunction) {
+function createInventoryDiv(stateObj, typeIndex) {
+    //set values based on ore Type
+    let typeArray = ['Bronze', 'Silver', 'Gold', 'Ruby', 'Amethyst', 'Diamond', 'Key']
+    let type = typeArray[typeIndex]
+    let typeString = type.toLowerCase()+"Inventory"
+    let inventory = stateObj[typeString]
+    console.log('typeString ' + typeString + "  inventory " + inventory)
+    const conversionRate = (stateObj.efficientGoldConverter && type==="Gold") ? 2 : 3;
+
+
   if (inventory > 0) {
     let inventoryDiv = document.createElement("div");
     inventoryDiv.classList.add("inv-row", `${type.toLowerCase()}-convert-row`);
     
     let textString = `${type} Ore (${inventory})`;
     
-    if (inventory >= conversionRate) {
+    if (inventory >= conversionRate && typeIndex < 6) {
       inventoryDiv.classList.add("can-convert");
-      textString += ` [click to convert ${conversionRate} to 1 ${nextType}]`;
+      textString += ` [click to convert ${conversionRate} to 1 ${typeArray[typeIndex+1]}]`;
       inventoryDiv.addEventListener('click', async function(event) {
         // Only trigger conversion if the click is directly on the inventoryDiv
         if (event.target === inventoryDiv) {
-            await conversionFunction(stateObj);
+                await convertOre(stateObj, type, typeArray[typeIndex+1]);
           }
       });
     }
     inventoryDiv.textContent = textString;
 
-    if (type === "Bronze") {
-        if (stateObj.currentFuel < stateObj.fuelTankMax) {
-            let refillFuelButton = createRefillFuelButton(stateObj)
-            inventoryDiv.append(refillFuelButton);
-        }
-    } else if (type === "Silver") {
-      let craftAmmoButton = createCraftAmmoButton(stateObj)
-      inventoryDiv.append(craftAmmoButton);
-    } else if (type === "Gold") {
-        if (stateObj.currentHullArmor < stateObj.hullArmorMax) {
-            let repairHullButton = createRepairHullButton(stateObj)
-            inventoryDiv.append(repairHullButton);
-        }
-        
-      }
+    if (type !== "Bronze") {
+        let breakDownButton = createBreakDownButton(stateObj, typeIndex)
+        inventoryDiv.append(breakDownButton)
+    }
+
     return inventoryDiv
   } else {
         return false
@@ -457,6 +466,37 @@ function createFuelTankVisualStoreDiv(fuelArray) {
     });
   
     return fuelTankDiv;
+}
+
+function createShipStatsDiv(stateObj) {
+    let shipStatsDiv = document.createElement("Div")
+    shipStatsDiv.classList.add("ship-stats")
+
+    let hullArmorRow = document.createElement("Div")
+    hullArmorRow.classList.add("inventory-bar-vis-div")
+    let hullArmorText = `Hull Armor: `
+    let hullArmorDiv = document.createElement("Div")
+    hullArmorDiv.textContent = hullArmorText
+    let hullBarVis = createFuelTankVisualStoreDiv(stateObj.playerShip.hullArmorPlating)
+    hullBarVis.classList.add("fortyvw")
+    hullArmorRow.append(hullArmorDiv, hullBarVis)
+
+    let fuelDivRow = document.createElement("Div")
+    fuelDivRow.classList.add("inventory-bar-vis-div")
+    let fuelTankText = `Fuel Tank: `
+    let fuelTankDiv = document.createElement("Div")
+    fuelTankDiv.textContent = fuelTankText
+
+    let fuelBarVis = createFuelTankVisualStoreDiv(stateObj.playerShip.fuelTank)
+    fuelBarVis.classList.add("fortyvw")
+    fuelDivRow.append(fuelTankDiv, fuelBarVis)
+
+    // let weaponsText = `Laser Level: ${stateObj.playerShip.laserLevel}, Bomb Level: ${stateObj.playerShip.bombLevel}`
+    // let weaponsDiv = document.createElement("Div")
+    // weaponsDiv.textContent = weaponsText
+
+    shipStatsDiv.append(hullArmorRow, fuelDivRow)
+    return shipStatsDiv
 }
 
 

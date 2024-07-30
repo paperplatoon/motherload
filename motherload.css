@@ -380,7 +380,7 @@ html, body {
     width: 100%;
   }
 
-  .craft-button-row, .bronze-fuel-row, .gold-repair-row, .scrap-inv-row {
+  .craft-button-row, .bronze-fuel-row, .gold-repair-row, .scrap-inv-row, .breakdown-button-row {
     position: absolute;
     text-align: center;
     right: -14vw; /* Move 10vw to the right */
@@ -396,16 +396,11 @@ html, body {
     cursor: pointer;
   }
 
-  .inventory-bar-vis-div {
-    display: flex;
-    width: 60vw;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1vh;
+  .breakdown-button-row {
+    right: 34vw;
   }
 
-  .craft-button-row:hover, .bronze-fuel-row:hover, .gold-repair-row:hover, .scrap-inv-row:hover {
+  .craft-button-row:hover, .bronze-fuel-row:hover, .gold-repair-row:hover, .scrap-inv-row:hover, .breakdown-button-row:hover {
     color: white;
     background-color: rgb(3, 171, 0);
   }
@@ -1376,12 +1371,25 @@ body:has(.store-clickable#store-inventory-upgrade-div:hover) #current-inv-bar  {
   .tank-section:last-child .tank-fill {
     border-radius: 0 25px 25px 0;
   }
+
+  .inventory-bar-vis-div {
+    display: flex;
+    width: 60vw;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1vh;
+  }
+
+  .fortyvw {
+    width: 40vw;
+  }
   
   /* Fuel colors */
   .fuel-1 { background-color: #cd7f32; } /* Bronze */
   .fuel-2 { background-color: #c0c0c0; } /* Silver */
-  .fuel-3 { background-color: #ffd700; } /* Gold */
-  .fuel-4 { background-color: #ff0000; } /* Red */
+  .fuel-3 { background-color: #baa321; } /* Gold */
+  .fuel-4 { background-color: #9b0a0a; } /* Red */
 
   .margin-top-10 {
     margin-top: 8vh;

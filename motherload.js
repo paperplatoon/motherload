@@ -23,8 +23,13 @@ let gameStartState = {
     lossString: false,
 
     currentFuel: 100,
+    baseMaxFuel: 100,
+    bonusesToMaxFuel: 0,
     fuelTankMax: 100,
+
     currentHullArmor: 100,
+    baseMaxHullArmor: 100,
+    bonusesToMaxHullArmor: 0,
     hullArmorMax: 100,
     takingDamage: false,
 
@@ -51,7 +56,6 @@ let gameStartState = {
     choosingRelicToReplace: false,
     relicToChoose: false,
     choosingRelicToUpgrade: false,
-    
 
     currentInventory: 0,
     inventoryMax: 12,
@@ -62,7 +66,7 @@ let gameStartState = {
     rubyInventory: 0,
     amethystInventory: 0,
     diamondInventory: 0,
-    blackDiamondInventory: 0,
+    keyInventory: 0,
     
     ammo: 2,
     ammoBonus: 0,
@@ -83,7 +87,7 @@ let gameStartState = {
     dirtRuby: false,
     killEnemiesForMoney: 0, //needs done
     killEnemiesForHealing: 0, 
-    bronzeSilverBonus: 1,
+    bronzeSilverBonus: 0,
     laserPiercing: false,
     silverHealing: 0,
     silverMaxFuel: 0,
@@ -713,7 +717,7 @@ async function chooseRobot2(stateObj) {
     stateObj.startTheGame = true;
     stateObj.robotPath = "img/map/robot2.png",
     stateObj.currentHullArmor = 20;
-    stateObj.hullArmorMax = 20;
+    stateObj.baseMaxHullArmor = 20;
     stateObj.bronzeMaxHull = 1;
     changeState(stateObj);
 }
@@ -722,7 +726,7 @@ async function chooseRobot3(stateObj) {
     stateObj.robotPath = "img/map/robot3.png",
     stateObj.choosingRobot = false
     stateObj.startTheGame = true;
-    stateObj.fuelTankMax = 100;
+    stateObj.baseMaxFuel = 100;
     stateObj.currentFuel = 90;
     stateObj.fuelTeleportCost = 40;
     changeState(stateObj);
@@ -733,7 +737,7 @@ async function chooseRobot4(stateObj) {
     stateObj.startTheGame = true;
     stateObj.robotPath = "img/map/robot4.png",
     stateObj.currentHullArmor = 75;
-    stateObj.hullArmorMax = 75;
+    stateObj.baseMaxHullArmor = 75;
     stateObj.dirtThresholdNeeded = 30;
     changeState(stateObj);
 }
@@ -790,99 +794,51 @@ async function leaveRouletteChoice(stateObj) {
     return stateObj
 }
 
-async function convertBronze(stateObj) {
-    document.querySelector(".bronze-convert-row").classList.remove("mini-emphasis")
-    document.querySelector(".bronze-convert-row").classList.add("mini-emphasis")
+async function convertOre(stateObj, lowString, highString) {
+    lowString = lowString.toLowerCase()
+    highString = highString.toLowerCase()
+    let lowQuery = "." + lowString + "-convert-row"
+    let highQuery = "." + highString + "-convert-row"
+    document.querySelector(lowQuery).classList.remove("mini-emphasis")
+    document.querySelector(lowQuery).classList.add("mini-emphasis")
     await pause(300)
+    let lowState = lowString+"Inventory"
+    let highState = highString+"Inventory"
     stateObj = immer.produce(stateObj, (newState) => {
-        newState.bronzeInventory -= 3;
-        newState.silverInventory += 1;
+        newState[lowState] -= 3;
+        newState[highState] += 1;
         newState.currentInventory -= 2
     })
     changeState(stateObj);
-    document.querySelector(".silver-convert-row").classList.add("converted")
+    document.querySelector(highQuery).classList.add("converted")
     await pause(300)
 }
 
-async function convertSilver(stateObj) {
-    document.querySelector(".silver-convert-row").classList.remove("converted")
-    document.querySelector(".silver-convert-row").classList.remove("mini-emphasis")
-    document.querySelector(".silver-convert-row").classList.add("mini-emphasis")
+async function breakDownOre(stateObj, typeIndex) {
+    let typeArray = ['Bronze', 'Silver', 'Gold', 'Ruby', 'Amethyst', 'Diamond', 'Key']
+    type = typeArray[typeIndex].toLowerCase()
+
+    let lowQuery = "." + type + "-convert-row"
+    document.querySelector(lowQuery).classList.remove("mini-emphasis")
+    document.querySelector(lowQuery).classList.add("mini-emphasis")
     await pause(300)
+
+    let typeInv = type + "Inventory"
+    convertedTypeInv = typeArray[typeIndex-1].toLowerCase() + "Inventory"
+
     stateObj = immer.produce(stateObj, (newState) => {
-        newState.silverInventory -= 3;
-        newState.goldInventory += 1;
-        newState.currentInventory -= 2
+        newState[convertedTypeInv] += 2;
+        newState[typeInv] -= 1;
+        newState.currentInventory += 1
     })
     changeState(stateObj);
-    document.querySelector(".gold-convert-row").classList.add("converted")
+    document.querySelector(lowQuery).classList.add("converted")
     await pause(300)
 }
 
-async function convertGold(stateObj) {
-    document.querySelector(".gold-convert-row").classList.remove("converted")
-    document.querySelector(".gold-convert-row").classList.remove("mini-emphasis")
-    document.querySelector(".gold-convert-row").classList.add("mini-emphasis")
-    await pause(300)
-    stateObj = immer.produce(stateObj, (newState) => {
-        if (stateObj.efficientGoldConverter === true) {
-            newState.goldInventory -= 2;
-            newState.currentInventory -= 1
-        } else {
-            newState.goldInventory -= 3;
-            newState.currentInventory -= 2
-        }
-        newState.rubyInventory += 1;
-    })
-    changeState(stateObj);
-    document.querySelector(".ruby-convert-row").classList.add("converted")
-    await pause(300)
-}
 
-async function convertRuby(stateObj) {
-    document.querySelector(".ruby-convert-row").classList.remove("converted")
-    document.querySelector(".ruby-convert-row").classList.remove("mini-emphasis")
-    document.querySelector(".ruby-convert-row").classList.add("mini-emphasis")
-    await pause(300)
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.rubyInventory -= 3;
-        newState.amethystInventory += 1;
-        newState.currentInventory -= 2
-    })
-    changeState(stateObj);
-    document.querySelector(".amethyst-convert-row").classList.add("converted")
-    await pause(300)
-}
 
-async function convertAmethyst(stateObj) {
-    document.querySelector(".amethyst-convert-row").classList.remove("converted")
-    document.querySelector(".amethyst-convert-row").classList.remove("mini-emphasis")
-    document.querySelector(".amethyst-convert-row").classList.add("mini-emphasis")
-    await pause(300)
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.amethystInventory -= 3;
-        newState.diamondInventory += 1;
-        newState.currentInventory -= 2
-    })
-    changeState(stateObj);
-    document.querySelector(".diamond-convert-row").classList.add("converted")
-    await pause(300)
-}
 
-async function convertDiamond(stateObj) {
-    document.querySelector(".diamond-convert-row").classList.remove("converted")
-    document.querySelector(".diamond-convert-row").classList.remove("mini-emphasis")
-    document.querySelector(".diamond-convert-row").classList.add("mini-emphasis")
-    await pause(300)
-    stateObj = immer.produce(stateObj, (newState) => {
-        newState.diamondInventory -= 3;
-        newState.blackDiamondInventory += 1;
-        newState.currentInventory -= 2
-    })
-    changeState(stateObj);
-    document.querySelector(".black-diamond-convert-row").classList.add("converted")
-    await pause(300)
-}
 
 
 
@@ -1132,7 +1088,7 @@ async function doDamage(stateObj, damageAmount, enemyLocation) {
                 }
                 if (newState.killEnemiesHullModifier > 0) {
                     newState.currentHullArmor += Math.ceil(newState.killEnemiesHullModifier * newState.overallHullModifier)
-                    newState.hullArmorMax += Math.ceil(newState.killEnemiesHullModifier * newState.overallHullModifier)
+                    newState.bonusesToMaxHullArmor += Math.ceil(newState.killEnemiesHullModifier * newState.overallHullModifier)
                 }
     
                 if (newState.killEnemiesForMoney > 0 && stateObj.inventoryMax > stateObj.currentInventory) {
@@ -1243,12 +1199,13 @@ async function calculateMoveChange(stateObj, squaresToMove) {
     } else if (targetSquare === "1") {
         if ((stateObj.currentInventory) < stateObj.inventoryMax) { 
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.currentInventory += (gemsToGain + stateObj.bronzeSilverConverter)
-                newState.bronzeInventory += (gemsToGain + stateObj.bronzeSilverConverter)
+                newState.currentInventory += (gemsToGain + stateObj.bronzeSilverBonus)
+                newState.bronzeInventory += (gemsToGain + stateObj.bronzeSilverBonus)
+                newState.score += 40
                 
                 if (stateObj.bronzeMaxHull > 0) {
                     newState.currentHullArmor += Math.ceil(stateObj.bronzeMaxHull * newState.overallHullModifier);
-                    newState.hullArmorMax += Math.ceil(stateObj.bronzeMaxHull * newState.overallHullModifier)
+                    newState.bonusesToMaxHullArmor += Math.ceil(stateObj.bronzeMaxHull * newState.overallHullModifier)
                 }
             })
         } 
@@ -1258,9 +1215,9 @@ async function calculateMoveChange(stateObj, squaresToMove) {
         stateObj = await handleSquare(stateObj, targetSquareNum, 2)
         if ((stateObj.currentInventory) < stateObj.inventoryMax) {  
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.silverInventory += gemsToGain
+                newState.silverInventory += (gemsToGain + stateObj.bronzeSilverBonus)
+                newState.currentInventory += (gemsToGain + stateObj.bronzeSilverBonus)
                 newState.score += 100
-                newState.currentInventory +=gemsToGain
                 if (stateObj.silverHealing > 0) {
                     if (newState.hullArmorMax - newState.currentHullArmor < newState.silverHealing) {
                         newState.currentHullArmor = newState.hullArmorMax
@@ -1270,7 +1227,8 @@ async function calculateMoveChange(stateObj, squaresToMove) {
                 }
                 if (stateObj. silverMaxFuel > 0) {
                     newState.currentFuel += Math.ceil(stateObj.silverMaxFuel * newState.overallFuelModifier);
-                    newState.fuelTankMax += Math.ceil(stateObj.silverMaxFuel * newState.overallFuelModifier);
+                    newState.bonusesToMaxFuel += Math.ceil(stateObj.silverMaxFuel * newState.overallFuelModifier);
+                    newState.fuelTankMax = calculateMaxFuel(newState)
                 }
             })
         } 
@@ -1316,7 +1274,7 @@ async function calculateMoveChange(stateObj, squaresToMove) {
             stateObj = await immer.produce(stateObj, (newState) => {
                 newState.currentInventory +=gemsToGain
                 newState.score += 10000
-                newState.blackDiamondInventory += gemsToGain})
+                newState.diamondKey += gemsToGain})
         } 
     } else if (targetSquare === "empty") {
         stateObj = await handleSquare(stateObj, targetSquareNum, 1)
@@ -1381,62 +1339,6 @@ function pause(timeValue) {
     return new Promise(res => setTimeout(res, timeValue))
 }
 
-async function sellBronze(stateObj, sellTotal) {
-    document.querySelector(".bronze-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.bronzeInventory;
-            newState.bronzeInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
-
-async function sellSilver(stateObj, sellTotal) {
-    document.querySelector(".silver-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.silverInventory;
-            newState.silverInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
-
-async function sellGold(stateObj, sellTotal) {
-    document.querySelector(".gold-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.goldInventory;
-            newState.goldInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
-
-async function sellRuby(stateObj, sellTotal) {
-    document.querySelector(".ruby-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.rubyInventory;
-            newState.rubyInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
-
 async function scrapRelicForCash(stateObj, value) {
     document.querySelector(".scrap-button-relic").classList.add("mini-emphasis")
     await pause(300)
@@ -1463,49 +1365,6 @@ async function swapRelic(stateObj, index) {
     return stateObj
 }
 
-
-
-async function sellAmethyst(stateObj, sellTotal) {
-    document.querySelector(".amethyst-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.amethystInventory;
-            newState.amethystInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
-
-async function sellDiamond(stateObj, sellTotal) {
-    document.querySelector(".diamond-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.diamondInventory;
-            newState.diamondInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
-
-async function sellBlackDiamond(stateObj, sellTotal) {
-    document.querySelector(".black-diamond-sell-row").classList.add("mini-emphasis")
-    await pause(300)
-    if (sellTotal) {
-        stateObj = await immer.produce(stateObj, async (newState) => {
-            newState.currentInventory -= newState.blackDiamondInventory;
-            newState.blackDiamondInventory = 0;
-            newState.bankedCash += sellTotal;
-        })
-    }
-    stateObj = changeState(stateObj)
-    return stateObj
-}
 
 async function inventoryKey(stateObj) {
     stateObj = await immer.produce(stateObj, (newState) => {
@@ -1729,7 +1588,7 @@ async function detonateBlock(stateObj, blockPosition, isLaser=false) {
             newState.currentInventory += 1;
             if (newState.killEnemiesHullModifier > 0) {
                 newState.currentHullArmor += newState.killEnemiesHullModifier
-                newState.hullArmorMax += Math.ceil(newState.killEnemiesHullModifier  * newState.overallHullModifier)
+                newState.bonusesToMaxHullArmor += Math.ceil(newState.killEnemiesHullModifier  * newState.overallHullModifier)
             }
 
             if (newState.killEnemiesForMoney > 0 && stateObj.inventoryMax > stateObj.currentInventory) {
@@ -1800,7 +1659,7 @@ async function dropBlock(stateObj) {
                 mapText += "0"
             }
             stateObj = await immer.produce(stateObj, (newState) => {
-                newState.fuelTankMax += Math.ceil(newState.dirtToMaxFuel * newState.overallFuelModifier);
+                newState.bonusesToMaxFuel += Math.ceil(newState.dirtToMaxFuel * newState.overallFuelModifier);
                 if (newState.dirtReserves >= newState.dirtThresholdNeeded) {
                     newState.dirtReserves -= newState.dirtThresholdNeeded;
                 } else if (newState.currentFuel > Math.floor((dirtNeeded)/newState.fuelToBlocks)) {

@@ -197,21 +197,29 @@ function renderStart(stateObj) {
 
   let textDiv2 = document.createElement("H3")
   textDiv2.classList.add("padding-width")
-  textDiv2.textContent = "Sell and trade ore at the shop to upgrade your ship"
+  textDiv2.textContent = "You're alone on this planet in an old mining ship with a leaky fuel tank and corroded hull armor"
+
+  let textDiv3 = document.createElement("H3")
+  textDiv3.classList.add("padding-width")
+  textDiv3.textContent = "You can use the planet's ore to craft upgrades for your ship at the SHOP"
+
+  let textDiv7 = document.createElement("H3")
+  textDiv7.classList.add("padding-width")
+  textDiv7.textContent = "Gems allow for more powerful upgrades, but they're encased in stone and must be hit with lasers ('L' key) or bombs ('B' key) before they can be mined"
 
   let textDiv4 = document.createElement("H3")
   textDiv4.classList.add("padding-width")
   textDiv4.textContent = "View Cargo Bay Inventory with 'I'. You can convert 3 ores to 1 higher quality ore"
 
-  let textDiv7 = document.createElement("H3")
-  textDiv7.classList.add("padding-width")
-  textDiv7.textContent = "Gems in stone must be hit with lasers ('L' key) or bombs ('B' key) before they can be mined"
+  let textDiv5 = document.createElement("H3")
+  textDiv5.classList.add("padding-width")
+  textDiv5.textContent = "If you can make it down through all 5 levels, you can escape by turning 3 diamonds into a DIAMOND KEY"
 
   let textDiv6 = document.createElement("H3")
   textDiv6.classList.add("padding-width")
   textDiv6.textContent = "Press 'H' to view this screen again"
 
-  lostDiv.append(textDiv2, textDiv4, textDiv7, textDiv6)
+  lostDiv.append(textDiv2, textDiv3, textDiv7, textDiv4, textDiv5, textDiv6)
 
   let startButton = document.createElement("Div")
   startButton.classList.add("sell-button")
@@ -244,21 +252,35 @@ function renderInventory(stateObj) {
   maxTextDiv.textContent = "Current Capacity: " + stateObj.currentInventory + "/" + stateObj.inventoryMax
   maxTextDiv.classList.add("margin-top-10")
 
-  let bronzeInvDiv = createInventoryDiv(stateObj, "Bronze", stateObj.bronzeInventory, 3, "Silver", convertBronze);
-  let silverInvDiv = createInventoryDiv(stateObj, "Silver", stateObj.silverInventory, 3, "Gold", convertSilver);
-  const conversionRate = stateObj.efficientGoldConverter ? 2 : 3;
-  let goldInvDiv = createInventoryDiv(stateObj, "Gold", stateObj.goldInventory, conversionRate, "Ruby", convertGold);
-  let rubyInvDiv = createInventoryDiv(stateObj, "Ruby", stateObj.rubyInventory, 3, "Amethyst", convertRuby);
-  let amethystInvDiv = createInventoryDiv(stateObj, "Amethyst", stateObj.amethystInventory, 3, "Diamond", convertAmethyst);
-  let diamondInvDiv = createInventoryDiv(stateObj, "Diamond", stateObj.diamondInventory, 3, "Black Diamond", convertDiamond);
-  let scrapDiv = createScrapDiv(stateObj)
-  let blackDiamondInvDiv = false
-  if (stateObj.blackDiamondInventory > 0) {
-    blackDiamondInvDiv= document.createElement("div");
-    blackDiamondInvDiv.classList.add("inv-row", "black-diamond-convert-row");
-    blackDiamondInvDiv.textContent = `Black Diamond Ore (${stateObj.blackDiamondInventory})`;
+  let bronzeInvDiv = createInventoryDiv(stateObj, 0);
+  if (stateObj.currentFuel < stateObj.fuelTankMax && stateObj.bronzeInventory > 0) {
+      let refillFuelButton = createRefillFuelButton(stateObj)
+      bronzeInvDiv.append(refillFuelButton);
   }
-  let invDivArray = [bronzeInvDiv, silverInvDiv, goldInvDiv, rubyInvDiv, amethystInvDiv, diamondInvDiv, blackDiamondInvDiv, scrapDiv]
+
+  let silverInvDiv = createInventoryDiv(stateObj, 1);
+  if (stateObj.silverInventory > 0) {
+      let craftAmmoButton = createCraftAmmoButton(stateObj)
+      silverInvDiv.append(craftAmmoButton);
+  }
+
+  let goldInvDiv = createInventoryDiv(stateObj, 2);
+  if (stateObj.goldInventory > 0 && stateObj.hullArmorMax > stateObj. currentHullArmor) {
+      let repairHullButton = createRepairHullButton(stateObj)
+      goldInvDiv.append(repairHullButton);
+  }
+
+  let rubyInvDiv = createInventoryDiv(stateObj, 3);
+  let amethystInvDiv = createInventoryDiv(stateObj, 4);
+  let diamondInvDiv = createInventoryDiv(stateObj, 5);
+  let scrapDiv = createScrapDiv(stateObj)
+  let keyInvDiv = false
+  if (stateObj.diamondKey > 0) {
+    keyInvDiv= document.createElement("div");
+    keyInvDiv.classList.add("inv-row", "key-convert-row");
+    keyInvDiv.textContent = `Diamond Keys (${stateObj.keyInventory})`;
+  }
+  let invDivArray = [bronzeInvDiv, silverInvDiv, goldInvDiv, rubyInvDiv, amethystInvDiv, diamondInvDiv, keyInvDiv, scrapDiv]
 
   invDivArray.forEach((div, index) => {
     if (div) {
@@ -266,39 +288,11 @@ function renderInventory(stateObj) {
     }
    })
   
-  
-  
   // Black Diamond is a special case as it doesn't convert to anything
 
-
-
   let buyNothingDiv = createReturnToMapButton(stateObj)
-
-  let shipStatsDiv = document.createElement("Div")
-    shipStatsDiv.classList.add("ship-stats")
-
-    let hullArmorRow = document.createElement("Div")
-    hullArmorRow.classList.add("inventory-bar-vis-div")
-    let hullArmorText = `Hull Armor: `
-    let hullArmorDiv = document.createElement("Div")
-    hullArmorDiv.textContent = hullArmorText
-    let hullBarVis = createFuelTankVisualStoreDiv(stateObj.playerShip.hullArmorPlating)
-    hullArmorRow.append(hullArmorDiv, hullBarVis)
-
-    let fuelDivRow = document.createElement("Div")
-    fuelDivRow.classList.add("inventory-bar-vis-div")
-    let fuelTankText = `Fuel Tank: `
-    let fuelTankDiv = document.createElement("Div")
-    fuelTankDiv.textContent = fuelTankText
-
-    let fuelBarVis = createFuelTankVisualStoreDiv(stateObj.playerShip.fuelTank)
-    fuelDivRow.append(fuelTankDiv, fuelBarVis)
-
-    // let weaponsText = `Laser Level: ${stateObj.playerShip.laserLevel}, Bomb Level: ${stateObj.playerShip.bombLevel}`
-    // let weaponsDiv = document.createElement("Div")
-    // weaponsDiv.textContent = weaponsText
-
-    shipStatsDiv.append(hullArmorRow, fuelDivRow)
+  let shipStatsDiv = createShipStatsDiv(stateObj)
+  
     sellDiv.append(shipStatsDiv, maxTextDiv, sellInventoryDiv, buyNothingDiv)
     storeDiv.append(sellDiv)
   
@@ -378,7 +372,7 @@ function renderMap(stateObj) {
               mapSquareImg.classList.add("player-img-low-fuel")
           } else if (stateObj.currentHullArmor <= (stateObj.hullArmorMax/2)) {
               mapSquareImg.classList.add("player-img-damaged")
-          } else if (stateObj.currentInventory === stateObj.inventoryMax) {
+          } else if (stateObj.currentInventory >= stateObj.inventoryMax) {
               mapSquareImg.classList.add("player-img-full")
           } else {
               mapSquareImg.classList.add("player-img")
@@ -918,8 +912,10 @@ async function upgradeHullArmor(stateObj, upgradeLevel) {
               draft.playerShip.hullArmorPlating[lowestIndex] = upgradeLevel
               draft[`${gemType}Inventory`] -= cost
               draft.currentInventory -= cost
-              draft.hullArmorMax = calculateMaxHullArmor(draft, draft.playerShip.hullArmorPlating)
-              draft.currentHullArmor = Math.min(draft.currentHullArmor + 20, draft.hullArmorMax)  // Increase armor, but don't exceed max
+              let currentMax = draft.hullArmorMax
+              let newMax = calculateMaxHullArmor(draft, draft.playerShip.hullArmorPlating)
+              draft.hullArmorMax = newMax
+              draft.currentHullArmor += (newMax-currentMax)
           }
       }
   })
@@ -932,7 +928,11 @@ async function upgradeHullRoulette(stateObj, upgradeLevel) {
         const lowestIndex = draft.playerShip.hullArmorPlating.findIndex(value => value === Math.min(...draft.playerShip.hullArmorPlating))
           if (lowestIndex !== -1) {
               draft.playerShip.hullArmorPlating[lowestIndex] = upgradeLevel
-              draft.hullArmorMax = calculateMaxHullArmor(draft, draft.playerShip.hullArmorPlating)
+              let currentMax = draft.hullArmorMax
+              let newMax = calculateMaxHullArmor(draft, draft.playerShip.hullArmorPlating)
+              draft.hullArmorMax = newMax
+              draft.currentHullArmor += (newMax-currentMax)
+
               draft.choosingRoulette = false
       }
   })
@@ -951,7 +951,7 @@ function getGemTypeForUpgrade(upgradeLevel) {
 }
 
 function calculateMaxFuel(stateObj, fuelTankArray) {
-  return stateObj.fuelTankMax + fuelTankArray.reduce((total, level) => {
+  return stateObj.baseMaxFuel + stateObj.bonusesToMaxFuel + fuelTankArray.reduce((total, level) => {
     switch(level) {
       case 1:
         return total + (5 * stateObj.overallFuelModifier);
@@ -968,7 +968,7 @@ function calculateMaxFuel(stateObj, fuelTankArray) {
 }
 
 function calculateMaxHullArmor(stateObj, fuelTankArray) {
-  return stateObj.hullArmorMax + fuelTankArray.reduce((total, level) => {
+  return stateObj.baseMaxHullArmor + stateObj.bonusesToMaxHullArmor + fuelTankArray.reduce((total, level) => {
     switch(level) {
       case 1:
         return total + (5 * stateObj.overallHullModifier);
